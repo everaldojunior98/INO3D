@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:winForms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         mc:Ignorable="d"
+        Closed="MainWindow_OnClosed"
         Style="{DynamicResource CustomWindowStyle}"
         WindowStartupLocation="CenterScreen"
         Icon="Icon.ico"
@@ -120,8 +122,11 @@
                 <ColumnDefinition Width="300" />
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0"
-                  Background="{StaticResource PrimaryColor}" />
+            <Grid Grid.Column="0" SizeChanged="UnityContainer_OnSizeChanged">
+                <WindowsFormsHost VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <winForms:Panel x:Name="UnityContainer"/>
+                </WindowsFormsHost>
+            </Grid>
 
             <GridSplitter Grid.Column="1"
                           Background="{StaticResource SecondaryColor}"
