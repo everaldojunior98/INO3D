@@ -3,10 +3,141 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:INO3D"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Style="{DynamicResource CustomWindowStyle}"
+        WindowStartupLocation="CenterScreen"
+        Icon="Icon.ico"
+        Title="INO3D"
+        Width="1280"
+        Height="720">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0"
+              Background="{StaticResource PrimaryColor}">
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal"
+                            Background="{StaticResource SecondaryColor}"
+                            HorizontalAlignment="Left">
+                    <Button Width="35"
+                            Background="Transparent"
+                            BorderThickness="0">
+                        <Image Margin="5"
+                               UseLayoutRounding="True"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               SnapsToDevicePixels="True"
+                               Source="Images/Icons/File.png" />
+                    </Button>
+                    <Button Width="35"
+                            Background="Transparent"
+                            BorderThickness="0">
+                        <Image Margin="5"
+                               UseLayoutRounding="True"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               SnapsToDevicePixels="True"
+                               Source="Images/Icons/Folder.png" />
+                    </Button>
+                    <Button Width="35"
+                            Background="Transparent"
+                            BorderThickness="0">
+                        <Image Margin="5"
+                               UseLayoutRounding="True"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               SnapsToDevicePixels="True"
+                               Source="Images/Icons/Save.png" />
+                    </Button>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal"
+                            Margin="5,0"
+                            Background="{StaticResource SecondaryColor}"
+                            HorizontalAlignment="Left">
+                    <Button Width="35"
+                            Background="Transparent"
+                            BorderThickness="0">
+                        <Image Margin="5"
+                               UseLayoutRounding="True"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               SnapsToDevicePixels="True"
+                               Source="Images/Icons/2D.png" />
+                    </Button>
+                    <Button Width="35"
+                            Background="Transparent"
+                            BorderThickness="0">
+                        <Image Margin="5"
+                               UseLayoutRounding="True"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               SnapsToDevicePixels="True"
+                               Source="Images/Icons/3D.png" />
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"
+                        Background="{StaticResource SecondaryColor}"
+                        HorizontalAlignment="Center">
+                <Button Width="35"
+                        Background="Transparent"
+                        BorderThickness="0">
+                    <Image Margin="5"
+                           UseLayoutRounding="True"
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           SnapsToDevicePixels="True"
+                           Source="Images/Icons/Play.png" />
+                </Button>
+                <Button Width="35"
+                        Background="Transparent"
+                        BorderThickness="0">
+                    <Image Margin="5"
+                           UseLayoutRounding="True"
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           SnapsToDevicePixels="True"
+                           Source="Images/Icons/Pause.png" />
+                </Button>
+                <Button Width="35"
+                        Background="Transparent"
+                        BorderThickness="0">
+                    <Image Margin="5"
+                           UseLayoutRounding="True"
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           SnapsToDevicePixels="True"
+                           Source="Images/Icons/Stop.png" />
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1"
+              Background="{StaticResource SecondaryColor}" />
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="2" />
+                <ColumnDefinition Width="300" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0"
+                  Background="{StaticResource PrimaryColor}" />
+
+            <GridSplitter Grid.Column="1"
+                          Background="{StaticResource SecondaryColor}"
+                          Width="5"
+                          HorizontalAlignment="Stretch" />
+
+            <Grid Grid.Column="2"
+                  Background="{StaticResource PrimaryColor}" />
+        </Grid>
+
+        <GridSplitter Grid.Row="3"
+                      Background="{StaticResource SecondaryColor}"
+                      Height="5"
+                      HorizontalAlignment="Stretch" />
+
+        <Grid Grid.Row="4"
+              Background="{StaticResource SecondaryColor}" />
     </Grid>
 </Window>

@@ -4,6 +4,14 @@
              xmlns:local="clr-namespace:INO3D"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/DarkTheme.xaml"/>
+                <ResourceDictionary>
+                    <SolidColorBrush x:Key="PrimaryColor">#2d2d2d</SolidColorBrush>
+                    <SolidColorBrush x:Key="SecondaryColor">#343434</SolidColorBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
