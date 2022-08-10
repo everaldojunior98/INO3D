@@ -54,6 +54,15 @@ namespace Assets.Scripts.Utils
 
         #endregion
 
+        #region Public Methods
+
+        public Camera GetMainCamera()
+        {
+            return mainCamera;
+        }
+
+        #endregion
+
         #region Private Methods
 
         private void SetCameraAsPerspective()
