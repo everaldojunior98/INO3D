@@ -14,7 +14,10 @@ namespace Assets.Scripts.Components
         private InoComponent selectedComponent;
         private Camera mainCamera;
 
+        private bool canDrag;
         private bool isDragging;
+
+        private Vector3 dragStartPosition;
 
         #endregion
 
@@ -35,17 +38,20 @@ namespace Assets.Scripts.Components
                     var component = hit.transform.GetComponent<InoComponent>();
                     if (component != null)
                     {
-                        isDragging = true;
+                        canDrag = true;
+                        isDragging = false;
                         selectedComponent = component;
                     }
                     else
                     {
+                        canDrag = false;
                         isDragging = false;
                         selectedComponent = null;
                     }
                 }
                 else
                 {
+                    canDrag = false;
                     isDragging = false;
                     selectedComponent = null;
                 }
@@ -53,17 +59,27 @@ namespace Assets.Scripts.Components
 
             if (Input.GetKey(selectButton))
             {
-                if (isDragging)
+                if (canDrag)
                 {
                     var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
                     if (Physics.Raycast(ray, out var hit, float.MaxValue, ~inoLayerMask))
                         if (selectedComponent != null)
-                            selectedComponent.transform.position = hit.point;
+                        {
+                            if (!isDragging)
+                                dragStartPosition = hit.point;
+
+                            selectedComponent.transform.position += hit.point - dragStartPosition;
+                            dragStartPosition = hit.point;
+                            isDragging = true;
+                        }
                 }
             }
 
             if (Input.GetKeyUp(selectButton))
+            {
+                canDrag = false;
                 isDragging = false;
+            }
         }
 
         #endregion
