@@ -1,9 +1,14 @@
 using UnityEngine;
 
-public class LimitFrameRate : MonoBehaviour
+namespace Assets.Scripts.Utils
 {
-    private void Start()
+    public class LimitFrameRate : MonoBehaviour
     {
+        private void Start()
+        {
+#if !UNITY_EDITOR
         Application.targetFrameRate = 30;
+#endif
+        }
     }
 }
