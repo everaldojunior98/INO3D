@@ -33,6 +33,7 @@ public class LocalizationManager : MonoBehaviour
         //Components
         AddLocalization("Menu.File", "Arquivo", "File");
         AddLocalization("Menu.Edit", "Editar", "Edit");
+        AddLocalization("Menu.Components", "Componentes", "Components");
 
         currentLanguage = PlayerPrefs.GetString("currentLanguage", localizationDictionary.Keys.First());
     }

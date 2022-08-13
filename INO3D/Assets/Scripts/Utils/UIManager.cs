@@ -242,7 +242,7 @@ public class UIManager : MonoBehaviour
 
     private void ShowComponentsWindow()
     {
-        ImGui.Begin("Components", ImGuiWindowFlags.NoCollapse);
+        ImGui.Begin(LocalizationManager.Instance.Localize("Menu.Components"), ImGuiWindowFlags.NoCollapse);
 
         ImGui.End();
     }

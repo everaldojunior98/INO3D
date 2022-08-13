@@ -493,7 +493,7 @@ GameObject:
   - component: {fileID: 545991849}
   - component: {fileID: 545991851}
   m_Layer: 6
-  m_Name: Arduino UNO
+  m_Name: UNO
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
