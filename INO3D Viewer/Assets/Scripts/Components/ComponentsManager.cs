@@ -6,6 +6,12 @@ namespace Assets.Scripts.Components
 {
     public class ComponentsManager : MonoBehaviour
     {
+        #region Properties
+
+        public static ComponentsManager Instance { get; private set; }
+
+        #endregion
+
         #region Fields
 
         [SerializeField] LayerMask inoLayerMask;
@@ -19,9 +25,23 @@ namespace Assets.Scripts.Components
 
         private Vector3 dragStartPosition;
 
+        private Material selectedMaterial;
+        private Material unselectedMaterial;
+
         #endregion
 
         #region Unity Methods
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+                Destroy(this);
+            else
+                Instance = this;
+
+            selectedMaterial = Resources.Load("Materials/PortRed", typeof(Material)) as Material;
+            unselectedMaterial = Resources.Load("Materials/PortGreen", typeof(Material)) as Material;
+        }
 
         private void Start()
         {
@@ -80,6 +100,30 @@ namespace Assets.Scripts.Components
                 canDrag = false;
                 isDragging = false;
             }
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public Material GetSelectedMaterial()
+        {
+            return selectedMaterial;
+        }
+
+        public Material GetUnselectedMaterial()
+        {
+            return unselectedMaterial;
+        }
+
+        public void OnPortSelected(InoPort port)
+        {
+
+        }
+
+        public void OnPortUnselected(InoPort port)
+        {
+
         }
 
         #endregion
