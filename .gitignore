@@ -76,26 +76,26 @@ Desktop.ini
 .DS_Store
 
 # Unity Files & Folders
-/INO3D Viewer/Temp/
-/INO3D Viewer/Library/
-/INO3D Viewer/Logs/
-/INO3D Viewer/Assembly-CSharp.csproj
-/INO3D Viewer/Assembly-CSharp-Editor.csproj
-/INO3D Viewer/Assembly-CSharp-Editor-vs.csproj
-/INO3D Viewer/Assembly-CSharp-firstpass.csproj
-/INO3D Viewer/Assembly-CSharp-firstpass-vs.csproj
-/INO3D Viewer/Assembly-CSharp-vs.csproj
-/INO3D Viewer/Assembly-CSharp.pidb
-/INO3D Viewer/Assembly-CSharp-Editor.pidb
-/INO3D Viewer/Assembly-CSharp-firstpass.pidb
-/INO3D Viewer/Assembly-UnityScript.pidb
-/INO3D Viewer/Assembly-UnityScript-firstpass.pidb
-/INO3D Viewer/Assembly-UnityScript-vs.unityproj
-/INO3D Viewer/INO3D Viewer.sln
-/INO3D Viewer/INO3D Viewer-csharp.sln
-/INO3D Viewer/Assembly-UnityScript.unityproj
-/INO3D Viewer/Assembly-UnityScript-firstpass.unityproj
-/INO3D Viewer/Assembly-UnityScript-firstpass-vs.unityproj
-/INO3D Viewer/INO3D Viewer.userprefs
+/INO3D/Temp/
+/INO3D/Library/
+/INO3D/Logs/
+/INO3D/Assembly-CSharp.csproj
+/INO3D/Assembly-CSharp-Editor.csproj
+/INO3D/Assembly-CSharp-Editor-vs.csproj
+/INO3D/Assembly-CSharp-firstpass.csproj
+/INO3D/Assembly-CSharp-firstpass-vs.csproj
+/INO3D/Assembly-CSharp-vs.csproj
+/INO3D/Assembly-CSharp.pidb
+/INO3D/Assembly-CSharp-Editor.pidb
+/INO3D/Assembly-CSharp-firstpass.pidb
+/INO3D/Assembly-UnityScript.pidb
+/INO3D/Assembly-UnityScript-firstpass.pidb
+/INO3D/Assembly-UnityScript-vs.unityproj
+/INO3D/INO3D.sln
+/INO3D/INO3D-csharp.sln
+/INO3D/Assembly-UnityScript.unityproj
+/INO3D/Assembly-UnityScript-firstpass.unityproj
+/INO3D/Assembly-UnityScript-firstpass-vs.unityproj
+/INO3D/INO3D.userprefs
 metadata
 CurrentLayout
