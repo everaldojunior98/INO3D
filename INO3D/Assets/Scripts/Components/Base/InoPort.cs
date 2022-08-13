@@ -43,11 +43,17 @@ namespace Assets.Scripts.Components.Base
 
         private void OnMouseEnter()
         {
+            if (UIManager.Instance.IsMouserOverUI())
+                return;
+
             ShowIndicator();
         }
 
         private void OnMouseDown()
         {
+            if (UIManager.Instance.IsMouserOverUI())
+                return;
+
             isSelected = !isSelected;
             UpdateMaterial();
 

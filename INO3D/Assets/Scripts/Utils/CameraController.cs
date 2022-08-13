@@ -49,6 +49,9 @@ namespace Assets.Scripts.Utils
 
         private void Update()
         {
+            if (UIManager.Instance.IsMouserOverUI())
+                return;
+
             PerspectiveCameraControl();
         }
 

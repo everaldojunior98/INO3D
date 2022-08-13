@@ -689,6 +689,7 @@ GameObject:
   - component: {fileID: 703296492}
   - component: {fileID: 703296491}
   - component: {fileID: 703296493}
+  - component: {fileID: 703296494}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -738,6 +739,18 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   selectButton: 323
+--- !u!114 &703296494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 703296490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59683fdc87ac5dd4b8cdd14e8cadf01f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &775057041
 GameObject:
   m_ObjectHideFlags: 0
@@ -1526,6 +1539,7 @@ GameObject:
   - component: {fileID: 1860337026}
   - component: {fileID: 1860337025}
   - component: {fileID: 1860337028}
+  - component: {fileID: 1860337029}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1615,6 +1629,44 @@ MonoBehaviour:
   dragSpeed: 5
   minDistance: 0.5
   maxDistance: 100
+--- !u!114 &1860337029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1860337024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fa779297770e0849864f782007007e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _doGlobalLayout: 1
+  _camera: {fileID: 1860337026}
+  _renderFeature: {fileID: 0}
+  _rendererType: 0
+  _platformType: 0
+  _initialConfiguration:
+    KeyboardNavigation: 0
+    GamepadNavigation: 0
+    NavSetMousePos: 0
+    NavNoCaptureKeyboard: 0
+    DoubleClickTime: 0.3
+    DoubleClickMaxDist: 6
+    DragThreshold: 6
+    KeyRepeatDelay: 0.275
+    KeyRepeatRate: 0.05
+    FontGlobalScale: 1
+    FontAllowUserScaling: 0
+    TextCursorBlink: 1
+    ResizeFromEdges: 1
+    MoveFromTitleOnly: 0
+    MemoryCompactTimer: 60
+  _fontAtlasConfiguration: {fileID: 11400000, guid: d3db7b07b5b1a984a9b0582acc461c22, type: 2}
+  _iniSettings: {fileID: 0}
+  _shaders: {fileID: 11400000, guid: 9c25b437bdcfe95449d0617c2f2ee93d, type: 2}
+  _style: {fileID: 11400000, guid: 2f5e7cc338c3ffc4caddb08baa576db2, type: 2}
+  _cursorShapes: {fileID: 11400000, guid: 79f57b40c6f98a5418bdf959f1061379, type: 2}
 --- !u!1 &1907897295
 GameObject:
   m_ObjectHideFlags: 0

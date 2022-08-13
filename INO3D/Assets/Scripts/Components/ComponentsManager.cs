@@ -50,6 +50,9 @@ namespace Assets.Scripts.Components
 
         private void Update()
         {
+            if(UIManager.Instance.IsMouserOverUI())
+                return;
+
             if (Input.GetKeyDown(selectButton))
             {
                 var ray = mainCamera.ScreenPointToRay(Input.mousePosition);

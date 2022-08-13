@@ -1,11 +1,39 @@
 {
   "dependencies": {
+    "com.realgames.dear-imgui": {
+      "version": "https://github.com/viliwonka/dear-imgui-unity.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.collections": "0.5.0-preview.9"
+      },
+      "hash": "a6889f4732302b7ea0935aa9730d82cdffb95c1c"
+    },
+    "com.unity.burst": {
+      "version": "1.2.0-preview.11",
+      "depth": 2,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.mathematics": "1.1.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.collab-proxy": {
       "version": "1.15.12",
       "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.services.core": "1.0.1"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.collections": {
+      "version": "0.5.0-preview.9",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework.performance": "1.3.3-preview",
+        "com.unity.burst": "1.2.0-preview.11"
       },
       "url": "https://packages.unity.com"
     },
@@ -41,6 +69,13 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.mathematics": {
+      "version": "1.1.0",
+      "depth": 3,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
     "com.unity.services.core": {
       "version": "1.0.1",
       "depth": 1,
@@ -57,6 +92,16 @@
       "dependencies": {
         "com.unity.ext.nunit": "1.0.6",
         "com.unity.modules.imgui": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.test-framework.performance": {
+      "version": "1.3.3-preview",
+      "depth": 2,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
