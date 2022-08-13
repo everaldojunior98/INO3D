@@ -5,21 +5,9 @@ namespace Assets.Scripts.Utils
 {
     public class CameraController : MonoBehaviour
     {
-        #region Singleton
+        #region Properties
 
         public static CameraController Instance { get; private set; }
-
-        private void Awake()
-        {
-            mainCamera = GetComponent<Camera>();
-
-            if (Instance != null && Instance != this)
-                Destroy(gameObject);
-            else
-                Instance = this;
-
-            DontDestroyOnLoad(gameObject);
-        }
 
         #endregion
 
@@ -41,6 +29,18 @@ namespace Assets.Scripts.Utils
         #endregion
 
         #region Unity Methods
+
+        private void Awake()
+        {
+            mainCamera = GetComponent<Camera>();
+
+            if (Instance != null && Instance != this)
+                Destroy(gameObject);
+            else
+                Instance = this;
+
+            DontDestroyOnLoad(gameObject);
+        }
 
         private void Start()
         {

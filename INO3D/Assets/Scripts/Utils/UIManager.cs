@@ -182,7 +182,7 @@ public class UIManager : MonoBehaviour
     {
         if (ImGui.BeginMainMenuBar())
         {
-            if (ImGui.BeginMenu("File"))
+            if (ImGui.BeginMenu(LocalizationManager.Instance.Localize("Menu.File")))
             {
                 if (ImGui.MenuItem("Undo", "CTRL+Z"))
                 {
@@ -209,7 +209,7 @@ public class UIManager : MonoBehaviour
                 ImGui.EndMenu();
             }
 
-            if (ImGui.BeginMenu("Edit"))
+            if (ImGui.BeginMenu(LocalizationManager.Instance.Localize("Menu.Edit")))
             {
                 if (ImGui.MenuItem("Undo", "CTRL+Z"))
                 {
