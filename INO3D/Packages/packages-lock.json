@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.realgames.dear-imgui": {
-      "version": "https://github.com/viliwonka/dear-imgui-unity.git",
+      "version": "https://github.com/everaldojunior98/dear-imgui-unity.git",
       "depth": 0,
       "source": "git",
       "dependencies": {
@@ -74,6 +74,17 @@
       "depth": 3,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.render-pipelines.core": {
+      "version": "10.8.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0",
+        "com.unity.modules.physics": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.services.core": {

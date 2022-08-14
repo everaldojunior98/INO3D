@@ -1662,7 +1662,7 @@ MonoBehaviour:
   _initialConfiguration:
     KeyboardNavigation: 0
     GamepadNavigation: 0
-    NavSetMousePos: 0
+    NavSetMousePos: 1
     NavNoCaptureKeyboard: 0
     DoubleClickTime: 0.3
     DoubleClickMaxDist: 6
@@ -1672,7 +1672,7 @@ MonoBehaviour:
     FontGlobalScale: 1
     FontAllowUserScaling: 0
     TextCursorBlink: 1
-    ResizeFromEdges: 1
+    ResizeFromEdges: 0
     MoveFromTitleOnly: 0
     MemoryCompactTimer: 60
   _fontAtlasConfiguration: {fileID: 11400000, guid: d3db7b07b5b1a984a9b0582acc461c22, type: 2}

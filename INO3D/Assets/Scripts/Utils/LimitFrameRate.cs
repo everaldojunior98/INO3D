@@ -6,9 +6,8 @@ namespace Assets.Scripts.Utils
     {
         private void Start()
         {
-#if !UNITY_EDITOR
-        Application.targetFrameRate = 30;
-#endif
+            Application.targetFrameRate = 30;
+            QualitySettings.vSyncCount = 0;
         }
     }
 }
