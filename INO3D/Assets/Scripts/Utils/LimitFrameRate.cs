@@ -4,10 +4,21 @@ namespace Assets.Scripts.Utils
 {
     public class LimitFrameRate : MonoBehaviour
     {
+        private int currentRefreshRate;
+
         private void Start()
         {
-            Application.targetFrameRate = 30;
             QualitySettings.vSyncCount = 0;
+            currentRefreshRate = Screen.currentResolution.refreshRate;
+        }
+
+        private void Update()
+        {
+            if (Screen.currentResolution.refreshRate != currentRefreshRate)
+            {
+                currentRefreshRate = Screen.currentResolution.refreshRate;
+                Application.targetFrameRate = currentRefreshRate;
+            }
         }
     }
 }
