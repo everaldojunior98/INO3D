@@ -2,6 +2,7 @@
 using System.Threading;
 using ImGuiNET;
 using UnityEngine;
+using static Assets.Scripts.Components.Base.InoComponent;
 
 namespace Assets.Scripts.Utils
 {
@@ -34,6 +35,9 @@ namespace Assets.Scripts.Utils
                                              ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing |
                                              ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoMove;
 
+        private const float PortHoverPaddingX = 10;
+        private const float PortHoverPaddingY = 5;
+
         private const float ButtonBarHeight = 60;
         private readonly Vector2 defaultButtonSize = new Vector2(50, 50);
 
@@ -44,6 +48,10 @@ namespace Assets.Scripts.Utils
 
         private bool isMouseOverUI;
         private bool displayPortOverlay;
+
+        private string overlayPortName;
+        private PortType overlayPortType;
+        private PinType overlayPinType;
 
         #endregion
 
@@ -76,9 +84,13 @@ namespace Assets.Scripts.Utils
             return !displayPortOverlay && isMouseOverUI;
         }
 
-        public void DisplayPortOverlay()
+        public void DisplayPortOverlay(string portName, PortType portType, PinType pinType)
         {
             displayPortOverlay = true;
+
+            overlayPortName = portName;
+            overlayPortType = portType;
+            overlayPinType = pinType;
         }
 
         public void HidePortOverlay()
@@ -212,12 +224,29 @@ namespace Assets.Scripts.Utils
 
         private void ShowPortOverlay()
         {
-            ImGui.SetNextWindowPos(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y));
+            ImGui.SetNextWindowPos(new Vector2(Input.mousePosition.x + PortHoverPaddingX, Screen.height - Input.mousePosition.y - PortHoverPaddingY));
             if (ImGui.Begin("PortOverlay", PortHoverWindowFlags))
             {
-                ImGui.Text("PORT OVERLAY");
+                var type = string.Empty;
+                switch (overlayPortType)
+                {
+                    case PortType.Analog:
+                        type = LocalizationManager.Instance.Localize("Overlay.Type.Analog");
+                        break;
+                    case PortType.Digital:
+                        type = LocalizationManager.Instance.Localize("Overlay.Type.Digital");
+                        break;
+                    case PortType.DigitalPwm:
+                        type = LocalizationManager.Instance.Localize("Overlay.Type.DigitalPwm");
+                        break;
+                    case PortType.Power:
+                        type = LocalizationManager.Instance.Localize("Overlay.Type.Power");
+                        break;
+                }
+
+                ImGui.Text(LocalizationManager.Instance.Localize("Overlay.Port") + ": " + overlayPortName);
                 ImGui.Separator();
-                ImGui.Text("PORT OVERLAY");
+                ImGui.Text(LocalizationManager.Instance.Localize("Overlay.Type") + ": " + type);
             }
 
             ImGui.End();

@@ -15,6 +15,7 @@ namespace Assets.Scripts.Components
         #region Fields
 
         [SerializeField] LayerMask inoLayerMask;
+        [SerializeField] LayerMask floorLayerMask;
         [SerializeField] KeyCode selectButton;
 
         private InoComponent selectedComponent;
@@ -85,7 +86,7 @@ namespace Assets.Scripts.Components
                 if (canDrag)
                 {
                     var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-                    if (Physics.Raycast(ray, out var hit, float.MaxValue, ~inoLayerMask))
+                    if (Physics.Raycast(ray, out var hit, float.MaxValue, floorLayerMask))
                         if (selectedComponent != null)
                         {
                             if (!isDragging)

@@ -31,10 +31,15 @@ namespace Assets.Scripts.Utils
 
             localizationDictionary = new Dictionary<string, Dictionary<string, string>>();
 
-            //Components
             AddLocalization("Menu.File", "Arquivo", "File");
             AddLocalization("Menu.Edit", "Editar", "Edit");
             AddLocalization("Menu.Components", "Componentes", "Components");
+            AddLocalization("Overlay.Port", "Porta", "Port");
+            AddLocalization("Overlay.Type", "Tipo", "Type");
+            AddLocalization("Overlay.Type.Analog", "Analógica", "Analog");
+            AddLocalization("Overlay.Type.Digital", "Digital", "Digital");
+            AddLocalization("Overlay.Type.DigitalPwm", "Digital (PWM)", "Digital (PWM)");
+            AddLocalization("Overlay.Type.Power", "Força", "Power");
 
             currentLanguage = PlayerPrefs.GetString("currentLanguage", localizationDictionary.Keys.First());
         }

@@ -1,13 +1,22 @@
 using Assets.Scripts.Utils;
 using UnityEngine;
+using static Assets.Scripts.Components.Base.InoComponent;
 
 namespace Assets.Scripts.Components.Base
 {
     public class InoPort : MonoBehaviour
     {
+        #region Porperties
+
+        public string PortName;
+        public PortType PortType;
+        public PinType PinType;
+
+        #endregion
+
         #region Fields
 
-        private readonly Vector3 defaultSize = 0.04f * Vector3.one;
+        private readonly Vector3 defaultSize = new Vector3(0.04f, 0.04f, 0.04f);
 
         private GameObject indicator;
         private BoxCollider boxCollider;
@@ -48,7 +57,7 @@ namespace Assets.Scripts.Components.Base
                 return;
 
             ShowIndicator();
-            UIManager.Instance.DisplayPortOverlay();
+            UIManager.Instance.DisplayPortOverlay(PortName, PortType, PinType);
         }
 
         private void OnMouseDown()
