@@ -30,6 +30,10 @@ namespace Assets.Scripts.Utils
         private const ImGuiWindowFlags ButtonBarFlags = ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoDecoration |
                                            ImGuiWindowFlags.NoResize;
 
+        private const ImGuiWindowFlags PortHoverWindowFlags = ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.AlwaysAutoResize |
+                                             ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing |
+                                             ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoMove;
+
         private const float ButtonBarHeight = 60;
         private readonly Vector2 defaultButtonSize = new Vector2(50, 50);
 
@@ -39,6 +43,7 @@ namespace Assets.Scripts.Utils
         private bool setupDearImGui = true;
 
         private bool isMouseOverUI;
+        private bool displayPortOverlay;
 
         #endregion
 
@@ -68,7 +73,17 @@ namespace Assets.Scripts.Utils
 
         public bool IsMouserOverUI()
         {
-            return isMouseOverUI;
+            return !displayPortOverlay && isMouseOverUI;
+        }
+
+        public void DisplayPortOverlay()
+        {
+            displayPortOverlay = true;
+        }
+
+        public void HidePortOverlay()
+        {
+            displayPortOverlay = false;
         }
 
         #endregion
@@ -190,6 +205,22 @@ namespace Assets.Scripts.Utils
 
             ShowComponentsWindow();
             ShowButtonBar();
+
+            if (displayPortOverlay)
+                ShowPortOverlay();
+        }
+
+        private void ShowPortOverlay()
+        {
+            ImGui.SetNextWindowPos(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y));
+            if (ImGui.Begin("PortOverlay", PortHoverWindowFlags))
+            {
+                ImGui.Text("PORT OVERLAY");
+                ImGui.Separator();
+                ImGui.Text("PORT OVERLAY");
+            }
+
+            ImGui.End();
         }
 
         private void ShowComponentsWindow()

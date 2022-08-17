@@ -48,6 +48,7 @@ namespace Assets.Scripts.Components.Base
                 return;
 
             ShowIndicator();
+            UIManager.Instance.DisplayPortOverlay();
         }
 
         private void OnMouseDown()
@@ -68,6 +69,7 @@ namespace Assets.Scripts.Components.Base
         {
             if (!isSelected)
                 HideIndicator();
+            UIManager.Instance.HidePortOverlay();
         }
 
         #endregion
