@@ -96,17 +96,17 @@ namespace Assets.Scripts.Utils
             if (Input.GetKey(KeyCode.Mouse1))
             {
                 transform.RotateAround(target.transform.position, Vector3.up,
-                    (Input.GetAxisRaw("Mouse X") * Time.deltaTime * rotateSpeed * 10));
+                    (Input.GetAxisRaw("Mouse X") * 0.001f * rotateSpeed));
 
-                var angle = -(Input.GetAxisRaw("Mouse Y") * Time.deltaTime * rotateSpeed * 10);
+                var angle = -(Input.GetAxisRaw("Mouse Y") * 0.001f * rotateSpeed);
                 transform.RotateAround(target.transform.position, transform.right, angle);
             }
 
             //Drag
             if (Input.GetKey(KeyCode.Mouse2))
             {
-                var direction = new Vector3(-Input.GetAxisRaw("Mouse X") * Time.deltaTime * dragSpeed * currentZoom,
-                    -Input.GetAxisRaw("Mouse Y") * Time.deltaTime * dragSpeed * currentZoom, 0);
+                var direction = new Vector3(-Input.GetAxisRaw("Mouse X") * 0.001f * dragSpeed * currentZoom,
+                    -Input.GetAxisRaw("Mouse Y") * 0.001f * dragSpeed * currentZoom, 0);
 
                 var ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
                 if (floorPlane.Raycast(ray, out var enter))
@@ -121,7 +121,7 @@ namespace Assets.Scripts.Utils
             //Zoom
             if (currentZoom >= minDistance && Input.GetAxis("Mouse ScrollWheel") > 0f ||
                 currentZoom <= maxDistance && Input.GetAxis("Mouse ScrollWheel") < 0f)
-                transform.Translate(0f, 0f, Input.GetAxis("Mouse ScrollWheel") * Time.deltaTime * zoomSpeed * 10,
+                transform.Translate(0f, 0f, Input.GetAxis("Mouse ScrollWheel") * 0.001f * zoomSpeed,
                     Space.Self);
         }
 
