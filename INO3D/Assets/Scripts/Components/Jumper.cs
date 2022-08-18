@@ -17,7 +17,12 @@ namespace Assets.Scripts.Components
         [SerializeField] GameObject femalePrefab;
 
         private GameObject jumper1;
+        private MeshRenderer jumper1MeshRenderer;
+        private BoxCollider jumper1BoxCollider;
+
         private GameObject jumper2;
+        private MeshRenderer jumper2MeshRenderer;
+        private BoxCollider jumper2BoxCollider;
 
         private InoPort inoPort1;
         private Vector3 inoPort1Position;
@@ -26,6 +31,7 @@ namespace Assets.Scripts.Components
         private Vector3 inoPort2Position;
 
         private LineRenderer lineRenderer;
+        private MeshCollider meshCollider;
 
         #endregion
 
@@ -59,18 +65,36 @@ namespace Assets.Scripts.Components
                 lineRenderer = GetComponentInChildren<LineRenderer>();
                 lineRenderer.useWorldSpace = true;
 
+                meshCollider = gameObject.AddComponent<MeshCollider>();
+
                 lineRenderer.startWidth = Width;
                 lineRenderer.endWidth = Width;
                 lineRenderer.positionCount = NumberOfPoints;
             }
 
             if (jumper1 == null)
+            {
                 jumper1 = Instantiate(port1.PinType == PinType.Female ? malePrefab : femalePrefab, transform);
+                jumper1MeshRenderer = jumper1.GetComponent<MeshRenderer>();
+                jumper1BoxCollider = gameObject.AddComponent<BoxCollider>();
+                jumper1BoxCollider.size = jumper1MeshRenderer.bounds.size;
+            }
             jumper1.transform.position = port1.transform.position;
+            jumper1BoxCollider.center = new Vector3(port1.transform.position.x,
+                port1.transform.position.y + jumper1MeshRenderer.bounds.size.y / 2f,
+                port1.transform.position.z);
 
             if (jumper2 == null)
+            {
                 jumper2 = Instantiate(port2.PinType == PinType.Female ? malePrefab : femalePrefab, transform);
+                jumper2MeshRenderer = jumper2.GetComponent<MeshRenderer>();
+                jumper2BoxCollider = gameObject.AddComponent<BoxCollider>();
+                jumper2BoxCollider.size = jumper2MeshRenderer.bounds.size;
+            }
             jumper2.transform.position = port2.transform.position;
+            jumper2BoxCollider.center = new Vector3(port2.transform.position.x,
+                port2.transform.position.y + jumper2MeshRenderer.bounds.size.y / 2f,
+                port2.transform.position.z);
 
             inoPort1 = port1;
             inoPort2 = port2;
@@ -92,6 +116,10 @@ namespace Assets.Scripts.Components
                                3 * (1 - t) * t * t * p2 + t * t * t * p3;
                 lineRenderer.SetPosition(i, position);
             }
+
+            var mesh = new Mesh();
+            lineRenderer.BakeMesh(mesh);
+            meshCollider.sharedMesh = mesh;
         }
 
         #endregion
