@@ -25,6 +25,7 @@ namespace Assets.Scripts.Components.Base
         private Material selectedMaterial;
         private Material unselectedMaterial;
 
+        private bool canSelect;
         private bool isSelected;
 
         #endregion
@@ -47,13 +48,15 @@ namespace Assets.Scripts.Components.Base
             selectedMaterial = ComponentsManager.Instance.GetSelectedMaterial();
             unselectedMaterial = ComponentsManager.Instance.GetUnselectedMaterial();
 
+            canSelect = true;
+
             UpdateMaterial();
             HideIndicator();
         }
 
         private void OnMouseEnter()
         {
-            if (UIManager.Instance.IsMouserOverUI())
+            if (UIManager.Instance.IsMouserOverUI() || !canSelect)
                 return;
 
             ShowIndicator();
@@ -62,7 +65,7 @@ namespace Assets.Scripts.Components.Base
 
         private void OnMouseDown()
         {
-            if (UIManager.Instance.IsMouserOverUI())
+            if (UIManager.Instance.IsMouserOverUI() || !canSelect)
                 return;
 
             isSelected = !isSelected;
@@ -90,18 +93,30 @@ namespace Assets.Scripts.Components.Base
             meshRenderer.sharedMaterial = isSelected ? selectedMaterial : unselectedMaterial;
         }
 
-        #endregion
-
-        #region Public Methods
-
-        public void ShowIndicator()
+        private void ShowIndicator()
         {
             indicator.SetActive(true);
         }
 
-        public void HideIndicator()
+        private void HideIndicator()
         {
             indicator.SetActive(false);
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public void Disable()
+        {
+            HideIndicator();
+            isSelected = false;
+            canSelect = false;
+        }
+
+        public void Enable()
+        {
+            canSelect = true;
         }
 
         #endregion

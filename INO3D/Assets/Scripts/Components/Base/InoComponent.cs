@@ -42,15 +42,6 @@ namespace Assets.Scripts.Components.Base
 
         private void Start()
         {
-            outlines = new List<Outline>();
-            foreach (var childRenderer in GetComponentsInChildren<Renderer>())
-            {
-                var outline = childRenderer.gameObject.AddComponent<Outline>();
-                outlines.Add(outline);
-                OutlineEffect.Instance?.AddOutline(outline);
-            }
-            DisableHighlight();
-
             SetupPorts();
             GeneratePorts();
         }
@@ -67,6 +58,18 @@ namespace Assets.Scripts.Components.Base
 
         public void EnableHighlight()
         {
+            if (outlines == null)
+            {
+                outlines = new List<Outline>();
+                foreach (var childRenderer in GetComponentsInChildren<Renderer>())
+                {
+                    var outline = childRenderer.gameObject.AddComponent<Outline>();
+                    outlines.Add(outline);
+                    OutlineEffect.Instance?.AddOutline(outline);
+                }
+                DisableHighlight();
+            }
+
             foreach (var outline in outlines)
                 outline.enabled = true;
         }

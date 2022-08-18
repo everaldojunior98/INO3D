@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Assets.Scripts.Components.Base;
 using Assets.Scripts.Utils;
 using UnityEngine;
@@ -18,6 +19,8 @@ namespace Assets.Scripts.Components
         [SerializeField] LayerMask floorLayerMask;
         [SerializeField] KeyCode selectButton;
 
+        [SerializeField] GameObject jumperPrefab;
+
         private InoComponent selectedComponent;
         private Camera mainCamera;
 
@@ -28,6 +31,8 @@ namespace Assets.Scripts.Components
 
         private Material selectedMaterial;
         private Material unselectedMaterial;
+
+        private List<InoPort> selectedPorts;
 
         #endregion
 
@@ -47,6 +52,7 @@ namespace Assets.Scripts.Components
         private void Start()
         {
             mainCamera = CameraController.Instance.GetMainCamera();
+            selectedPorts = new List<InoPort>();
         }
 
         private void Update()
@@ -64,6 +70,7 @@ namespace Assets.Scripts.Components
                     {
                         canDrag = true;
                         isDragging = false;
+                        selectedComponent?.DisableHighlight();
                         selectedComponent = component;
                         selectedComponent.EnableHighlight();
                     }
@@ -125,12 +132,24 @@ namespace Assets.Scripts.Components
 
         public void OnPortSelected(InoPort port)
         {
+            selectedPorts.Add(port);
 
+            if (selectedPorts.Count == 2)
+            {
+                var jumperGameObject = Instantiate(jumperPrefab);
+                var jumper = jumperGameObject.GetComponent<Jumper>();
+                jumper.Generate(selectedPorts[0], selectedPorts[1]);
+
+                selectedPorts[0].Disable();
+                selectedPorts[1].Disable();
+
+                selectedPorts.Clear();
+            }
         }
 
         public void OnPortUnselected(InoPort port)
         {
-
+            selectedPorts.Remove(port);
         }
 
         #endregion
