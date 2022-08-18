@@ -65,11 +65,13 @@ namespace Assets.Scripts.Components
                         canDrag = true;
                         isDragging = false;
                         selectedComponent = component;
+                        selectedComponent.EnableHighlight();
                     }
                     else
                     {
                         canDrag = false;
                         isDragging = false;
+                        selectedComponent?.DisableHighlight();
                         selectedComponent = null;
                     }
                 }
@@ -77,6 +79,7 @@ namespace Assets.Scripts.Components
                 {
                     canDrag = false;
                     isDragging = false;
+                    selectedComponent?.DisableHighlight();
                     selectedComponent = null;
                 }
             }

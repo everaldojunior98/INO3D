@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using cakeslice;
 using UnityEngine;
 
 namespace Assets.Scripts.Components.Base
@@ -28,6 +29,8 @@ namespace Assets.Scripts.Components.Base
 
         protected List<Tuple<string, Vector3, PortType, PinType>> Ports;
 
+        private List<Outline> outlines;
+
         #endregion
 
         #region Unity Methods
@@ -39,6 +42,15 @@ namespace Assets.Scripts.Components.Base
 
         private void Start()
         {
+            outlines = new List<Outline>();
+            foreach (var childRenderer in GetComponentsInChildren<Renderer>())
+            {
+                var outline = childRenderer.gameObject.AddComponent<Outline>();
+                outlines.Add(outline);
+                OutlineEffect.Instance?.AddOutline(outline);
+            }
+            DisableHighlight();
+
             SetupPorts();
             GeneratePorts();
         }
@@ -48,6 +60,22 @@ namespace Assets.Scripts.Components.Base
         #region Abstract Methods
 
         protected abstract void SetupPorts();
+
+        #endregion
+
+        #region Public Methods
+
+        public void EnableHighlight()
+        {
+            foreach (var outline in outlines)
+                outline.enabled = true;
+        }
+
+        public void DisableHighlight()
+        {
+            foreach (var outline in outlines)
+                outline.enabled = false;
+        }
 
         #endregion
 

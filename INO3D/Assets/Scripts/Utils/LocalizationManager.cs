@@ -39,7 +39,7 @@ namespace Assets.Scripts.Utils
             AddLocalization("Overlay.Type.Analog", "Analógica", "Analog");
             AddLocalization("Overlay.Type.Digital", "Digital", "Digital");
             AddLocalization("Overlay.Type.DigitalPwm", "Digital (PWM)", "Digital (PWM)");
-            AddLocalization("Overlay.Type.Power", "Força", "Power");
+            AddLocalization("Overlay.Type.Power", "Alimentação", "Power");
 
             currentLanguage = PlayerPrefs.GetString("currentLanguage", localizationDictionary.Keys.First());
         }

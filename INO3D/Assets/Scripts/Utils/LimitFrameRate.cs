@@ -9,7 +9,6 @@ namespace Assets.Scripts.Utils
         private void Start()
         {
             QualitySettings.vSyncCount = 0;
-            currentRefreshRate = Screen.currentResolution.refreshRate;
         }
 
         private void Update()
