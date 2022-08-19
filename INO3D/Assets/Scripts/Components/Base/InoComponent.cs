@@ -14,7 +14,8 @@ namespace Assets.Scripts.Components.Base
             Analog,
             Digital,
             DigitalPwm,
-            Power
+            Power,
+            None
         }
         
         public enum PinType

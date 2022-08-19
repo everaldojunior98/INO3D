@@ -44,7 +44,7 @@ namespace Assets.Scripts.Components
                 if (inoPort.IsConnected())
                 {
                     var connectedComponent = inoPort.GetConnectedComponent();
-                    connectedComponent.Delete();
+                    connectedComponent?.Delete();
                 }
             }
 

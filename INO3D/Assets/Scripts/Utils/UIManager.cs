@@ -227,26 +227,30 @@ namespace Assets.Scripts.Utils
             ImGui.SetNextWindowPos(new Vector2(Input.mousePosition.x + PortHoverPaddingX, Screen.height - Input.mousePosition.y - PortHoverPaddingY));
             if (ImGui.Begin("PortOverlay", PortHoverWindowFlags))
             {
-                var type = string.Empty;
-                switch (overlayPortType)
-                {
-                    case PortType.Analog:
-                        type = LocalizationManager.Instance.Localize("Overlay.Type.Analog");
-                        break;
-                    case PortType.Digital:
-                        type = LocalizationManager.Instance.Localize("Overlay.Type.Digital");
-                        break;
-                    case PortType.DigitalPwm:
-                        type = LocalizationManager.Instance.Localize("Overlay.Type.DigitalPwm");
-                        break;
-                    case PortType.Power:
-                        type = LocalizationManager.Instance.Localize("Overlay.Type.Power");
-                        break;
-                }
-
                 ImGui.Text(LocalizationManager.Instance.Localize("Overlay.Port") + ": " + overlayPortName);
-                ImGui.Separator();
-                ImGui.Text(LocalizationManager.Instance.Localize("Overlay.Type") + ": " + type);
+
+                if (overlayPortType != PortType.None)
+                {
+                    var type = string.Empty;
+                    switch (overlayPortType)
+                    {
+                        case PortType.Analog:
+                            type = LocalizationManager.Instance.Localize("Overlay.Type.Analog");
+                            break;
+                        case PortType.Digital:
+                            type = LocalizationManager.Instance.Localize("Overlay.Type.Digital");
+                            break;
+                        case PortType.DigitalPwm:
+                            type = LocalizationManager.Instance.Localize("Overlay.Type.DigitalPwm");
+                            break;
+                        case PortType.Power:
+                            type = LocalizationManager.Instance.Localize("Overlay.Type.Power");
+                            break;
+                    }
+
+                    ImGui.Separator();
+                    ImGui.Text(LocalizationManager.Instance.Localize("Overlay.Type") + ": " + type);
+                }
             }
 
             ImGui.End();

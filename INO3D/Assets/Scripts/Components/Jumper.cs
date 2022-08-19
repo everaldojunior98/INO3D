@@ -101,6 +101,7 @@ namespace Assets.Scripts.Components
                 jumper1BoxCollider.size = jumper1MeshRenderer.bounds.size;
             }
             jumper1.transform.position = port1.transform.position;
+            jumper1.transform.eulerAngles = new Vector3(0, port1.transform.eulerAngles.y, 90);
             jumper1BoxCollider.center = new Vector3(port1.transform.position.x,
                 port1.transform.position.y + jumper1MeshRenderer.bounds.size.y / 2f,
                 port1.transform.position.z);
@@ -113,6 +114,7 @@ namespace Assets.Scripts.Components
                 jumper2BoxCollider.size = jumper2MeshRenderer.bounds.size;
             }
             jumper2.transform.position = port2.transform.position;
+            jumper2.transform.eulerAngles = new Vector3(0, port2.transform.eulerAngles.y, 90);
             jumper2BoxCollider.center = new Vector3(port2.transform.position.x,
                 port2.transform.position.y + jumper2MeshRenderer.bounds.size.y / 2f,
                 port2.transform.position.z);
