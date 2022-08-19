@@ -121,6 +121,14 @@ namespace Assets.Scripts.Components
                 DeselectComponent();
                 component.Delete();
             }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                if (selectedComponent == null || !selectedComponent.CanRotate)
+                    return;
+
+                selectedComponent.transform.eulerAngles += new Vector3(0, 45f, 0);
+            }
         }
 
         #endregion

@@ -31,6 +31,7 @@ namespace Assets.Scripts.Components.Base
         protected List<InoPort> GeneratedPorts;
 
         public bool CanDrag { get; protected set; }
+        public bool CanRotate { get; protected set; }
 
         private List<Outline> outlines;
 
@@ -44,6 +45,7 @@ namespace Assets.Scripts.Components.Base
             GeneratedPorts = new List<InoPort>();
 
             CanDrag = true;
+            CanRotate = true;
         }
 
         private void Start()

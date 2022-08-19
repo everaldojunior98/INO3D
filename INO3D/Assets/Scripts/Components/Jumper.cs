@@ -52,6 +52,7 @@ namespace Assets.Scripts.Components
         protected override void SetupPorts()
         {
             CanDrag = false;
+            CanRotate = false;
         }
 
         public override void Delete()
