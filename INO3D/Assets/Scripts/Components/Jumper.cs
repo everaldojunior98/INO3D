@@ -1,4 +1,3 @@
-using System;
 using Assets.Scripts.Components.Base;
 using UnityEngine;
 
@@ -52,6 +51,7 @@ namespace Assets.Scripts.Components
 
         protected override void SetupPorts()
         {
+            CanDrag = false;
         }
 
         #endregion

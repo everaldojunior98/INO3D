@@ -28,6 +28,7 @@ namespace Assets.Scripts.Components.Base
         #region Fields
 
         protected List<Tuple<string, Vector3, PortType, PinType>> Ports;
+        public bool CanDrag { get; protected set; }
 
         private List<Outline> outlines;
 
@@ -38,6 +39,7 @@ namespace Assets.Scripts.Components.Base
         private void Awake()
         {
             Ports = new List<Tuple<string, Vector3, PortType, PinType>>();
+            CanDrag = true;
         }
 
         private void Start()

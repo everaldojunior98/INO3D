@@ -68,10 +68,10 @@ namespace Assets.Scripts.Components
                     var component = hit.transform.GetComponent<InoComponent>();
                     if (component != null)
                     {
-                        canDrag = true;
                         isDragging = false;
                         selectedComponent?.DisableHighlight();
                         selectedComponent = component;
+                        canDrag = selectedComponent.CanDrag;
                         selectedComponent.EnableHighlight();
                     }
                     else

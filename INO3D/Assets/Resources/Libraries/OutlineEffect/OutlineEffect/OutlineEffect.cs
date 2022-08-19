@@ -284,6 +284,10 @@ namespace cakeslice
 						{
 							commandBuffer.DrawRenderer(outline.Renderer, m, v, 0);
 						}
+                        else if (outline?.Renderer is LineRenderer)
+                        {
+                            commandBuffer.DrawRenderer(outline.Renderer, m, v, 0);
+                        }
 					}
 				}
 			}
