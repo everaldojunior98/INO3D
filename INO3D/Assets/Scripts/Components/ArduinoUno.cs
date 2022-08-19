@@ -36,5 +36,19 @@ namespace Assets.Scripts.Components
             Ports.Add(Tuple.Create("1", new Vector3(0.598f, 0.2f, 0.476f), PortType.Digital, PinType.Female));
             Ports.Add(Tuple.Create("0", new Vector3(0.647f, 0.2f, 0.476f), PortType.Digital, PinType.Female));
         }
+
+        public override void Delete()
+        {
+            foreach (var inoPort in GeneratedPorts)
+            {
+                if (inoPort.IsConnected())
+                {
+                    var connectedComponent = inoPort.GetConnectedComponent();
+                    connectedComponent.Delete();
+                }
+            }
+
+            Destroy(gameObject);
+        }
     }
 }

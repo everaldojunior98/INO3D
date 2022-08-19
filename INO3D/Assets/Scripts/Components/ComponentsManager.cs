@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.Components.Base;
 using Assets.Scripts.Utils;
@@ -26,6 +27,7 @@ namespace Assets.Scripts.Components
 
         private bool canDrag;
         private bool isDragging;
+        private bool isAdding;
 
         private Vector3 dragStartPosition;
 
@@ -68,26 +70,16 @@ namespace Assets.Scripts.Components
                     var component = hit.transform.GetComponent<InoComponent>();
                     if (component != null)
                     {
-                        isDragging = false;
-                        selectedComponent?.DisableHighlight();
-                        selectedComponent = component;
-                        canDrag = selectedComponent.CanDrag;
-                        selectedComponent.EnableHighlight();
+                        SelectComponent(component);
                     }
-                    else
+                    else if(!isAdding)
                     {
-                        canDrag = false;
-                        isDragging = false;
-                        selectedComponent?.DisableHighlight();
-                        selectedComponent = null;
+                        DeselectComponent();
                     }
                 }
                 else
                 {
-                    canDrag = false;
-                    isDragging = false;
-                    selectedComponent?.DisableHighlight();
-                    selectedComponent = null;
+                    DeselectComponent();
                 }
             }
 
@@ -113,6 +105,21 @@ namespace Assets.Scripts.Components
             {
                 canDrag = false;
                 isDragging = false;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                DeselectComponent();
+            }
+            
+            if (Input.GetKeyDown(KeyCode.Delete))
+            {
+                if(selectedComponent == null)
+                    return;
+
+                var component = selectedComponent;
+                DeselectComponent();
+                component.Delete();
             }
         }
 
@@ -140,16 +147,43 @@ namespace Assets.Scripts.Components
                 var jumper = jumperGameObject.GetComponent<Jumper>();
                 jumper.Generate(selectedPorts[0], selectedPorts[1]);
 
-                selectedPorts[0].Disable();
-                selectedPorts[1].Disable();
-
                 selectedPorts.Clear();
+                SelectComponent(jumper);
             }
         }
 
         public void OnPortUnselected(InoPort port)
         {
             selectedPorts.Remove(port);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private IEnumerator WaitFrameEnd()
+        {
+            yield return new WaitForEndOfFrame();
+            isAdding = false;
+        }
+
+        private void SelectComponent(InoComponent component)
+        {
+            isAdding = true;
+            isDragging = false;
+            selectedComponent?.DisableHighlight();
+            selectedComponent = component;
+            canDrag = selectedComponent.CanDrag;
+            selectedComponent.EnableHighlight();
+            StartCoroutine(WaitFrameEnd());
+        }
+
+        private void DeselectComponent()
+        {
+            canDrag = false;
+            isDragging = false;
+            selectedComponent?.DisableHighlight();
+            selectedComponent = null;
         }
 
         #endregion

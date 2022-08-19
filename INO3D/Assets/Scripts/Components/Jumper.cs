@@ -54,6 +54,17 @@ namespace Assets.Scripts.Components
             CanDrag = false;
         }
 
+        public override void Delete()
+        {
+            inoPort1.Enable();
+            inoPort1.Disconnect();
+
+            inoPort2.Enable();
+            inoPort2.Disconnect();
+
+            Destroy(gameObject);
+        }
+
         #endregion
 
         #region Public Methods
@@ -70,6 +81,15 @@ namespace Assets.Scripts.Components
                 lineRenderer.startWidth = Width;
                 lineRenderer.endWidth = Width;
                 lineRenderer.positionCount = NumberOfPoints;
+
+                inoPort1 = port1;
+                inoPort2 = port2;
+
+                inoPort1.Disable();
+                inoPort1.Connect(this);
+
+                inoPort2.Disable();
+                inoPort2.Connect(this);
             }
 
             if (jumper1 == null)
@@ -95,9 +115,6 @@ namespace Assets.Scripts.Components
             jumper2BoxCollider.center = new Vector3(port2.transform.position.x,
                 port2.transform.position.y + jumper2MeshRenderer.bounds.size.y / 2f,
                 port2.transform.position.z);
-
-            inoPort1 = port1;
-            inoPort2 = port2;
 
             inoPort1Position = port1.transform.position;
             inoPort2Position = port2.transform.position;

@@ -28,6 +28,8 @@ namespace Assets.Scripts.Components.Base
         #region Fields
 
         protected List<Tuple<string, Vector3, PortType, PinType>> Ports;
+        protected List<InoPort> GeneratedPorts;
+
         public bool CanDrag { get; protected set; }
 
         private List<Outline> outlines;
@@ -39,6 +41,8 @@ namespace Assets.Scripts.Components.Base
         private void Awake()
         {
             Ports = new List<Tuple<string, Vector3, PortType, PinType>>();
+            GeneratedPorts = new List<InoPort>();
+
             CanDrag = true;
         }
 
@@ -53,6 +57,7 @@ namespace Assets.Scripts.Components.Base
         #region Abstract Methods
 
         protected abstract void SetupPorts();
+        public abstract void Delete();
 
         #endregion
 
@@ -103,6 +108,8 @@ namespace Assets.Scripts.Components.Base
                 inoPort.PortName = tuple.Item1;
                 inoPort.PortType = tuple.Item3;
                 inoPort.PinType = tuple.Item4;
+
+                GeneratedPorts.Add(inoPort);
             }
         }
 

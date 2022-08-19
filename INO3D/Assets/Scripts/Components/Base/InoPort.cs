@@ -28,6 +28,8 @@ namespace Assets.Scripts.Components.Base
         private bool canSelect;
         private bool isSelected;
 
+        private InoComponent connectedComponent;
+
         #endregion
 
         #region Unity Methods
@@ -107,6 +109,26 @@ namespace Assets.Scripts.Components.Base
 
         #region Public Methods
 
+        public void Connect(InoComponent component)
+        {
+            connectedComponent = component;
+        }
+
+        public void Disconnect()
+        {
+            connectedComponent = null;
+        }
+
+        public InoComponent GetConnectedComponent()
+        {
+            return connectedComponent;
+        }
+
+        public bool IsConnected()
+        {
+            return connectedComponent != null;
+        }
+
         public void Disable()
         {
             HideIndicator();
@@ -117,6 +139,7 @@ namespace Assets.Scripts.Components.Base
         public void Enable()
         {
             canSelect = true;
+            UpdateMaterial();
         }
 
         #endregion
