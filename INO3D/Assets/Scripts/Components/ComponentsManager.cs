@@ -103,6 +103,8 @@ namespace Assets.Scripts.Components
 
             if (Input.GetKeyUp(selectButton))
             {
+                if (isDragging && selectedComponent != null)
+                    selectedComponent.UpdatePinsConnection();
                 canDrag = false;
                 isDragging = false;
             }
@@ -128,6 +130,7 @@ namespace Assets.Scripts.Components
                     return;
 
                 selectedComponent.transform.eulerAngles += new Vector3(0, 45f, 0);
+                selectedComponent.UpdatePinsConnection();
             }
         }
 
