@@ -94,7 +94,11 @@ namespace Assets.Scripts.Components
                             if (!isDragging)
                                 dragStartPosition = hit.point;
 
-                            selectedComponent.transform.position += hit.point - dragStartPosition;
+                            var draggingOffset = hit.point - dragStartPosition;
+                            selectedComponent.transform.position = new Vector3(
+                                selectedComponent.transform.position.x + draggingOffset.x,
+                                dragStartPosition.y + selectedComponent.DefaultHeight,
+                                selectedComponent.transform.position.z + draggingOffset.z);
                             dragStartPosition = hit.point;
                             isDragging = true;
                         }

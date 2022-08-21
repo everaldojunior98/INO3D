@@ -8,6 +8,8 @@ namespace Assets.Scripts.Components
     {
         protected override void SetupPorts()
         {
+            DefaultHeight = 0;
+
             Ports.Add(Tuple.Create("3.3V", new Vector3(0.092f, 0.2f, -0.488f), PortType.Power, PinType.Female));
             Ports.Add(Tuple.Create("5V", new Vector3(0.141f, 0.2f, -0.488f), PortType.Power, PinType.Female));
             Ports.Add(Tuple.Create("GND", new Vector3(0.191f, 0.2f, -0.488f), PortType.Power, PinType.Female));

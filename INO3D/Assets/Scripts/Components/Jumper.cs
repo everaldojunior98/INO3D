@@ -53,6 +53,7 @@ namespace Assets.Scripts.Components
         {
             CanDrag = false;
             CanRotate = false;
+            DefaultHeight = 0;
         }
 
         public override void Delete()

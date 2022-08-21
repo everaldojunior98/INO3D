@@ -10,6 +10,7 @@ namespace Assets.Scripts.Components
 
         protected override void SetupPorts()
         {
+            DefaultHeight = 0;
             //Setup dos pins do arduino
             var yOffset = 0.052f;
 

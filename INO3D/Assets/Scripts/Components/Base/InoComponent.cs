@@ -37,6 +37,8 @@ namespace Assets.Scripts.Components.Base
         public bool CanDrag { get; protected set; }
         public bool CanRotate { get; protected set; }
 
+        public float DefaultHeight  { get; protected set; }
+
         private List<Outline> outlines;
 
         private bool isConnected;
@@ -66,6 +68,7 @@ namespace Assets.Scripts.Components.Base
         {
             SetupPorts();
             GeneratePorts();
+            transform.position = new Vector3(transform.position.x, DefaultHeight, transform.position.z);
         }
 
         private void Update()
@@ -235,8 +238,7 @@ namespace Assets.Scripts.Components.Base
                 var lastPosition = connectedPorts.Last().transform.position;
 
                 var middlePosition = positions / connectedPorts.Count;
-                //transform.position = new Vector3(middlePosition.x, middlePosition.y, middlePosition.z);
-                transform.position = new Vector3(middlePosition.x, transform.position.y, middlePosition.z);
+                transform.position = new Vector3(middlePosition.x, middlePosition.y, middlePosition.z);
                 transform.rotation = Quaternion.LookRotation(firstPosition - lastPosition, Vector3.up);
             }
         }
