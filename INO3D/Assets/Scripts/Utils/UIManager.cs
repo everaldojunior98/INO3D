@@ -1,5 +1,8 @@
 
+using System;
+using System.IO;
 using System.Threading;
+using Assets.Scripts.Components;
 using ImGuiNET;
 using UnityEngine;
 using static Assets.Scripts.Components.Base.InoComponent;
@@ -259,28 +262,26 @@ namespace Assets.Scripts.Utils
         private void ShowComponentsWindow()
         {
             ImGui.Begin(LocalizationManager.Instance.Localize("Menu.Components"), ImGuiWindowFlags.NoCollapse);
-            
 
-            for (var i = 0; i < 3; i++)
+            foreach (var components in ComponentsManager.Instance.GetComponentsList())
             {
-                if (ImGui.CollapsingHeader(i.ToString(), ImGuiTreeNodeFlags.DefaultOpen))
+                if (ImGui.CollapsingHeader(components.Key, ImGuiTreeNodeFlags.DefaultOpen))
                 {
                     var visibleSize = ImGui.GetWindowPos().x + ImGui.GetWindowContentRegionMax().x;
-                    var componentsCount = 10;
+                    var componentsCount = components.Value.Count;
                     var currentCount = 0;
 
-                    for (var j = 0; j < componentsCount; j++)
+                    foreach (var componentName in components.Value)
                     {
                         var disabled = false;
                         if (disabled)
                         {
                             ImGui.PushStyleVar(ImGuiStyleVar.Alpha, style.Alpha * 0.5f);
-                            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, style.Colors[(int)ImGuiCol.Button]);
-                            ImGui.PushStyleColor(ImGuiCol.ButtonActive, style.Colors[(int)ImGuiCol.Button]);
+                            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, style.Colors[(int) ImGuiCol.Button]);
+                            ImGui.PushStyleColor(ImGuiCol.ButtonActive, style.Colors[(int) ImGuiCol.Button]);
                         }
 
-                        //if (ImGui.ImageButton((IntPtr)ImGuiUn.GetTextureId(iconByComponentName[uiComponent.Name]), DefaultButtonSize))
-                        if (ImGui.Button(i+":"+j, defaultButtonSize))
+                        if (ImGui.ImageButton((IntPtr)ImGuiUn.GetTextureId(ComponentsManager.Instance.GetComponentIcon(componentName)), defaultButtonSize))
                         {
                             if (!disabled)
                             {
@@ -292,7 +293,7 @@ namespace Assets.Scripts.Utils
                         {
                             ImGui.BeginTooltip();
                             ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35.0f);
-                            ImGui.TextUnformatted(j.ToString());
+                            ImGui.TextUnformatted(componentName);
                             ImGui.PopTextWrapPos();
                             ImGui.EndTooltip();
                         }
@@ -311,6 +312,7 @@ namespace Assets.Scripts.Utils
                         currentCount++;
                     }
                 }
+
             }
 
             ImGui.End();

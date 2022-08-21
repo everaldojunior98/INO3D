@@ -36,6 +36,10 @@ namespace Assets.Scripts.Components
 
         private List<InoPort> selectedPorts;
 
+        private Dictionary<string, List<string>> componentsList;
+        private Dictionary<string, Texture> iconByComponentName;
+        private Dictionary<string, GameObject> prefabByComponentName;
+
         #endregion
 
         #region Unity Methods
@@ -49,6 +53,41 @@ namespace Assets.Scripts.Components
 
             selectedMaterial = Resources.Load("Materials/PortRed", typeof(Material)) as Material;
             unselectedMaterial = Resources.Load("Materials/PortGreen", typeof(Material)) as Material;
+
+            componentsList = new Dictionary<string, List<string>>
+            {
+                {
+                    "Boards", new List<string>
+                    {
+                        "ArduinoUno"
+                    }
+                },
+                {
+                    "Utils", new List<string>
+                    {
+                        "Protoboard400",
+                        "Resistor"
+                    }
+                }
+            };
+
+            iconByComponentName = new Dictionary<string, Texture>();
+            prefabByComponentName = new Dictionary<string, GameObject>();
+
+            foreach (var components in componentsList)
+            {
+                foreach (var componentName in components.Value)
+                {
+                    var path = "Components/" + componentName;
+                    foreach (var o in Resources.LoadAll(path))
+                    {
+                        if (o is Texture icon)
+                            iconByComponentName.Add(componentName, icon);
+                        else if (o is GameObject prefab)
+                            prefabByComponentName.Add(componentName, prefab);
+                    }
+                }
+            }
         }
 
         private void Start()
@@ -141,6 +180,16 @@ namespace Assets.Scripts.Components
         #endregion
 
         #region Public Methods
+
+        public Dictionary<string, List<string>> GetComponentsList()
+        {
+            return componentsList;
+        }
+
+        public Texture GetComponentIcon(string componentName)
+        {
+            return iconByComponentName[componentName];
+        }
 
         public Material GetSelectedMaterial()
         {
