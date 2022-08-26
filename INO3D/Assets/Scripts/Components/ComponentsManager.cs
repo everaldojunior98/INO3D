@@ -36,9 +36,9 @@ namespace Assets.Scripts.Components
 
         private List<InoPort> selectedPorts;
 
-        private Dictionary<string, List<string>> componentsList;
-        private Dictionary<string, Texture> iconByComponentName;
-        private Dictionary<string, GameObject> prefabByComponentName;
+        private Dictionary<string, Dictionary<string, List<string>>> componentsCategories;
+        private Dictionary<string, Texture> iconByName;
+        private Dictionary<string, GameObject> prefabByName;
 
         #endregion
 
@@ -54,37 +54,40 @@ namespace Assets.Scripts.Components
             selectedMaterial = Resources.Load("Materials/PortRed", typeof(Material)) as Material;
             unselectedMaterial = Resources.Load("Materials/PortGreen", typeof(Material)) as Material;
 
-            componentsList = new Dictionary<string, List<string>>
-            {
-                {
-                    "Boards", new List<string>
-                    {
-                        "ArduinoUno"
-                    }
-                },
-                {
-                    "Utils", new List<string>
-                    {
-                        "Protoboard400",
-                        "Resistor"
-                    }
-                }
-            };
+            componentsCategories = new Dictionary<string, Dictionary<string, List<string>>>();
 
-            iconByComponentName = new Dictionary<string, Texture>();
-            prefabByComponentName = new Dictionary<string, GameObject>();
-
-            foreach (var components in componentsList)
+            componentsCategories.Add("Circuit", new Dictionary<string, List<string>>());
+            componentsCategories["Circuit"].Add("Basics", new List<string>
             {
-                foreach (var componentName in components.Value)
+                "Resistor",
+                "Protoboard400"
+            });
+
+            componentsCategories.Add("Arduino", new Dictionary<string, List<string>>());
+            componentsCategories["Arduino"].Add("Boards", new List<string>
+            {
+                "ArduinoUno"
+            });
+
+            iconByName = new Dictionary<string, Texture>();
+            prefabByName = new Dictionary<string, GameObject>();
+
+            foreach (var category in componentsCategories)
+            {
+                iconByName.Add(category.Key, Resources.Load<Texture>("Icons/" + category.Key));
+
+                foreach (var componentsList in category.Value.Values)
                 {
-                    var path = "Components/" + componentName;
-                    foreach (var o in Resources.LoadAll(path))
+                    foreach (var componentName in componentsList)
                     {
-                        if (o is Texture icon)
-                            iconByComponentName.Add(componentName, icon);
-                        else if (o is GameObject prefab)
-                            prefabByComponentName.Add(componentName, prefab);
+                        var path = "Components/" + componentName;
+                        foreach (var o in Resources.LoadAll(path))
+                        {
+                            if (o is Texture icon)
+                                iconByName.Add(componentName, icon);
+                            else if (o is GameObject prefab)
+                                prefabByName.Add(componentName, prefab);
+                        }
                     }
                 }
             }
@@ -181,14 +184,14 @@ namespace Assets.Scripts.Components
 
         #region Public Methods
 
-        public Dictionary<string, List<string>> GetComponentsList()
+        public Dictionary<string, Dictionary<string, List<string>>> GetComponentsCategories()
         {
-            return componentsList;
+            return componentsCategories;
         }
 
-        public Texture GetComponentIcon(string componentName)
+        public Texture GetIcon(string componentName)
         {
-            return iconByComponentName[componentName];
+            return iconByName[componentName];
         }
 
         public Material GetSelectedMaterial()

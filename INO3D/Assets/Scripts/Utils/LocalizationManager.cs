@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -40,6 +41,13 @@ namespace Assets.Scripts.Utils
             AddLocalization("Overlay.Type.Digital", "Digital", "Digital");
             AddLocalization("Overlay.Type.DigitalPwm", "Digital (PWM)", "Digital (PWM)");
             AddLocalization("Overlay.Type.Power", "Alimentação", "Power");
+            AddLocalization("Circuit", "Circuito", "Circuit");
+            AddLocalization("Circuit.Basics", "Básicos", "Basics");
+            AddLocalization("Arduino", "Arduino", "Arduino");
+            AddLocalization("Arduino.Boards", "Placas", "Boards");
+            AddLocalization("ArduinoUno", "Arduino Uno", "Arduino Uno");
+            AddLocalization("Protoboard400", "Protoboard 400 pontos", "Protoboard 400 points");
+            AddLocalization("Resistor", "Resistor", "Resistor");
 
             currentLanguage = PlayerPrefs.GetString("currentLanguage", localizationDictionary.Keys.First());
         }
@@ -73,7 +81,15 @@ namespace Assets.Scripts.Utils
 
         public string Localize(string key)
         {
-            return localizationDictionary[currentLanguage][key];
+            try
+            {
+                return localizationDictionary[currentLanguage][key];
+            }
+            catch
+            {
+                Debug.Log(key);
+                return key;
+            }
         }
 
         #endregion

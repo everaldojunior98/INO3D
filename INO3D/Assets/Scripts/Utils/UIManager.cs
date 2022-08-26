@@ -56,6 +56,8 @@ namespace Assets.Scripts.Utils
         private PortType overlayPortType;
         private PinType overlayPinType;
 
+        private string selectedCategory;
+
         #endregion
 
         #region Unity Methods
@@ -225,6 +227,126 @@ namespace Assets.Scripts.Utils
                 ShowPortOverlay();
         }
 
+        private void ShowComponentsWindow()
+        {
+            if (ImGui.Begin(LocalizationManager.Instance.Localize("Menu.Components"), ImGuiWindowFlags.NoCollapse))
+            {
+                var categories = ComponentsManager.Instance.GetComponentsCategories();
+                // Left
+                ImGui.BeginChild("left pane", new Vector2(40, 0), false, ImGuiWindowFlags.NoScrollbar);
+                foreach (var category in categories)
+                {
+                    if (string.IsNullOrEmpty(selectedCategory))
+                        selectedCategory = category.Key;
+
+                    var isSelected = selectedCategory == category.Key;
+
+                    if (!isSelected)
+                    {
+                        ImGui.PushStyleVar(ImGuiStyleVar.Alpha, style.Alpha * 0.5f);
+                        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, style.Colors[(int) ImGuiCol.Button]);
+                        ImGui.PushStyleColor(ImGuiCol.ButtonActive, style.Colors[(int) ImGuiCol.Button]);
+                    }
+
+                    if (ImGui.ImageButton(
+                            (IntPtr) ImGuiUn.GetTextureId(
+                                ComponentsManager.Instance.GetIcon(category.Key)), new Vector2(30, 30)))
+                    {
+                        selectedCategory = category.Key;
+                    }
+
+                    if (!isSelected)
+                    {
+                        ImGui.PopStyleVar();
+                        ImGui.PopStyleColor();
+                        ImGui.PopStyleColor();
+                    }
+
+                    if (ImGui.IsItemHovered())
+                    {
+                        ImGui.BeginTooltip();
+                        ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35.0f);
+                        ImGui.TextUnformatted(LocalizationManager.Instance.Localize(category.Key));
+                        ImGui.PopTextWrapPos();
+                        ImGui.EndTooltip();
+                    }
+                }
+
+                ImGui.EndChild();
+
+                ImGui.SameLine();
+
+                // Right
+                ImGui.BeginGroup();
+                ImGui.BeginChild("item view");
+
+                if (categories.ContainsKey(selectedCategory))
+                {
+                    ImGui.Text(LocalizationManager.Instance.Localize(selectedCategory));
+                    ImGui.Separator();
+                    foreach (var subCategory in categories[selectedCategory])
+                    {
+                        if (ImGui.CollapsingHeader(
+                                LocalizationManager.Instance.Localize(selectedCategory + "." + subCategory.Key),
+                                ImGuiTreeNodeFlags.DefaultOpen))
+                        {
+                            var visibleSize = ImGui.GetWindowPos().x + ImGui.GetWindowContentRegionMax().x;
+                            var componentsCount = subCategory.Value.Count;
+                            var currentCount = 0;
+
+                            foreach (var componentName in subCategory.Value)
+                            {
+                                var disabled = false;
+                                if (disabled)
+                                {
+                                    ImGui.PushStyleVar(ImGuiStyleVar.Alpha, style.Alpha * 0.5f);
+                                    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, style.Colors[(int) ImGuiCol.Button]);
+                                    ImGui.PushStyleColor(ImGuiCol.ButtonActive, style.Colors[(int) ImGuiCol.Button]);
+                                }
+
+                                if (ImGui.ImageButton(
+                                        (IntPtr) ImGuiUn.GetTextureId(
+                                            ComponentsManager.Instance.GetIcon(componentName)), defaultButtonSize))
+                                {
+                                    if (!disabled)
+                                    {
+
+                                    }
+                                }
+
+                                if (!disabled && ImGui.IsItemHovered())
+                                {
+                                    ImGui.BeginTooltip();
+                                    ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35.0f);
+                                    ImGui.TextUnformatted(LocalizationManager.Instance.Localize(componentName));
+                                    ImGui.PopTextWrapPos();
+                                    ImGui.EndTooltip();
+                                }
+
+                                if (disabled)
+                                {
+                                    ImGui.PopStyleVar();
+                                    ImGui.PopStyleColor();
+                                    ImGui.PopStyleColor();
+                                }
+
+                                var lastButtonSize = ImGui.GetItemRectMax().x;
+                                var nextButtonSize = lastButtonSize + style.ItemSpacing.x + defaultButtonSize.x;
+                                if (currentCount + 1 < componentsCount && nextButtonSize < visibleSize)
+                                    ImGui.SameLine();
+                                currentCount++;
+                            }
+                        }
+                    }
+                }
+
+                ImGui.EndChild();
+                ImGui.EndGroup();
+            }
+
+            ImGui.End();
+        }
+
         private void ShowPortOverlay()
         {
             ImGui.SetNextWindowPos(new Vector2(Input.mousePosition.x + PortHoverPaddingX, Screen.height - Input.mousePosition.y - PortHoverPaddingY));
@@ -254,65 +376,6 @@ namespace Assets.Scripts.Utils
                     ImGui.Separator();
                     ImGui.Text(LocalizationManager.Instance.Localize("Overlay.Type") + ": " + type);
                 }
-            }
-
-            ImGui.End();
-        }
-
-        private void ShowComponentsWindow()
-        {
-            ImGui.Begin(LocalizationManager.Instance.Localize("Menu.Components"), ImGuiWindowFlags.NoCollapse);
-
-            foreach (var components in ComponentsManager.Instance.GetComponentsList())
-            {
-                if (ImGui.CollapsingHeader(components.Key, ImGuiTreeNodeFlags.DefaultOpen))
-                {
-                    var visibleSize = ImGui.GetWindowPos().x + ImGui.GetWindowContentRegionMax().x;
-                    var componentsCount = components.Value.Count;
-                    var currentCount = 0;
-
-                    foreach (var componentName in components.Value)
-                    {
-                        var disabled = false;
-                        if (disabled)
-                        {
-                            ImGui.PushStyleVar(ImGuiStyleVar.Alpha, style.Alpha * 0.5f);
-                            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, style.Colors[(int) ImGuiCol.Button]);
-                            ImGui.PushStyleColor(ImGuiCol.ButtonActive, style.Colors[(int) ImGuiCol.Button]);
-                        }
-
-                        if (ImGui.ImageButton((IntPtr)ImGuiUn.GetTextureId(ComponentsManager.Instance.GetComponentIcon(componentName)), defaultButtonSize))
-                        {
-                            if (!disabled)
-                            {
-
-                            }
-                        }
-
-                        if (!disabled && ImGui.IsItemHovered())
-                        {
-                            ImGui.BeginTooltip();
-                            ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35.0f);
-                            ImGui.TextUnformatted(componentName);
-                            ImGui.PopTextWrapPos();
-                            ImGui.EndTooltip();
-                        }
-
-                        if (disabled)
-                        {
-                            ImGui.PopStyleVar();
-                            ImGui.PopStyleColor();
-                            ImGui.PopStyleColor();
-                        }
-
-                        var lastButtonSize = ImGui.GetItemRectMax().x;
-                        var nextButtonSize = lastButtonSize + style.ItemSpacing.x + defaultButtonSize.x;
-                        if (currentCount + 1 < componentsCount && nextButtonSize < visibleSize)
-                            ImGui.SameLine();
-                        currentCount++;
-                    }
-                }
-
             }
 
             ImGui.End();
