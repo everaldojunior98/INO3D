@@ -1,8 +1,6 @@
-
 using System;
-using System.IO;
-using System.Threading;
 using Assets.Scripts.Components;
+using Assets.Scripts.Simulation;
 using ImGuiNET;
 using UnityEngine;
 using static Assets.Scripts.Components.Base.InoComponent;
@@ -296,7 +294,7 @@ namespace Assets.Scripts.Utils
 
                             foreach (var componentName in subCategory.Value)
                             {
-                                var disabled = false;
+                                var disabled = SimulationManager.Instance.IsSimulating();
                                 if (disabled)
                                 {
                                     ImGui.PushStyleVar(ImGuiStyleVar.Alpha, style.Alpha * 0.5f);
@@ -304,14 +302,12 @@ namespace Assets.Scripts.Utils
                                     ImGui.PushStyleColor(ImGuiCol.ButtonActive, style.Colors[(int) ImGuiCol.Button]);
                                 }
 
-                                if (ImGui.ImageButton(
-                                        (IntPtr) ImGuiUn.GetTextureId(
-                                            ComponentsManager.Instance.GetIcon(componentName)), defaultButtonSize))
+                                ImGui.ImageButton(
+                                    (IntPtr) ImGuiUn.GetTextureId(ComponentsManager.Instance.GetIcon(componentName)),
+                                    defaultButtonSize);
+                                if (!disabled && ImGui.IsItemClicked(ImGuiMouseButton.Left))
                                 {
-                                    if (!disabled)
-                                    {
-
-                                    }
+                                    ComponentsManager.Instance.InstantiateComponent(componentName);
                                 }
 
                                 if (!disabled && ImGui.IsItemHovered())

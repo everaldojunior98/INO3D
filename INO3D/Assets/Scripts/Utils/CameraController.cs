@@ -38,8 +38,6 @@ namespace Assets.Scripts.Utils
                 Destroy(gameObject);
             else
                 Instance = this;
-
-            DontDestroyOnLoad(gameObject);
         }
 
         private void Start()

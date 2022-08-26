@@ -27,8 +27,10 @@ namespace Assets.Scripts.Components
 
         private bool canDrag;
         private bool isDragging;
-        private bool isAdding;
+        private bool isAddingComponent;
+        private bool isAddingJumper;
 
+        private Vector3 addingComponentStartPosition;
         private Vector3 dragStartPosition;
 
         private Material selectedMaterial;
@@ -101,7 +103,7 @@ namespace Assets.Scripts.Components
 
         private void Update()
         {
-            if(UIManager.Instance.IsMouserOverUI())
+            if (!isAddingComponent && UIManager.Instance.IsMouserOverUI())
                 return;
 
             if (Input.GetKeyDown(selectButton))
@@ -111,13 +113,9 @@ namespace Assets.Scripts.Components
                 {
                     var component = hit.transform.GetComponent<InoComponent>();
                     if (component != null)
-                    {
                         SelectComponent(component);
-                    }
-                    else if(!isAdding)
-                    {
+                    else if(!isAddingJumper)
                         DeselectComponent();
-                    }
                 }
                 else
                 {
@@ -149,10 +147,25 @@ namespace Assets.Scripts.Components
 
             if (Input.GetKeyUp(selectButton))
             {
+                if (isAddingComponent && selectedComponent != null)
+                {
+                    if (Vector2.Distance(
+                            new Vector2(addingComponentStartPosition.x, addingComponentStartPosition.z),
+                            new Vector2(selectedComponent.transform.position.x,
+                                selectedComponent.transform.position.z)) < 1)
+                    {
+                        var component = selectedComponent;
+                        DeselectComponent();
+                        component.Delete();
+                    }
+                }
+
                 if (isDragging && selectedComponent != null)
                     selectedComponent.UpdatePinsConnection();
                 canDrag = false;
                 isDragging = false;
+                isAddingComponent = false;
+
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -184,6 +197,25 @@ namespace Assets.Scripts.Components
 
         #region Public Methods
 
+        public void InstantiateComponent(string componentName)
+        {
+            if (prefabByName.ContainsKey(componentName))
+            {
+                isAddingComponent = true;
+                var newComponent = Instantiate(prefabByName[componentName]).GetComponent<InoComponent>();
+
+                var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out var hit, float.MaxValue, floorLayerMask))
+                {
+                    addingComponentStartPosition =
+                        new Vector3(hit.point.x, hit.point.x + newComponent.DefaultHeight, hit.point.z);
+                    newComponent.transform.position = addingComponentStartPosition;
+                }
+
+                SelectComponent(newComponent);
+            }
+        }
+        
         public Dictionary<string, Dictionary<string, List<string>>> GetComponentsCategories()
         {
             return componentsCategories;
@@ -209,14 +241,7 @@ namespace Assets.Scripts.Components
             selectedPorts.Add(port);
 
             if (selectedPorts.Count == 2)
-            {
-                var jumperGameObject = Instantiate(jumperPrefab);
-                var jumper = jumperGameObject.GetComponent<Jumper>();
-                jumper.Generate(selectedPorts[0], selectedPorts[1]);
-
-                selectedPorts.Clear();
-                SelectComponent(jumper);
-            }
+                StartCoroutine(CreateJumper());
         }
 
         public void OnPortUnselected(InoPort port)
@@ -228,21 +253,27 @@ namespace Assets.Scripts.Components
 
         #region Private Methods
 
-        private IEnumerator WaitFrameEnd()
+        private IEnumerator CreateJumper()
         {
+            isAddingJumper = true;
+            var jumperGameObject = Instantiate(jumperPrefab);
+            var jumper = jumperGameObject.GetComponent<Jumper>();
+            jumper.Generate(selectedPorts[0], selectedPorts[1]);
+
+            selectedPorts.Clear();
+            SelectComponent(jumper);
+
             yield return new WaitForEndOfFrame();
-            isAdding = false;
+            isAddingJumper = false;
         }
 
         private void SelectComponent(InoComponent component)
         {
-            isAdding = true;
             isDragging = false;
             selectedComponent?.DisableHighlight();
             selectedComponent = component;
             canDrag = selectedComponent.CanDrag;
             selectedComponent.EnableHighlight();
-            StartCoroutine(WaitFrameEnd());
         }
 
         private void DeselectComponent()
