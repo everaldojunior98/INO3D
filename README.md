@@ -12,6 +12,13 @@
 
 INO3D is a 3D environment for simulating the Arduino platform, aimed at learning, where users can easily develop prototypes and collect data in real time, without the need for physical components.
 
+### Last development screenshot
+See [screenshots](Screenshots) for more images.
+
+<p align="left">
+    <img alt="2022-08-26" src="https://github.com/everaldojunior98/INO3D/blob/main/Screenshots/2022-08-26%20154521.png">
+</p>
+
 ### Credits
 Ino3D builds on several open source codebases. See [licenses](LICENSES) for all details.
 
