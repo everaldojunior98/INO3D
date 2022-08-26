@@ -39,7 +39,8 @@ namespace Assets.Scripts.Utils
         private const float PortHoverPaddingX = 10;
         private const float PortHoverPaddingY = 5;
 
-        private const float ButtonBarHeight = 60;
+        private const float ButtonBarHeight = 40;
+        private readonly Vector2 buttonBarButtonSize = new Vector2(20, 20);
         private readonly Vector2 defaultButtonSize = new Vector2(50, 50);
 
         #endregion
@@ -218,8 +219,8 @@ namespace Assets.Scripts.Utils
 
             isMouseOverUI = ImGui.GetIO().WantCaptureMouse;
 
-            ShowComponentsWindow();
             ShowButtonBar();
+            ShowComponentsWindow();
 
             if (displayPortOverlay)
                 ShowPortOverlay();
@@ -388,19 +389,39 @@ namespace Assets.Scripts.Utils
             ImGui.SetNextWindowSize(new Vector2(viewport.Size.x, ButtonBarHeight));
             ImGui.Begin("ButtonBar", ButtonBarFlags);
 
-            for (var j = 0; j < 5; j++)
-            {
-                if (ImGui.Button(j.ToString(), defaultButtonSize))
-                {
-                    
-                }
-                ImGui.SameLine();
-            }
+            DrawInLineButton("File", null);
+            DrawInLineButton("Folder", null);
+            DrawInLineButton("Save", null);
+
+            InLineSpacing();
+
+            DrawInLineButton("Save", null);
+            DrawInLineButton("Save", null);
+            DrawInLineButton("Save", null);
 
             ImGui.End();
-
             ImGui.PopStyleVar();
             ImGui.PopStyleVar(2);
+        }
+
+        private void DrawInLineButton(string iconName, Action onClick)
+        {
+            ImGui.SameLine();
+            if (ImGui.ImageButton(
+                    (IntPtr)ImGuiUn.GetTextureId(ComponentsManager.Instance.GetIcon(iconName)),
+                    buttonBarButtonSize))
+            {
+                onClick?.Invoke();
+            }
+        }
+
+        private void InLineSpacing()
+        {
+            ImGui.SameLine();
+            ImGui.Spacing();
+
+            ImGui.SameLine();
+            ImGui.Spacing();
         }
 
         #endregion

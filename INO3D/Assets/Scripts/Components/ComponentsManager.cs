@@ -74,10 +74,11 @@ namespace Assets.Scripts.Components
             iconByName = new Dictionary<string, Texture>();
             prefabByName = new Dictionary<string, GameObject>();
 
+            foreach (var texture in Resources.LoadAll<Texture>("Icons"))
+                iconByName.Add(texture.name, texture);
+
             foreach (var category in componentsCategories)
             {
-                iconByName.Add(category.Key, Resources.Load<Texture>("Icons/" + category.Key));
-
                 foreach (var componentsList in category.Value.Values)
                 {
                     foreach (var componentName in componentsList)
@@ -221,9 +222,9 @@ namespace Assets.Scripts.Components
             return componentsCategories;
         }
 
-        public Texture GetIcon(string componentName)
+        public Texture GetIcon(string iconName)
         {
-            return iconByName[componentName];
+            return iconByName[iconName];
         }
 
         public Material GetSelectedMaterial()
