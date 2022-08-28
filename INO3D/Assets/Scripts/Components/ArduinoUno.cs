@@ -39,6 +39,35 @@ namespace Assets.Scripts.Components
             Ports.Add(Tuple.Create("0", new Vector3(0.647f, 0.2f, 0.476f), PortType.Digital, PinType.Female));
         }
 
+        public override SaveFile Save()
+        {
+            var saveFile = new ArduinoUnoSaveFile
+            {
+                PrefabName = "ArduinoUno",
+
+                PositionX = transform.position.x,
+                PositionY = transform.position.y,
+                PositionZ = transform.position.z,
+
+                RotationX = transform.eulerAngles.x,
+                RotationY = transform.eulerAngles.y,
+                RotationZ = transform.eulerAngles.z
+            };
+
+            return saveFile;
+        }
+
+        public override void Load(SaveFile saveFile)
+        {
+            if (saveFile is ArduinoUnoSaveFile arduinoUnoSaveFile)
+            {
+                transform.position = new Vector3(arduinoUnoSaveFile.PositionX, arduinoUnoSaveFile.PositionY,
+                    arduinoUnoSaveFile.PositionZ);
+                transform.eulerAngles = new Vector3(arduinoUnoSaveFile.RotationX, arduinoUnoSaveFile.RotationY,
+                    arduinoUnoSaveFile.RotationZ);
+            }
+        }
+
         public override void Delete()
         {
             foreach (var inoPort in GeneratedPorts)

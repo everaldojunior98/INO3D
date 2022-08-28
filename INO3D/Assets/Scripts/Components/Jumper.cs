@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Assets.Scripts.Components.Base;
 using UnityEngine;
 
@@ -56,6 +57,29 @@ namespace Assets.Scripts.Components
             DefaultHeight = 0;
         }
 
+        public override SaveFile Save()
+        {
+            var saveFile = new JumperSaveFile
+            {
+                PrefabName = "Jumper",
+
+                Port1PositionX = inoPort1Position.x,
+                Port1PositionY = inoPort1Position.y,
+                Port1PositionZ = inoPort1Position.z,
+
+                Port2PositionX = inoPort2Position.x,
+                Port2PositionY = inoPort2Position.y,
+                Port2PositionZ = inoPort2Position.z
+            };
+
+            return saveFile;
+        }
+
+        public override void Load(SaveFile saveFile)
+        {
+
+        }
+
         public override void Delete()
         {
             inoPort1.Enable();
@@ -92,6 +116,8 @@ namespace Assets.Scripts.Components
 
                 inoPort2.Disable();
                 inoPort2.Connect(this);
+
+                ConnectedPorts = new List<InoPort> {inoPort1, inoPort2};
             }
 
             if (jumper1 == null)

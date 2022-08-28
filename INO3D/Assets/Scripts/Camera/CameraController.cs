@@ -1,7 +1,8 @@
 using System;
+using Assets.Scripts.Managers;
 using UnityEngine;
 
-namespace Assets.Scripts.Utils
+namespace Assets.Scripts.Camera
 {
     public class CameraController : MonoBehaviour
     {
@@ -21,7 +22,7 @@ namespace Assets.Scripts.Utils
         [SerializeField] float maxDistance = 12f;
 
         private GameObject target;
-        private Camera mainCamera;
+        private UnityEngine.Camera mainCamera;
         private float currentZoom;
 
         private Plane floorPlane;
@@ -32,7 +33,7 @@ namespace Assets.Scripts.Utils
 
         private void Awake()
         {
-            mainCamera = GetComponent<Camera>();
+            mainCamera = GetComponent<UnityEngine.Camera>();
 
             if (Instance != null && Instance != this)
                 Destroy(gameObject);
@@ -57,7 +58,7 @@ namespace Assets.Scripts.Utils
 
         #region Public Methods
 
-        public Camera GetMainCamera()
+        public UnityEngine.Camera GetMainCamera()
         {
             return mainCamera;
         }

@@ -1,10 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using Assets.Scripts.Camera;
+using Assets.Scripts.Components;
 using Assets.Scripts.Components.Base;
 using Assets.Scripts.Utils;
+using Newtonsoft.Json;
 using UnityEngine;
 
-namespace Assets.Scripts.Components
+namespace Assets.Scripts.Managers
 {
     public class ComponentsManager : MonoBehaviour
     {
@@ -16,6 +21,8 @@ namespace Assets.Scripts.Components
 
         #region Fields
 
+        public Vector3 DefaultIndicatorSize = new Vector3(0.04f, 0.04f, 0.04f);
+
         [SerializeField] LayerMask inoLayerMask;
         [SerializeField] LayerMask floorLayerMask;
         [SerializeField] KeyCode selectButton;
@@ -23,7 +30,7 @@ namespace Assets.Scripts.Components
         [SerializeField] GameObject jumperPrefab;
 
         private InoComponent selectedComponent;
-        private Camera mainCamera;
+        private UnityEngine.Camera mainCamera;
 
         private bool canDrag;
         private bool isDragging;
@@ -198,6 +205,106 @@ namespace Assets.Scripts.Components
 
         #region Public Methods
 
+        public void NewProject()
+        {
+            DeselectComponent();
+            foreach (var inoComponent in FindObjectsOfType<InoComponent>())
+                inoComponent.Delete();
+        }
+
+        public void SaveProject()
+        {
+            var components = new HashSet<string>();
+            var dependencyByComponent = new HashSet<Tuple<string, string>>();
+            var componentByHash = new Dictionary<string, InoComponent>();
+
+            foreach (var inoComponent in FindObjectsOfType<InoComponent>())
+            {
+                components.Add(inoComponent.Hash);
+                componentByHash.Add(inoComponent.Hash, inoComponent);
+
+                foreach (var dependency in inoComponent.GetDependencies())
+                    dependencyByComponent.Add(Tuple.Create(inoComponent.Hash, dependency));
+            }
+
+            var saveProject = new InoProjectSaveFile {Components = new List<SaveFile>()};
+            foreach (var hash in DependencySorter.Sort(components, dependencyByComponent))
+                saveProject.Components.Add(componentByHash[hash].Save());
+
+            var json = JsonConvert.SerializeObject(saveProject,
+                new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All});
+
+            var path = Application.persistentDataPath + "/test.txt";
+            var writer = new StreamWriter(path);
+            writer.Write(json);
+            writer.Close();
+
+            Debug.Log("SAVED ON: " + path);
+        }
+
+        public IEnumerator LoadProject()
+        {
+            var path = Application.persistentDataPath + "/test.txt";
+            var reader = new StreamReader(path);
+            var json = reader.ReadToEnd();
+            reader.Close();
+
+            var saveFile = JsonConvert.DeserializeObject<InoProjectSaveFile>(json,
+                new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All});
+
+            var components = new List<Tuple<InoComponent, SaveFile>>();
+            foreach (var componentSaveFile in saveFile.Components)
+            {
+                if (prefabByName.ContainsKey(componentSaveFile.PrefabName))
+                {
+                    var newComponent = Instantiate(prefabByName[componentSaveFile.PrefabName])
+                        .GetComponent<InoComponent>();
+                    components.Add(Tuple.Create(newComponent, componentSaveFile));
+                }
+            }
+
+            yield return new WaitForEndOfFrame();
+
+            foreach (var inoComponent in components)
+                inoComponent.Item1.Load(inoComponent.Item2);
+
+            yield return new WaitForEndOfFrame();
+
+            foreach (var inoComponent in components)
+                inoComponent.Item1.UpdatePinsConnection();
+
+            yield return new WaitForEndOfFrame();
+
+            foreach (var componentSaveFile in saveFile.Components)
+            {
+                if (!prefabByName.ContainsKey(componentSaveFile.PrefabName) &&
+                    componentSaveFile is JumperSaveFile jumperSaveFile)
+                {
+                    InoPort port1 = null;
+                    var port1Position = new Vector3(jumperSaveFile.Port1PositionX,
+                        jumperSaveFile.Port1PositionY + DefaultIndicatorSize.y,
+                        jumperSaveFile.Port1PositionZ);
+                    var port1Ray = new Ray(port1Position, Vector3.down);
+                    if (Physics.Raycast(port1Ray, out var port1Hit))
+                        port1 = port1Hit.transform.GetComponent<InoPort>();
+
+                    InoPort port2 = null;
+                    var port2Position = new Vector3(jumperSaveFile.Port2PositionX,
+                        jumperSaveFile.Port2PositionY + DefaultIndicatorSize.y,
+                        jumperSaveFile.Port2PositionZ);
+                    var port2Ray = new Ray(port2Position, Vector3.down);
+                    if (Physics.Raycast(port2Ray, out var port2Hit))
+                        port2 = port2Hit.transform.GetComponent<InoPort>();
+
+                    if (port1 != null && port2 != null)
+                        StartCoroutine(CreateJumper(port1, port2));
+                }
+            }
+
+            DeselectComponent();
+            Debug.Log("LOADED FROM: " + path);
+        }
+
         public void InstantiateComponent(string componentName)
         {
             if (prefabByName.ContainsKey(componentName))
@@ -242,7 +349,7 @@ namespace Assets.Scripts.Components
             selectedPorts.Add(port);
 
             if (selectedPorts.Count == 2)
-                StartCoroutine(CreateJumper());
+                StartCoroutine(CreateJumper(selectedPorts[0], selectedPorts[1]));
         }
 
         public void OnPortUnselected(InoPort port)
@@ -254,12 +361,12 @@ namespace Assets.Scripts.Components
 
         #region Private Methods
 
-        private IEnumerator CreateJumper()
+        private IEnumerator CreateJumper(InoPort port1, InoPort port2)
         {
             isAddingJumper = true;
             var jumperGameObject = Instantiate(jumperPrefab);
             var jumper = jumperGameObject.GetComponent<Jumper>();
-            jumper.Generate(selectedPorts[0], selectedPorts[1]);
+            jumper.Generate(port1, port2);
 
             selectedPorts.Clear();
             SelectComponent(jumper);

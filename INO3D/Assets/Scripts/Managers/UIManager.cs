@@ -1,11 +1,9 @@
 using System;
-using Assets.Scripts.Components;
-using Assets.Scripts.Simulation;
 using ImGuiNET;
 using UnityEngine;
 using static Assets.Scripts.Components.Base.InoComponent;
 
-namespace Assets.Scripts.Utils
+namespace Assets.Scripts.Managers
 {
     public class UIManager : MonoBehaviour
     {
@@ -382,22 +380,34 @@ namespace Assets.Scripts.Utils
         {
             ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
             ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(5.0f, 5.0f));
+            var padding = new Vector2(5, 5);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, padding);
 
             var viewport = ImGui.GetMainViewport();
             ImGui.SetNextWindowPos(new Vector2(0, 0));
             ImGui.SetNextWindowSize(new Vector2(viewport.Size.x, ButtonBarHeight));
             ImGui.Begin("ButtonBar", ButtonBarFlags);
 
-            DrawInLineButton("File", null);
-            DrawInLineButton("Folder", null);
-            DrawInLineButton("Save", null);
+            DrawInLineButton("File", () => { ComponentsManager.Instance.NewProject(); });
+            DrawInLineButton("Folder", () => { StartCoroutine(ComponentsManager.Instance.LoadProject()); });
+            DrawInLineButton("Save", () => { ComponentsManager.Instance.SaveProject(); });
 
             InLineSpacing();
 
-            DrawInLineButton("Save", null);
-            DrawInLineButton("Save", null);
-            DrawInLineButton("Save", null);
+            DrawInLineButton("2D", null);
+            DrawInLineButton("3D", null);
+
+            var menuBarSize = ImGui.GetWindowSize();
+            var pausePosition = menuBarSize.x / 2 - buttonBarButtonSize.x / 2;
+            var playPosition = pausePosition - buttonBarButtonSize.x - 3 * padding.x;
+            var stopPosition = pausePosition + buttonBarButtonSize.x + 3 * padding.x;
+
+            ImGui.SetCursorPos(new Vector2(playPosition, padding.y));
+            DrawButton("Play", null);
+            ImGui.SetCursorPos(new Vector2(pausePosition, padding.y));
+            DrawButton("Pause", null);
+            ImGui.SetCursorPos(new Vector2(stopPosition, padding.y));
+            DrawButton("Stop", null);
 
             ImGui.End();
             ImGui.PopStyleVar();
@@ -407,6 +417,16 @@ namespace Assets.Scripts.Utils
         private void DrawInLineButton(string iconName, Action onClick)
         {
             ImGui.SameLine();
+            if (ImGui.ImageButton(
+                    (IntPtr)ImGuiUn.GetTextureId(ComponentsManager.Instance.GetIcon(iconName)),
+                    buttonBarButtonSize))
+            {
+                onClick?.Invoke();
+            }
+        }
+
+        private void DrawButton(string iconName, Action onClick)
+        {
             if (ImGui.ImageButton(
                     (IntPtr)ImGuiUn.GetTextureId(ComponentsManager.Instance.GetIcon(iconName)),
                     buttonBarButtonSize))

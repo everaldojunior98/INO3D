@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Assets.Scripts.Simulation
+namespace Assets.Scripts.Managers
 {
     public class SimulationManager : MonoBehaviour
     {

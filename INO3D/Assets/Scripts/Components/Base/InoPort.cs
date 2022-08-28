@@ -1,4 +1,4 @@
-using Assets.Scripts.Utils;
+using Assets.Scripts.Managers;
 using UnityEngine;
 using static Assets.Scripts.Components.Base.InoComponent;
 
@@ -15,8 +15,6 @@ namespace Assets.Scripts.Components.Base
         #endregion
 
         #region Fields
-
-        private readonly Vector3 defaultSize = new Vector3(0.04f, 0.04f, 0.04f);
 
         private GameObject indicator;
         private BoxCollider boxCollider;
@@ -39,13 +37,13 @@ namespace Assets.Scripts.Components.Base
             indicator = GameObject.CreatePrimitive(PrimitiveType.Cube);
             indicator.transform.parent = transform;
             indicator.transform.localPosition = Vector3.zero;
-            indicator.transform.localScale = defaultSize;
+            indicator.transform.localScale = ComponentsManager.Instance.DefaultIndicatorSize;
             Destroy(indicator.GetComponent<BoxCollider>());
 
             meshRenderer = indicator.GetComponent<MeshRenderer>();
 
             boxCollider = gameObject.AddComponent<BoxCollider>();
-            boxCollider.size = defaultSize;
+            boxCollider.size = ComponentsManager.Instance.DefaultIndicatorSize;
 
             selectedMaterial = ComponentsManager.Instance.GetSelectedMaterial();
             unselectedMaterial = ComponentsManager.Instance.GetUnselectedMaterial();
