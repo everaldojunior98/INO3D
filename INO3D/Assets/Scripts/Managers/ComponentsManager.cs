@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using Assets.Scripts.Camera;
 using Assets.Scripts.Components;
 using Assets.Scripts.Components.Base;
@@ -22,6 +23,10 @@ namespace Assets.Scripts.Managers
         #region Fields
 
         public Vector3 DefaultIndicatorSize = new Vector3(0.04f, 0.04f, 0.04f);
+
+        public bool HasUnsavedChanges;
+        public string CurrentProjectName;
+        public string CurrentProjectPath;
 
         [SerializeField] LayerMask inoLayerMask;
         [SerializeField] LayerMask floorLayerMask;
@@ -48,6 +53,13 @@ namespace Assets.Scripts.Managers
         private Dictionary<string, Dictionary<string, List<string>>> componentsCategories;
         private Dictionary<string, Texture> iconByName;
         private Dictionary<string, GameObject> prefabByName;
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowText")]
+        public static extern bool SetWindowText(IntPtr hwnd, string lpString);
+        [DllImport("user32.dll", EntryPoint = "FindWindow")]
+        public static extern IntPtr FindWindow(string className, string windowName);
+
+        private IntPtr currentWindow = IntPtr.Zero;
 
         #endregion
 
@@ -101,6 +113,11 @@ namespace Assets.Scripts.Managers
                     }
                 }
             }
+
+            CurrentProjectPath = "";
+            HasUnsavedChanges = false;
+            CurrentProjectName = "Untitled";
+            UpdateWindowTitle(false);
         }
 
         private void Start()
@@ -149,6 +166,10 @@ namespace Assets.Scripts.Managers
                                 selectedComponent.transform.position.z + draggingOffset.z);
                             dragStartPosition = hit.point;
                             isDragging = true;
+
+                            if(!HasUnsavedChanges)
+                                UpdateWindowTitle(true);
+                            HasUnsavedChanges = true;
                         }
                 }
             }
@@ -210,9 +231,14 @@ namespace Assets.Scripts.Managers
             DeselectComponent();
             foreach (var inoComponent in FindObjectsOfType<InoComponent>())
                 inoComponent.Delete();
+
+            CurrentProjectPath = "";
+            HasUnsavedChanges = false;
+            CurrentProjectName = "Untitled";
+            UpdateWindowTitle(false);
         }
 
-        public void SaveProject()
+        public void SaveProject(string path)
         {
             var components = new HashSet<string>();
             var dependencyByComponent = new HashSet<Tuple<string, string>>();
@@ -232,25 +258,27 @@ namespace Assets.Scripts.Managers
                 saveProject.Components.Add(componentByHash[hash].Save());
 
             var json = JsonConvert.SerializeObject(saveProject,
-                new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All});
+                new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto, Formatting = Formatting.Indented});
 
-            var path = Application.persistentDataPath + "/test.txt";
             var writer = new StreamWriter(path);
             writer.Write(json);
             writer.Close();
 
-            Debug.Log("SAVED ON: " + path);
+            CurrentProjectPath = path;
+            HasUnsavedChanges = false;
+            CurrentProjectName = Path.GetFileNameWithoutExtension(path);
+            UpdateWindowTitle(false);
         }
 
-        public IEnumerator LoadProject()
+        public IEnumerator LoadProject(string path)
         {
-            var path = Application.persistentDataPath + "/test.txt";
+            NewProject();
             var reader = new StreamReader(path);
             var json = reader.ReadToEnd();
             reader.Close();
 
             var saveFile = JsonConvert.DeserializeObject<InoProjectSaveFile>(json,
-                new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All});
+                new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto, Formatting = Formatting.Indented});
 
             var components = new List<Tuple<InoComponent, SaveFile>>();
             foreach (var componentSaveFile in saveFile.Components)
@@ -302,7 +330,10 @@ namespace Assets.Scripts.Managers
             }
 
             DeselectComponent();
-            Debug.Log("LOADED FROM: " + path);
+            CurrentProjectPath = path;
+            HasUnsavedChanges = false;
+            CurrentProjectName = Path.GetFileNameWithoutExtension(path);
+            UpdateWindowTitle(false);
         }
 
         public void InstantiateComponent(string componentName)
@@ -321,6 +352,9 @@ namespace Assets.Scripts.Managers
                 }
 
                 SelectComponent(newComponent);
+                if (!HasUnsavedChanges)
+                    UpdateWindowTitle(true);
+                HasUnsavedChanges = true;
             }
         }
         
@@ -363,6 +397,9 @@ namespace Assets.Scripts.Managers
 
         private IEnumerator CreateJumper(InoPort port1, InoPort port2)
         {
+            if (!HasUnsavedChanges)
+                UpdateWindowTitle(true);
+            HasUnsavedChanges = true;
             isAddingJumper = true;
             var jumperGameObject = Instantiate(jumperPrefab);
             var jumper = jumperGameObject.GetComponent<Jumper>();
@@ -390,6 +427,13 @@ namespace Assets.Scripts.Managers
             isDragging = false;
             selectedComponent?.DisableHighlight();
             selectedComponent = null;
+        }
+
+        private void UpdateWindowTitle(bool addStar)
+        {
+            if (currentWindow == IntPtr.Zero)
+                currentWindow = FindWindow(null, "INO3D");
+            SetWindowText(currentWindow, "INO3D - " + CurrentProjectName + (addStar ? "*" : ""));
         }
 
         #endregion

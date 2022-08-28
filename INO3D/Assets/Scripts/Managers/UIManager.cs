@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using ImGuiNET;
+using SFB;
 using UnityEngine;
 using static Assets.Scripts.Components.Base.InoComponent;
 
@@ -54,6 +56,8 @@ namespace Assets.Scripts.Managers
         private PinType overlayPinType;
 
         private string selectedCategory;
+
+        private Action currentPopupAction = () => { };
 
         #endregion
 
@@ -388,9 +392,52 @@ namespace Assets.Scripts.Managers
             ImGui.SetNextWindowSize(new Vector2(viewport.Size.x, ButtonBarHeight));
             ImGui.Begin("ButtonBar", ButtonBarFlags);
 
-            DrawInLineButton("File", () => { ComponentsManager.Instance.NewProject(); });
-            DrawInLineButton("Folder", () => { StartCoroutine(ComponentsManager.Instance.LoadProject()); });
-            DrawInLineButton("Save", () => { ComponentsManager.Instance.SaveProject(); });
+            var extensions = new[]
+            {
+                new ExtensionFilter(LocalizationManager.Instance.Localize("Ino3DProjectFiles"), "i3d"),
+            };
+
+            DrawInLineButton("File", () =>
+            {
+                currentPopupAction = () => { ComponentsManager.Instance.NewProject(); };
+                if (ComponentsManager.Instance.HasUnsavedChanges)
+                    ImGui.OpenPopup(LocalizationManager.Instance.Localize("UnsavedPopupTitle"));
+                else
+                    currentPopupAction();
+            });
+            DrawInLineButton("Folder", () =>
+            {
+                currentPopupAction = () =>
+                {
+                    StandaloneFileBrowser.OpenFilePanelAsync(LocalizationManager.Instance.Localize("OpenProject"), "",
+                        extensions, false, paths =>
+                        {
+                            if (paths.Length > 0 && File.Exists(paths[0]))
+                                StartCoroutine(ComponentsManager.Instance.LoadProject(paths[0]));
+                        });
+                };
+
+                if (ComponentsManager.Instance.HasUnsavedChanges)
+                    ImGui.OpenPopup(LocalizationManager.Instance.Localize("UnsavedPopupTitle"));
+                else
+                    currentPopupAction();
+            });
+            DrawInLineButton("Save", () =>
+            {
+                if (string.IsNullOrEmpty(ComponentsManager.Instance.CurrentProjectPath))
+                {
+                    StandaloneFileBrowser.SaveFilePanelAsync(LocalizationManager.Instance.Localize("SaveProject"), "",
+                        ComponentsManager.Instance.CurrentProjectName, extensions, path =>
+                        {
+                            if (!string.IsNullOrEmpty(path))
+                                ComponentsManager.Instance.SaveProject(path);
+                        });
+                }
+                else
+                {
+                    ComponentsManager.Instance.SaveProject(ComponentsManager.Instance.CurrentProjectPath);
+                }
+            });
 
             InLineSpacing();
 
@@ -408,6 +455,54 @@ namespace Assets.Scripts.Managers
             DrawButton("Pause", null);
             ImGui.SetCursorPos(new Vector2(stopPosition, padding.y));
             DrawButton("Stop", null);
+
+            var center = ImGui.GetMainViewport().Size / 2;
+            ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+            var pOpen = true;
+            if (ImGui.BeginPopupModal(LocalizationManager.Instance.Localize("UnsavedPopupTitle"), ref pOpen, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize))
+            {
+                ImGui.Text(LocalizationManager.Instance.Localize("UnsavedPopupMessage") +
+                           $" \"{ComponentsManager.Instance.CurrentProjectName}\".");
+                ImGui.Separator();
+
+                if (ImGui.Button(LocalizationManager.Instance.Localize("Yes"), new Vector2(65, 0)))
+                {
+                    if (string.IsNullOrEmpty(ComponentsManager.Instance.CurrentProjectPath))
+                    {
+                        StandaloneFileBrowser.SaveFilePanelAsync(LocalizationManager.Instance.Localize("SaveProject"), "", "",
+                            extensions, path =>
+                            {
+                                if (!string.IsNullOrEmpty(path))
+                                {
+                                    ComponentsManager.Instance.SaveProject(path);
+                                    currentPopupAction();
+                                }
+                            });
+                    }
+                    else
+                    {
+                        ComponentsManager.Instance.SaveProject(ComponentsManager.Instance.CurrentProjectPath);
+                        currentPopupAction();
+                    }
+                    ImGui.CloseCurrentPopup();
+                }
+
+                ImGui.SameLine();
+                if (ImGui.Button(LocalizationManager.Instance.Localize("No"), new Vector2(65, 0)))
+                {
+                    currentPopupAction();
+                    ImGui.CloseCurrentPopup();
+                }
+
+                ImGui.SetItemDefaultFocus();
+                ImGui.SameLine();
+                if (ImGui.Button(LocalizationManager.Instance.Localize("Cancel"), new Vector2(65, 0)))
+                {
+                    ImGui.CloseCurrentPopup();
+                }
+
+                ImGui.EndPopup();
+            }
 
             ImGui.End();
             ImGui.PopStyleVar();

@@ -34,12 +34,14 @@ namespace Assets.Scripts.Managers
             AddLocalization("Menu.File", "Arquivo", "File");
             AddLocalization("Menu.Edit", "Editar", "Edit");
             AddLocalization("Menu.Components", "Componentes", "Components");
+
             AddLocalization("Overlay.Port", "Porta", "Port");
             AddLocalization("Overlay.Type", "Tipo", "Type");
             AddLocalization("Overlay.Type.Analog", "Analógica", "Analog");
             AddLocalization("Overlay.Type.Digital", "Digital", "Digital");
             AddLocalization("Overlay.Type.DigitalPwm", "Digital (PWM)", "Digital (PWM)");
             AddLocalization("Overlay.Type.Power", "Alimentação", "Power");
+
             AddLocalization("Circuit", "Circuito", "Circuit");
             AddLocalization("Circuit.Basics", "Básicos", "Basics");
             AddLocalization("Arduino", "Arduino", "Arduino");
@@ -47,6 +49,16 @@ namespace Assets.Scripts.Managers
             AddLocalization("ArduinoUno", "Arduino Uno", "Arduino Uno");
             AddLocalization("Protoboard400", "Protoboard 400 pontos", "Protoboard 400 points");
             AddLocalization("Resistor", "Resistor", "Resistor");
+
+            AddLocalization("Yes", "Sim", "Yes");
+            AddLocalization("No", "Não", "No");
+            AddLocalization("Cancel", "Cancelar", "Cancel");
+
+            AddLocalization("OpenProject", "Abrir Projeto", "Open Project");
+            AddLocalization("SaveProject", "Salvar Projeto", "Save Project");
+            AddLocalization("Ino3DProjectFiles", "Arquivos de Projeto Ino3D", "Ino3D Project Files");
+            AddLocalization("UnsavedPopupTitle", "Deseja salvar o projeto?", "Do you want to save the project?");
+            AddLocalization("UnsavedPopupMessage", "Há alterações não salvas em", "There are unsaved changes in");
 
             currentLanguage = PlayerPrefs.GetString("currentLanguage", localizationDictionary.Keys.First());
         }
