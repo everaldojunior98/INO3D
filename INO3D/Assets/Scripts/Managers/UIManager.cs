@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Assets.Scripts.Camera;
 using ImGuiNET;
 using SFB;
 using UnityEngine;
@@ -441,8 +442,8 @@ namespace Assets.Scripts.Managers
 
             InLineSpacing();
 
-            DrawInLineButton("2D", null);
-            DrawInLineButton("3D", null);
+            DrawInLineButton("2D", () => CameraController.Instance.SetCameraAsOrthographic());
+            DrawInLineButton("3D", () => CameraController.Instance.SetCameraAsPerspective());
 
             var menuBarSize = ImGui.GetWindowSize();
             var pausePosition = menuBarSize.x / 2 - buttonBarButtonSize.x / 2;
