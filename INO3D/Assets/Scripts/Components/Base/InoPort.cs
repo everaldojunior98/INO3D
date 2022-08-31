@@ -1,4 +1,6 @@
+using System;
 using Assets.Scripts.Managers;
+using CircuitSharp.Core;
 using UnityEngine;
 using static Assets.Scripts.Components.Base.InoComponent;
 
@@ -11,6 +13,8 @@ namespace Assets.Scripts.Components.Base
         public string PortName;
         public PortType PortType;
         public PinType PinType;
+
+        public Func<Lead> GetLead;
 
         #endregion
 
@@ -56,7 +60,7 @@ namespace Assets.Scripts.Components.Base
 
         private void OnMouseEnter()
         {
-            if (UIManager.Instance.IsMouserOverUI() || !canSelect)
+            if (UIManager.Instance.IsMouserOverUI() || !canSelect || SimulationManager.Instance.IsSimulating())
                 return;
 
             ShowIndicator();
@@ -65,7 +69,7 @@ namespace Assets.Scripts.Components.Base
 
         private void OnMouseDown()
         {
-            if (UIManager.Instance.IsMouserOverUI() || !canSelect)
+            if (UIManager.Instance.IsMouserOverUI() || !canSelect || SimulationManager.Instance.IsSimulating())
                 return;
 
             isSelected = !isSelected;
@@ -132,6 +136,13 @@ namespace Assets.Scripts.Components.Base
             HideIndicator();
             isSelected = false;
             canSelect = false;
+        }
+
+        public void Deselect()
+        {
+            HideIndicator();
+            isSelected = false;
+            UpdateMaterial();
         }
 
         public void Enable()

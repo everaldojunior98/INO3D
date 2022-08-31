@@ -1,12 +1,43 @@
 using System;
+using System.Collections.Generic;
 using Assets.Scripts.Components.Base;
+using Assets.Scripts.Managers;
+using CircuitSharp.Core;
 using UnityEngine;
+using ResistorModel = CircuitSharp.Components.Resistor;
 
 namespace Assets.Scripts.Components
 {
     public class Resistor : InoComponent
     {
+        #region Fields
+
+        private ResistorModel resistor;
+
+        #endregion
+
         #region Overrides
+
+        public override void GenerateCircuitElement()
+        {
+            if (IsConnected())
+            {
+                resistor = SimulationManager.Instance.CreateElement<ResistorModel>(100);
+                LeadByPortName = new Dictionary<string, Lead>
+                {
+                    {"A", resistor.LeadIn},
+                    {"B", resistor.LeadOut}
+                };
+
+                foreach (var pair in ConnectedPorts)
+                    SimulationManager.Instance.Connect(GetLead(pair.Key), pair.Value.GetLead());
+            }
+        }
+
+        public override void OnSimulationTick()
+        {
+            Debug.Log(resistor.GetVoltageDelta() + " :: " + resistor.GetCurrent());
+        }
 
         protected override void SetupPorts()
         {

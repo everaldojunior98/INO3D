@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using Assets.Scripts.Components.Base;
+using Assets.Scripts.Managers;
+using CircuitSharp.Components;
+using CircuitSharp.Core;
 using UnityEngine;
 
 namespace Assets.Scripts.Components
@@ -49,6 +52,23 @@ namespace Assets.Scripts.Components
         #endregion
 
         #region Overrides
+
+        public override void GenerateCircuitElement()
+        {
+            var wire = SimulationManager.Instance.CreateElement<Wire>();
+            LeadByPortName = new Dictionary<string, Lead>
+            {
+                {"A", wire.LeadIn},
+                {"B", wire.LeadOut}
+            };
+
+            foreach (var pair in ConnectedPorts)
+                SimulationManager.Instance.Connect(GetLead(pair.Key), pair.Value.GetLead());
+        }
+
+        public override void OnSimulationTick()
+        {
+        }
 
         protected override void SetupPorts()
         {
@@ -117,7 +137,11 @@ namespace Assets.Scripts.Components
                 inoPort2.Disable();
                 inoPort2.Connect(this);
 
-                ConnectedPorts = new List<InoPort> {inoPort1, inoPort2};
+                ConnectedPorts = new Dictionary<string, InoPort>
+                {
+                    {"A", inoPort1},
+                    {"B", inoPort2}
+                };
             }
 
             if (jumper1 == null)

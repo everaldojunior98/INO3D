@@ -1,5 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.Components.Base;
+using Assets.Scripts.Managers;
+using CircuitSharp.Components;
+using CircuitSharp.Core;
 using UnityEngine;
 
 namespace Assets.Scripts.Components
@@ -7,6 +12,76 @@ namespace Assets.Scripts.Components
     public class Protoboard400 : InoComponent
     {
         #region Overrides
+
+        public override void GenerateCircuitElement()
+        {
+            var vcc = new List<InoPort>();
+            var gnd = new List<InoPort>();
+            var lines = new Dictionary<int, List<InoPort>>();
+            foreach (var inoPort in GeneratedPorts)
+            {
+                if (inoPort.PortName.Contains("VCC"))
+                {
+                    vcc.Add(inoPort);
+                }
+                else if (inoPort.PortName.Contains("GND"))
+                {
+                    gnd.Add(inoPort);
+                }
+                else
+                {
+                    var portNumber = int.Parse(inoPort.PortName.Substring(1));
+                    if (!lines.ContainsKey(portNumber))
+                        lines.Add(portNumber, new List<InoPort>());
+                    lines[portNumber].Add(inoPort);
+                }
+            }
+
+            LeadByPortName = new Dictionary<string, Lead>();
+
+            var vccOutput = SimulationManager.Instance.CreateElement<Output>();
+            var vccCount = 0;
+            foreach (var inoPort in vcc)
+            {
+                LeadByPortName.Add(inoPort.PortName, vccOutput.LeadIn);
+                vccCount++;
+
+                if (vccCount == 25)
+                    vccOutput = SimulationManager.Instance.CreateElement<Output>();
+            }
+
+            var gndOutput = SimulationManager.Instance.CreateElement<Output>();
+            var gndCount = 0;
+            foreach (var inoPort in gnd)
+            {
+                LeadByPortName.Add(inoPort.PortName, gndOutput.LeadIn);
+                gndCount++;
+
+                if (gndCount == 25)
+                    gndOutput = SimulationManager.Instance.CreateElement<Output>();
+            }
+
+            foreach (var pair in lines)
+            {
+                var output = SimulationManager.Instance.CreateElement<Output>();
+                var count = 0;
+                if(pair.Value.Any(port => port.IsConnected()))
+                {
+                    foreach (var inoPort in pair.Value)
+                    {
+                        LeadByPortName.Add(inoPort.PortName, output.LeadIn);
+                        count++;
+
+                        if (count == 5)
+                            output = SimulationManager.Instance.CreateElement<Output>();
+                    }
+                }
+            }
+        }
+
+        public override void OnSimulationTick()
+        {
+        }
 
         protected override void SetupPorts()
         {

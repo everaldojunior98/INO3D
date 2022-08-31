@@ -128,7 +128,7 @@ namespace Assets.Scripts.Managers
 
         private void Update()
         {
-            if (!isAddingComponent && UIManager.Instance.IsMouserOverUI())
+            if (!isAddingComponent && UIManager.Instance.IsMouserOverUI() || SimulationManager.Instance.IsSimulating())
                 return;
 
             if (Input.GetKeyDown(selectButton))
@@ -391,6 +391,30 @@ namespace Assets.Scripts.Managers
             selectedPorts.Remove(port);
         }
 
+        public void SelectComponent(InoComponent component)
+        {
+            isDragging = false;
+            selectedComponent?.DisableHighlight();
+            selectedComponent = component;
+            canDrag = selectedComponent.CanDrag;
+            selectedComponent.EnableHighlight();
+        }
+
+        public void DeselectComponent()
+        {
+            canDrag = false;
+            isDragging = false;
+            selectedComponent?.DisableHighlight();
+            selectedComponent = null;
+        }
+        
+        public void DeselectPorts()
+        {
+            foreach (var selectedPort in selectedPorts)
+                selectedPort.Deselect();
+            selectedPorts.Clear();
+        }
+
         #endregion
 
         #region Private Methods
@@ -410,23 +434,6 @@ namespace Assets.Scripts.Managers
 
             yield return new WaitForEndOfFrame();
             isAddingJumper = false;
-        }
-
-        private void SelectComponent(InoComponent component)
-        {
-            isDragging = false;
-            selectedComponent?.DisableHighlight();
-            selectedComponent = component;
-            canDrag = selectedComponent.CanDrag;
-            selectedComponent.EnableHighlight();
-        }
-
-        private void DeselectComponent()
-        {
-            canDrag = false;
-            isDragging = false;
-            selectedComponent?.DisableHighlight();
-            selectedComponent = null;
         }
 
         private void UpdateWindowTitle(bool addStar)

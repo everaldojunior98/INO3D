@@ -398,7 +398,7 @@ namespace Assets.Scripts.Managers
                 new ExtensionFilter(LocalizationManager.Instance.Localize("Ino3DProjectFiles"), "i3d"),
             };
 
-            DrawInLineButton("File", () =>
+            DrawInLineButton("File", !SimulationManager.Instance.IsSimulating(), () =>
             {
                 currentPopupAction = () => { ComponentsManager.Instance.NewProject(); };
                 if (ComponentsManager.Instance.HasUnsavedChanges)
@@ -406,7 +406,7 @@ namespace Assets.Scripts.Managers
                 else
                     currentPopupAction();
             });
-            DrawInLineButton("Folder", () =>
+            DrawInLineButton("Folder", !SimulationManager.Instance.IsSimulating(), () =>
             {
                 currentPopupAction = () =>
                 {
@@ -423,7 +423,7 @@ namespace Assets.Scripts.Managers
                 else
                     currentPopupAction();
             });
-            DrawInLineButton("Save", () =>
+            DrawInLineButton("Save", !SimulationManager.Instance.IsSimulating(), () =>
             {
                 if (string.IsNullOrEmpty(ComponentsManager.Instance.CurrentProjectPath))
                 {
@@ -442,8 +442,8 @@ namespace Assets.Scripts.Managers
 
             InLineSpacing();
 
-            DrawInLineButton("2D", () => CameraController.Instance.SetCameraAsOrthographic());
-            DrawInLineButton("3D", () => CameraController.Instance.SetCameraAsPerspective());
+            DrawInLineButton("2D", true, () => CameraController.Instance.SetCameraAsOrthographic());
+            DrawInLineButton("3D", true, () => CameraController.Instance.SetCameraAsPerspective());
 
             var menuBarSize = ImGui.GetWindowSize();
             var pausePosition = menuBarSize.x / 2 - buttonBarButtonSize.x / 2;
@@ -451,11 +451,14 @@ namespace Assets.Scripts.Managers
             var stopPosition = pausePosition + buttonBarButtonSize.x + 3 * padding.x;
 
             ImGui.SetCursorPos(new Vector2(playPosition, padding.y));
-            DrawButton("Play", null);
+
+            DrawButton("Play", !SimulationManager.Instance.IsSimulating(), () => SimulationManager.Instance.StartSimulation());
+
             ImGui.SetCursorPos(new Vector2(pausePosition, padding.y));
-            DrawButton("Pause", null);
+            DrawButton("Pause", SimulationManager.Instance.IsSimulating(), null);
             ImGui.SetCursorPos(new Vector2(stopPosition, padding.y));
-            DrawButton("Stop", null);
+            DrawButton("Stop", SimulationManager.Instance.IsSimulating(),
+                () => SimulationManager.Instance.StopSimulation());
 
             var center = ImGui.GetMainViewport().Size / 2;
             ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
@@ -510,24 +513,52 @@ namespace Assets.Scripts.Managers
             ImGui.PopStyleVar(2);
         }
 
-        private void DrawInLineButton(string iconName, Action onClick)
+        private void DrawInLineButton(string iconName, bool enable, Action onClick)
         {
+            if (!enable)
+            {
+                ImGui.PushStyleVar(ImGuiStyleVar.Alpha, style.Alpha * 0.5f);
+                ImGui.PushStyleColor(ImGuiCol.ButtonHovered, style.Colors[(int)ImGuiCol.Button]);
+                ImGui.PushStyleColor(ImGuiCol.ButtonActive, style.Colors[(int)ImGuiCol.Button]);
+            }
+
             ImGui.SameLine();
             if (ImGui.ImageButton(
                     (IntPtr)ImGuiUn.GetTextureId(ComponentsManager.Instance.GetIcon(iconName)),
-                    buttonBarButtonSize))
+                    buttonBarButtonSize) && enable)
             {
                 onClick?.Invoke();
             }
+
+            if (!enable)
+            {
+                ImGui.PopStyleVar();
+                ImGui.PopStyleColor();
+                ImGui.PopStyleColor();
+            }
         }
 
-        private void DrawButton(string iconName, Action onClick)
+        private void DrawButton(string iconName, bool enable, Action onClick)
         {
+            if (!enable)
+            {
+                ImGui.PushStyleVar(ImGuiStyleVar.Alpha, style.Alpha * 0.5f);
+                ImGui.PushStyleColor(ImGuiCol.ButtonHovered, style.Colors[(int)ImGuiCol.Button]);
+                ImGui.PushStyleColor(ImGuiCol.ButtonActive, style.Colors[(int)ImGuiCol.Button]);
+            }
+
             if (ImGui.ImageButton(
                     (IntPtr)ImGuiUn.GetTextureId(ComponentsManager.Instance.GetIcon(iconName)),
-                    buttonBarButtonSize))
+                    buttonBarButtonSize) && enable)
             {
                 onClick?.Invoke();
+            }
+
+            if (!enable)
+            {
+                ImGui.PopStyleVar();
+                ImGui.PopStyleColor();
+                ImGui.PopStyleColor();
             }
         }
 

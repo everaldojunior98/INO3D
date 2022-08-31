@@ -1,11 +1,56 @@
 using System;
+using System.Collections.Generic;
 using Assets.Scripts.Components.Base;
+using Assets.Scripts.Managers;
+using CircuitSharp.Components.Chips;
+using CircuitSharp.Core;
 using UnityEngine;
 
 namespace Assets.Scripts.Components
 {
     public class ArduinoUno : InoComponent
     {
+        public override void GenerateCircuitElement()
+        {
+            var code = @"
+            void setup() 
+            {
+                Serial.begin(9600);
+                pinMode(5, OUTPUT);
+                pinMode(2, INPUT);
+                attachInterrupt(digitalPinToInterrupt(2), blink, RISING);
+            }
+
+            void blink()
+            {
+                Serial.println(""INTERRUPCAO"");
+            }
+
+            void loop()
+            {
+                Serial.println(""A"");
+                digitalWrite(5, HIGH);
+                delay(1000);
+            }
+            ";
+
+            var print = new Action<byte>(b =>
+            {
+                Debug.Log((char)b);
+            });
+
+            var aTmega328P = SimulationManager.Instance.CreateElement<ATmega328P>(code, print);
+            LeadByPortName = new Dictionary<string, Lead>
+            {
+                {"5V", aTmega328P.VCCLead},
+                {"GND", aTmega328P.GNDLead}
+            };
+        }
+
+        public override void OnSimulationTick()
+        {
+        }
+
         protected override void SetupPorts()
         {
             DefaultHeight = 0;

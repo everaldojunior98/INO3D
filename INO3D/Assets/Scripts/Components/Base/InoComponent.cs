@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Assets.Scripts.Managers;
 using cakeslice;
+using CircuitSharp.Core;
 using UnityEngine;
 
 namespace Assets.Scripts.Components.Base
@@ -36,6 +37,7 @@ namespace Assets.Scripts.Components.Base
 
         protected List<Tuple<string, Vector3, PortType, PinType>> Ports;
         protected List<InoPort> GeneratedPorts;
+        protected Dictionary<string, Lead> LeadByPortName;
 
         protected List<Tuple<string, Vector3>> Pins;
 
@@ -48,8 +50,8 @@ namespace Assets.Scripts.Components.Base
 
         private bool isConnected;
 
-        protected List<InoPort> ConnectedPorts;
-        private List<Vector3> connectedPortsPositions;
+        protected Dictionary<string, InoPort> ConnectedPorts;
+        private Dictionary<string, Vector3> connectedPortsPositions;
 
         #endregion
 
@@ -62,8 +64,8 @@ namespace Assets.Scripts.Components.Base
 
             Pins = new List<Tuple<string, Vector3>>();
 
-            ConnectedPorts = new List<InoPort>();
-            connectedPortsPositions = new List<Vector3>();
+            ConnectedPorts = new Dictionary<string, InoPort>();
+            connectedPortsPositions = new Dictionary<string, Vector3>();
 
             CanDrag = true;
             CanRotate = true;
@@ -92,18 +94,16 @@ namespace Assets.Scripts.Components.Base
         {
             if (isConnected)
             {
-                for (var i = 0; i < connectedPortsPositions.Count; i++)
+                foreach (var pair in connectedPortsPositions)
                 {
-                    var connectedPinPosition = connectedPortsPositions[i];
-                    if (ConnectedPorts[i] == null)
+                    if (!ConnectedPorts.ContainsKey(pair.Key))
                     {
                         DisconnectAllPorts();
                         break;
                     }
 
-                    var currentPinPosition = ConnectedPorts[i].transform.position;
-
-                    if (connectedPinPosition != currentPinPosition)
+                    var currentPinPosition = ConnectedPorts[pair.Key].transform.position;
+                    if (pair.Value != currentPinPosition)
                     {
                         UpdateComponentPosition();
                         break;
@@ -116,6 +116,8 @@ namespace Assets.Scripts.Components.Base
 
         #region Abstract Methods
 
+        public abstract void GenerateCircuitElement();
+        public abstract void OnSimulationTick();
         protected abstract void SetupPorts();
         public abstract SaveFile Save();
         public abstract void Load(SaveFile saveFile);
@@ -130,7 +132,7 @@ namespace Assets.Scripts.Components.Base
             var dependencies = new List<string>();
             foreach (var connectedPort in ConnectedPorts)
             {
-                var hash = connectedPort.transform.parent.GetComponent<InoComponent>().Hash;
+                var hash = connectedPort.Value.transform.parent.GetComponent<InoComponent>().Hash;
                 if (!dependencies.Contains(hash))
                     dependencies.Add(hash);
             }
@@ -144,7 +146,7 @@ namespace Assets.Scripts.Components.Base
 
             if (Pins != null && Pins.Count > 0)
             {
-                var pins = new List<InoPort>();
+                var pins = new Dictionary<string, InoPort>();
                 foreach (var pin in Pins)
                 {
                     var contactGlobalPoint = RotatePointAroundPivot(
@@ -156,20 +158,21 @@ namespace Assets.Scripts.Components.Base
                     {
                         var inoPort = hit.transform.GetComponent<InoPort>();
                         if (inoPort != null)
-                            pins.Add(inoPort);
+                            pins.Add(pin.Item1, inoPort);
                     }
                 }
 
-                if (pins.Count == Pins.Count && pins.All(port => !port.IsConnected() || ConnectedPorts.Contains(port)))
+                if (pins.Count == Pins.Count && pins.All(port =>
+                        !port.Value.IsConnected() || ConnectedPorts.ContainsKey(port.Key)))
                 {
-                    if (pins.Any(pin => !ConnectedPorts.Contains(pin)))
+                    if (pins.Any(pin => !ConnectedPorts.ContainsKey(pin.Key) || ConnectedPorts[pin.Key] != pin.Value))
                     {
                         DisconnectAllPorts();
 
                         foreach (var connectedPort in pins)
                         {
-                            connectedPort.Disable();
-                            connectedPort.Connect(this);
+                            connectedPort.Value.Disable();
+                            connectedPort.Value.Connect(this);
                         }
 
                         ConnectedPorts = pins;
@@ -223,10 +226,17 @@ namespace Assets.Scripts.Components.Base
             isConnected = false;
             foreach (var connectedPort in ConnectedPorts)
             {
-                connectedPort.Enable();
-                connectedPort.Disconnect();
+                connectedPort.Value.Enable();
+                connectedPort.Value.Disconnect();
             }
             ConnectedPorts.Clear();
+        }
+
+        protected Lead GetLead(string portName)
+        {
+            if (LeadByPortName != null && LeadByPortName.ContainsKey(portName))
+                return LeadByPortName[portName];
+            return null;
         }
 
         #endregion
@@ -250,6 +260,7 @@ namespace Assets.Scripts.Components.Base
                 inoPort.PortName = tuple.Item1;
                 inoPort.PortType = tuple.Item3;
                 inoPort.PinType = tuple.Item4;
+                inoPort.GetLead = () => GetLead(tuple.Item1);
 
                 GeneratedPorts.Add(inoPort);
             }
@@ -261,14 +272,14 @@ namespace Assets.Scripts.Components.Base
             connectedPortsPositions.Clear();
             foreach (var connectedPort in ConnectedPorts)
             {
-                positions += connectedPort.transform.position;
-                connectedPortsPositions.Add(connectedPort.transform.position);
+                positions += connectedPort.Value.transform.position;
+                connectedPortsPositions.Add(connectedPort.Key, connectedPort.Value.transform.position);
             }
 
             if (ConnectedPorts.Count > 1)
             {
-                var firstPosition = ConnectedPorts.First().transform.position;
-                var lastPosition = ConnectedPorts.Last().transform.position;
+                var firstPosition = ConnectedPorts.First().Value.transform.position;
+                var lastPosition = ConnectedPorts.Last().Value.transform.position;
 
                 var middlePosition = positions / ConnectedPorts.Count;
                 transform.position = new Vector3(middlePosition.x, middlePosition.y, middlePosition.z);
