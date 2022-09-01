@@ -60,6 +60,13 @@ namespace Assets.Scripts.Managers
             AddLocalization("UnsavedPopupTitle", "Deseja salvar o projeto?", "Do you want to save the project?");
             AddLocalization("UnsavedPopupMessage", "Há alterações não salvas em", "There are unsaved changes in");
 
+            AddLocalization("Console", "Console", "Console");
+            AddLocalization("Send", "Enviar", "Send");
+            AddLocalization("Auto-scroll", "Auto-rolagem", "Auto-scroll");
+            AddLocalization("NoLineEnding", "Sem fim de linha", "No line ending");
+            AddLocalization("NewLine", "Nova linha", "New line");
+            AddLocalization("Clear", "Limpar", "Clear");
+
             currentLanguage = PlayerPrefs.GetString("currentLanguage", localizationDictionary.Keys.First());
         }
 

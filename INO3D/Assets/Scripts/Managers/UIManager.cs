@@ -1,5 +1,8 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using Assets.Scripts.Camera;
 using ImGuiNET;
 using SFB;
@@ -51,12 +54,19 @@ namespace Assets.Scripts.Managers
 
         private bool isMouseOverUI;
         private bool displayPortOverlay;
+        private bool showConsole;
 
         private string overlayPortName;
         private PortType overlayPortType;
         private PinType overlayPinType;
 
         private string selectedCategory;
+
+        private bool consoleAutoScroll;
+        private byte[] consoleInputBuffer;
+
+        private string currentLog;
+        private int currentLineEnding = 1;
 
         private Action currentPopupAction = () => { };
 
@@ -70,6 +80,11 @@ namespace Assets.Scripts.Managers
                 Destroy(this);
             else
                 Instance = this;
+
+            consoleAutoScroll = true;
+            consoleInputBuffer = new byte[1024];
+
+            currentLog = string.Empty;
         }
 
         private void OnEnable()
@@ -103,6 +118,17 @@ namespace Assets.Scripts.Managers
         public void HidePortOverlay()
         {
             displayPortOverlay = false;
+        }
+
+        public void ShowConsole()
+        {
+            showConsole = !showConsole;
+        }
+
+        public void AddLog(string log, int lineEnding = 1)
+        {
+            log = Regex.Unescape(log.Split('\0').First());
+            currentLog += log + (lineEnding == 1 ? "\n" : "");
         }
 
         #endregion
@@ -224,6 +250,9 @@ namespace Assets.Scripts.Managers
 
             ShowButtonBar();
             ShowComponentsWindow();
+
+            if (showConsole)
+                ShowConsoleWindow();
 
             if (displayPortOverlay)
                 ShowPortOverlay();
@@ -445,6 +474,10 @@ namespace Assets.Scripts.Managers
             DrawInLineButton("2D", true, () => CameraController.Instance.SetCameraAsOrthographic());
             DrawInLineButton("3D", true, () => CameraController.Instance.SetCameraAsPerspective());
 
+            InLineSpacing();
+
+            DrawInLineButton("Console", true, () => ShowConsole());
+
             var menuBarSize = ImGui.GetWindowSize();
             var pausePosition = menuBarSize.x / 2 - buttonBarButtonSize.x / 2;
             var playPosition = pausePosition - buttonBarButtonSize.x - 3 * padding.x;
@@ -569,6 +602,70 @@ namespace Assets.Scripts.Managers
 
             ImGui.SameLine();
             ImGui.Spacing();
+        }
+
+        private void ShowConsoleWindow()
+        {
+            ImGui.SetNextWindowSize(new Vector2(520, 300), ImGuiCond.FirstUseEver);
+            ImGui.Begin(LocalizationManager.Instance.Localize("Console"), ref showConsole,
+                ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking);
+
+            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().x - 55);
+            if (ImGui.InputText("", consoleInputBuffer, (uint) consoleInputBuffer.Length,
+                    ImGuiInputTextFlags.EnterReturnsTrue))
+            {
+                AddLog(Encoding.UTF8.GetString(consoleInputBuffer));
+                consoleInputBuffer = new byte[consoleInputBuffer.Length];
+            }
+
+            ImGui.SameLine();
+            if (ImGui.Button(LocalizationManager.Instance.Localize("Send"), new Vector2(50, ImGui.GetItemRectSize().y)))
+            {
+                AddLog(Encoding.UTF8.GetString(consoleInputBuffer));
+                consoleInputBuffer = new byte[consoleInputBuffer.Length];
+            }
+
+            ImGui.Separator();
+
+            var footerHeightToReserve = ImGui.GetStyle().ItemSpacing.y + ImGui.GetFrameHeightWithSpacing();
+            ImGui.BeginChild("ScrollingRegion", new Vector2(0, -footerHeightToReserve), false,
+                ImGuiWindowFlags.HorizontalScrollbar);
+
+            ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(4, 1));
+
+            foreach (var log in currentLog.Split('\n'))
+                ImGui.TextUnformatted(log);
+
+            if (consoleAutoScroll && ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
+                ImGui.SetScrollHereY(1.0f);
+
+            ImGui.PopStyleVar();
+            ImGui.EndChild();
+
+            ImGui.Separator();
+            ImGui.Checkbox(LocalizationManager.Instance.Localize("Auto-scroll"), ref consoleAutoScroll);
+
+            ImGui.SameLine(250);
+            var lineEndings = new[]
+            {
+                LocalizationManager.Instance.Localize("NoLineEnding"), LocalizationManager.Instance.Localize("NewLine")
+            };
+            ImGui.PushID("LineEnding");
+            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().x - 55);
+            ImGui.Combo("", ref currentLineEnding, lineEndings, lineEndings.Length);
+            ImGui.PopID();
+
+            ImGui.SameLine();
+            if (ImGui.Button(LocalizationManager.Instance.Localize("Clear"),
+                    new Vector2(50, ImGui.GetItemRectSize().y)))
+                ClearLog();
+
+            ImGui.End();
+        }
+
+        private void ClearLog()
+        {
+            currentLog = string.Empty;
         }
 
         #endregion

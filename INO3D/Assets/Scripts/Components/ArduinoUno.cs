@@ -36,7 +36,7 @@ namespace Assets.Scripts.Components
 
             var print = new Action<byte>(b =>
             {
-                Debug.Log((char)b);
+                UIManager.Instance.AddLog(((char) b).ToString(), 0);
             });
 
             var aTmega328P = SimulationManager.Instance.CreateElement<ATmega328P>(code, print);
