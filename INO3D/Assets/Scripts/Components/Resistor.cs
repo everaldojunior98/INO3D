@@ -36,7 +36,7 @@ namespace Assets.Scripts.Components
 
         public override void OnSimulationTick()
         {
-            Debug.Log(resistor.GetVoltageDelta() + " :: " + resistor.GetCurrent());
+            //Debug.Log(resistor.GetVoltageDelta() + " :: " + resistor.GetCurrent());
         }
 
         protected override void SetupPorts()

@@ -31,6 +31,8 @@ namespace Assets.Scripts.Components
                 Serial.println(""A"");
                 digitalWrite(5, HIGH);
                 delay(1000);
+                digitalWrite(5, LOW);
+                delay(1000);
             }
             ";
 
@@ -42,7 +44,27 @@ namespace Assets.Scripts.Components
             var aTmega328P = SimulationManager.Instance.CreateElement<ATmega328P>(code, print);
             LeadByPortName = new Dictionary<string, Lead>
             {
-                {"5V", aTmega328P.VCCLead},
+                {"0", aTmega328P.PD0Lead},
+                {"1", aTmega328P.PD1Lead},
+                {"2", aTmega328P.PD2Lead},
+                {"3", aTmega328P.PD3Lead},
+                {"4", aTmega328P.PD4Lead},
+                {"5", aTmega328P.PD5Lead},
+                {"6", aTmega328P.PD6Lead},
+                {"7", aTmega328P.PD7Lead},
+                {"8", aTmega328P.PB0Lead},
+                {"9", aTmega328P.PB1Lead},
+                {"10", aTmega328P.PB2Lead},
+                {"11", aTmega328P.PB3Lead},
+                {"12", aTmega328P.PB4Lead},
+                {"13", aTmega328P.PB5Lead},
+                {"A0", aTmega328P.PC0Lead},
+                {"A1", aTmega328P.PC1Lead},
+                {"A2", aTmega328P.PC2Lead},
+                {"A3", aTmega328P.PC3Lead},
+                {"A4", aTmega328P.PC4Lead},
+                {"A5", aTmega328P.PC5Lead},
+                {"VCC", aTmega328P.VCCLead},
                 {"GND", aTmega328P.GNDLead}
             };
         }
