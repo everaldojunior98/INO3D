@@ -31,9 +31,8 @@ namespace Assets.Scripts.Managers
 
             localizationDictionary = new Dictionary<string, Dictionary<string, string>>();
 
-            AddLocalization("Menu.File", "Arquivo", "File");
-            AddLocalization("Menu.Edit", "Editar", "Edit");
             AddLocalization("Menu.Components", "Componentes", "Components");
+            AddLocalization("Menu.Properties", "Propriedades", "Properties");
 
             AddLocalization("Overlay.Port", "Porta", "Port");
             AddLocalization("Overlay.Type", "Tipo", "Type");
@@ -76,7 +75,10 @@ namespace Assets.Scripts.Managers
             AddLocalization("NewLine", "Nova linha", "New line");
             AddLocalization("Clear", "Limpar", "Clear");
 
+            AddLocalization("Resistance", "Resistência", "Resistance");
+
             currentLanguage = PlayerPrefs.GetString("currentLanguage", localizationDictionary.Keys.First());
+            //currentLanguage = "en-us";
         }
 
         #endregion

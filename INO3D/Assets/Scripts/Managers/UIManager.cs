@@ -132,6 +132,62 @@ namespace Assets.Scripts.Managers
             currentLog += log + (lineEnding == 1 ? "\n" : "");
         }
 
+        public void BeginPropertyBar()
+        {
+            ImGui.Columns(2);
+        }
+
+        public void GenerateStringPropertyField(string label, byte[] stringBuffer)
+        {
+            var cursorPosition = ImGui.GetCursorPos();
+            ImGui.SetCursorPos(new Vector2(cursorPosition.x, cursorPosition.y + ImGui.GetFontSize() / 2));
+            ImGui.Text(label);
+            ImGui.NextColumn();
+            ImGui.SetNextItemWidth(-1);
+            ImGui.InputText(label, stringBuffer, (uint)stringBuffer.Length);
+            ImGui.NextColumn();
+        }
+
+        public void GenerateIntPropertyField(string label, ref int value)
+        {
+            var cursorPosition = ImGui.GetCursorPos();
+            ImGui.SetCursorPos(new Vector2(cursorPosition.x, cursorPosition.y + ImGui.GetFontSize() / 2));
+            ImGui.Text(label);
+            ImGui.NextColumn();
+            ImGui.SetNextItemWidth(-1);
+            ImGui.InputInt(label, ref value, 10, 100);
+            ImGui.NextColumn();
+        }
+
+        public void GenerateComboBoxPropertyField(string label, ref int selectedIndex, string[] items)
+        {
+            var cursorPosition = ImGui.GetCursorPos();
+            ImGui.SetCursorPos(new Vector2(cursorPosition.x, cursorPosition.y + ImGui.GetFontSize() / 2));
+            ImGui.Text(label);
+            ImGui.NextColumn();
+            ImGui.SetNextItemWidth(-1);
+            ImGui.Combo(label, ref selectedIndex, items, items.Length);
+            ImGui.NextColumn();
+        }
+
+        public void GenerateButtonPropertyField(string label, Action onClick)
+        {
+            ImGui.SetNextItemWidth(-1);
+            var buttonSize = new Vector2(-1, 30);
+            if (ImGui.Button(label, buttonSize))
+                onClick();
+        }
+
+        public void GenerateSeparator()
+        {
+            ImGui.Separator();
+        }
+
+        public void EndPropertyBar()
+        {
+            ImGui.Columns(1);
+        }
+
         #endregion
 
         #region Layouts
@@ -251,6 +307,7 @@ namespace Assets.Scripts.Managers
 
             ShowButtonBar();
             ShowComponentsWindow();
+            ShowPropertiesWindow();
 
             if (showConsole)
                 ShowConsoleWindow();
@@ -261,7 +318,7 @@ namespace Assets.Scripts.Managers
 
         private void ShowComponentsWindow()
         {
-            if (ImGui.Begin(LocalizationManager.Instance.Localize("Menu.Components"), ImGuiWindowFlags.NoCollapse))
+            if (ImGui.Begin(LocalizationManager.Instance.Localize("Menu.Components") + "###components", ImGuiWindowFlags.NoCollapse))
             {
                 var categories = ComponentsManager.Instance.GetComponentsCategories();
                 // Left
@@ -372,6 +429,18 @@ namespace Assets.Scripts.Managers
 
                 ImGui.EndChild();
                 ImGui.EndGroup();
+            }
+
+            ImGui.End();
+        }
+        
+        private void ShowPropertiesWindow()
+        {
+            if (ImGui.Begin(LocalizationManager.Instance.Localize("Menu.Properties") + "###properties", ImGuiWindowFlags.NoCollapse))
+            {
+                var selectedComponent = ComponentsManager.Instance.GetSelectedComponent();
+                if (selectedComponent != null)
+                    selectedComponent.DrawPropertiesWindow();
             }
 
             ImGui.End();

@@ -92,6 +92,7 @@ namespace Assets.Scripts.Components.Base
 
         private void Update()
         {
+            OnUpdate();
             if (isConnected)
             {
                 foreach (var pair in connectedPortsPositions)
@@ -114,10 +115,20 @@ namespace Assets.Scripts.Components.Base
 
         #endregion
 
+        #region Virtual Methods
+
+        protected virtual void OnUpdate()
+        {
+
+        }
+
+        #endregion
+
         #region Abstract Methods
 
         public abstract void GenerateCircuitElement();
         public abstract void OnSimulationTick();
+        public abstract void DrawPropertiesWindow();
         protected abstract void SetupPorts();
         public abstract SaveFile Save();
         public abstract void Load(SaveFile saveFile);

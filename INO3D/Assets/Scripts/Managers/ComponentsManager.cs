@@ -357,7 +357,12 @@ namespace Assets.Scripts.Managers
                 HasUnsavedChanges = true;
             }
         }
-        
+
+        public InoComponent GetSelectedComponent()
+        {
+            return selectedComponent;
+        }
+
         public Dictionary<string, Dictionary<string, List<string>>> GetComponentsCategories()
         {
             return componentsCategories;

@@ -13,5 +13,7 @@ namespace Assets.Scripts.Components
         public float RotationX;
         public float RotationY;
         public float RotationZ;
+
+        public int Resistance;
     }
 }

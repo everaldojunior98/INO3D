@@ -585,7 +585,7 @@ MonoBehaviour:
     FontAllowUserScaling: 0
     TextCursorBlink: 1
     ResizeFromEdges: 0
-    MoveFromTitleOnly: 0
+    MoveFromTitleOnly: 1
     MemoryCompactTimer: 60
   _fontAtlasConfiguration: {fileID: 11400000, guid: d3db7b07b5b1a984a9b0582acc461c22, type: 2}
   _iniSettings: {fileID: 0}

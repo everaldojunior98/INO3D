@@ -73,6 +73,10 @@ namespace Assets.Scripts.Components
         {
         }
 
+        public override void DrawPropertiesWindow()
+        {
+        }
+
         protected override void SetupPorts()
         {
             DefaultHeight = 0;
