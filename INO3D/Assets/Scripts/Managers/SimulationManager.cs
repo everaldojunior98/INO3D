@@ -113,6 +113,11 @@ namespace Assets.Scripts.Managers
             circuit.Connect(left, right);
         }
 
+        public double GetTime()
+        {
+            return circuit?.GetTime() ?? 0;
+        }
+
         #endregion
     }
 }

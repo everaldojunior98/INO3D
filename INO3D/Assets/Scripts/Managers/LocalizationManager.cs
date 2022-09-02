@@ -54,11 +54,20 @@ namespace Assets.Scripts.Managers
             AddLocalization("No", "Não", "No");
             AddLocalization("Cancel", "Cancelar", "Cancel");
 
+            AddLocalization("NewProject", "Novo Projeto", "New Project");
             AddLocalization("OpenProject", "Abrir Projeto", "Open Project");
             AddLocalization("SaveProject", "Salvar Projeto", "Save Project");
             AddLocalization("Ino3DProjectFiles", "Arquivos de Projeto Ino3D", "Ino3D Project Files");
             AddLocalization("UnsavedPopupTitle", "Deseja salvar o projeto?", "Do you want to save the project?");
             AddLocalization("UnsavedPopupMessage", "Há alterações não salvas em", "There are unsaved changes in");
+
+            AddLocalization("Camera2D", "Câmera 2D", "Camera 2D");
+            AddLocalization("Camera3D", "Câmera 3D", "Camera 3D");
+            AddLocalization("OpenConsole", "Abrir console", "Open console");
+            AddLocalization("StartSimulation", "Iniciar a simulação", "Start simulation");
+            AddLocalization("PauseSimulation", "Pausar a simulação", "Pause simulation");
+            AddLocalization("StopSimulation", "Parar a simulação", "Stop simulation");
+            AddLocalization("SimulationTime", "Tempo de simulação", "Simulation time");
 
             AddLocalization("Console", "Console", "Console");
             AddLocalization("Send", "Enviar", "Send");

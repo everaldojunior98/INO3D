@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -427,71 +428,111 @@ namespace Assets.Scripts.Managers
                 new ExtensionFilter(LocalizationManager.Instance.Localize("Ino3DProjectFiles"), "i3d"),
             };
 
-            DrawInLineButton("File", !SimulationManager.Instance.IsSimulating(), () =>
-            {
-                currentPopupAction = () => { ComponentsManager.Instance.NewProject(); };
-                if (ComponentsManager.Instance.HasUnsavedChanges)
-                    ImGui.OpenPopup(LocalizationManager.Instance.Localize("UnsavedPopupTitle"));
-                else
-                    currentPopupAction();
-            });
-            DrawInLineButton("Folder", !SimulationManager.Instance.IsSimulating(), () =>
-            {
-                currentPopupAction = () =>
+            DrawInLineButton("File", !SimulationManager.Instance.IsSimulating(),
+                LocalizationManager.Instance.Localize("NewProject"), () =>
                 {
-                    StandaloneFileBrowser.OpenFilePanelAsync(LocalizationManager.Instance.Localize("OpenProject"), "",
-                        extensions, false, paths =>
-                        {
-                            if (paths.Length > 0 && File.Exists(paths[0]))
-                                StartCoroutine(ComponentsManager.Instance.LoadProject(paths[0]));
-                        });
-                };
+                    currentPopupAction = () => { ComponentsManager.Instance.NewProject(); };
+                    if (ComponentsManager.Instance.HasUnsavedChanges)
+                        ImGui.OpenPopup(LocalizationManager.Instance.Localize("UnsavedPopupTitle"));
+                    else
+                        currentPopupAction();
+                });
+            DrawInLineButton("Folder", !SimulationManager.Instance.IsSimulating(),
+                LocalizationManager.Instance.Localize("OpenProject"), () =>
+                {
+                    currentPopupAction = () =>
+                    {
+                        StandaloneFileBrowser.OpenFilePanelAsync(LocalizationManager.Instance.Localize("OpenProject"),
+                            "",
+                            extensions, false, paths =>
+                            {
+                                if (paths.Length > 0 && File.Exists(paths[0]))
+                                    StartCoroutine(ComponentsManager.Instance.LoadProject(paths[0]));
+                            });
+                    };
 
-                if (ComponentsManager.Instance.HasUnsavedChanges)
-                    ImGui.OpenPopup(LocalizationManager.Instance.Localize("UnsavedPopupTitle"));
-                else
-                    currentPopupAction();
-            });
-            DrawInLineButton("Save", !SimulationManager.Instance.IsSimulating(), () =>
-            {
-                if (string.IsNullOrEmpty(ComponentsManager.Instance.CurrentProjectPath))
+                    if (ComponentsManager.Instance.HasUnsavedChanges)
+                        ImGui.OpenPopup(LocalizationManager.Instance.Localize("UnsavedPopupTitle"));
+                    else
+                        currentPopupAction();
+                });
+            DrawInLineButton("Save", !SimulationManager.Instance.IsSimulating(),
+                LocalizationManager.Instance.Localize("SaveProject"), () =>
                 {
-                    StandaloneFileBrowser.SaveFilePanelAsync(LocalizationManager.Instance.Localize("SaveProject"), "",
-                        ComponentsManager.Instance.CurrentProjectName, extensions, path =>
-                        {
-                            if (!string.IsNullOrEmpty(path))
-                                ComponentsManager.Instance.SaveProject(path);
-                        });
-                }
-                else
-                {
-                    ComponentsManager.Instance.SaveProject(ComponentsManager.Instance.CurrentProjectPath);
-                }
-            });
+                    if (string.IsNullOrEmpty(ComponentsManager.Instance.CurrentProjectPath))
+                    {
+                        StandaloneFileBrowser.SaveFilePanelAsync(LocalizationManager.Instance.Localize("SaveProject"),
+                            "",
+                            ComponentsManager.Instance.CurrentProjectName, extensions, path =>
+                            {
+                                if (!string.IsNullOrEmpty(path))
+                                    ComponentsManager.Instance.SaveProject(path);
+                            });
+                    }
+                    else
+                    {
+                        ComponentsManager.Instance.SaveProject(ComponentsManager.Instance.CurrentProjectPath);
+                    }
+                });
 
             InLineSpacing();
 
-            DrawInLineButton("2D", true, () => CameraController.Instance.SetCameraAsOrthographic());
-            DrawInLineButton("3D", true, () => CameraController.Instance.SetCameraAsPerspective());
+            DrawInLineButton("2D", true, LocalizationManager.Instance.Localize("Camera2D"),
+                () => CameraController.Instance.SetCameraAsOrthographic());
+            DrawInLineButton("3D", true, LocalizationManager.Instance.Localize("Camera3D"),
+                () => CameraController.Instance.SetCameraAsPerspective());
 
             InLineSpacing();
 
-            DrawInLineButton("Console", true, () => ShowConsole());
+            DrawInLineButton("Console", true, LocalizationManager.Instance.Localize("OpenConsole"),
+                () => ShowConsole());
+
+            InLineSpacing();
 
             var menuBarSize = ImGui.GetWindowSize();
             var pausePosition = menuBarSize.x / 2 - buttonBarButtonSize.x / 2;
             var playPosition = pausePosition - buttonBarButtonSize.x - 3 * padding.x;
             var stopPosition = pausePosition + buttonBarButtonSize.x + 3 * padding.x;
+            var timePosition = stopPosition + buttonBarButtonSize.x + 3 * padding.x;
 
             ImGui.SetCursorPos(new Vector2(playPosition, padding.y));
 
-            DrawButton("Play", !SimulationManager.Instance.IsSimulating(), () => SimulationManager.Instance.StartSimulation());
+            DrawButton("Play", !SimulationManager.Instance.IsSimulating(),
+                LocalizationManager.Instance.Localize("StartSimulation"),
+                () => SimulationManager.Instance.StartSimulation());
 
             ImGui.SetCursorPos(new Vector2(pausePosition, padding.y));
-            DrawButton("Pause", SimulationManager.Instance.IsSimulating(), null);
+            DrawButton("Pause", SimulationManager.Instance.IsSimulating(),
+                LocalizationManager.Instance.Localize("PauseSimulation"), null);
             ImGui.SetCursorPos(new Vector2(stopPosition, padding.y));
             DrawButton("Stop", SimulationManager.Instance.IsSimulating(),
+                LocalizationManager.Instance.Localize("StopSimulation"),
                 () => SimulationManager.Instance.StopSimulation());
+
+            if (SimulationManager.Instance.IsSimulating())
+            {
+                var us = SimulationManager.Instance.GetTime();
+                var ms = us * 1000;
+                var s = ms / 1000 % 60;
+                var m = ms / 1000 / 60;
+                var h = m / 60;
+
+                string timeString;
+                if (h > 1)
+                    timeString = h.ToString("0", CultureInfo.InvariantCulture) + " h " +
+                                 m.ToString("0", CultureInfo.InvariantCulture) + " m " +
+                                 s.ToString("0.00", CultureInfo.InvariantCulture) + " s";
+                else if (m > 1)
+                    timeString = m.ToString("0", CultureInfo.InvariantCulture) + " m " +
+                                 s.ToString("0.00", CultureInfo.InvariantCulture) + " s";
+                else if (s > 1)
+                    timeString = s.ToString("0.00", CultureInfo.InvariantCulture) + " s";
+                else
+                    timeString = ms.ToString("0", CultureInfo.InvariantCulture) + " ms";
+
+                ImGui.SetCursorPos(new Vector2(timePosition, menuBarSize.y / 2 - ImGui.GetFontSize() / 2));
+                ImGui.Text(LocalizationManager.Instance.Localize("SimulationTime") + ": " + timeString);
+            }
 
             var center = ImGui.GetMainViewport().Size / 2;
             ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
@@ -546,7 +587,7 @@ namespace Assets.Scripts.Managers
             ImGui.PopStyleVar(2);
         }
 
-        private void DrawInLineButton(string iconName, bool enable, Action onClick)
+        private void DrawInLineButton(string iconName, bool enable, string tooltip, Action onClick)
         {
             if (!enable)
             {
@@ -563,6 +604,15 @@ namespace Assets.Scripts.Managers
                 onClick?.Invoke();
             }
 
+            if (!string.IsNullOrEmpty(tooltip) && enable && ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35.0f);
+                ImGui.TextUnformatted(tooltip);
+                ImGui.PopTextWrapPos();
+                ImGui.EndTooltip();
+            }
+
             if (!enable)
             {
                 ImGui.PopStyleVar();
@@ -571,7 +621,7 @@ namespace Assets.Scripts.Managers
             }
         }
 
-        private void DrawButton(string iconName, bool enable, Action onClick)
+        private void DrawButton(string iconName, bool enable, string tooltip, Action onClick)
         {
             if (!enable)
             {
@@ -585,6 +635,15 @@ namespace Assets.Scripts.Managers
                     buttonBarButtonSize) && enable)
             {
                 onClick?.Invoke();
+            }
+
+            if (!string.IsNullOrEmpty(tooltip) && enable && ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35.0f);
+                ImGui.TextUnformatted(tooltip);
+                ImGui.PopTextWrapPos();
+                ImGui.EndTooltip();
             }
 
             if (!enable)
