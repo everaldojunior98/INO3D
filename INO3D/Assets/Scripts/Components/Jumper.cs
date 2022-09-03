@@ -36,18 +36,10 @@ namespace Assets.Scripts.Components
         private LineRenderer lineRenderer;
         private MeshCollider meshCollider;
 
-        #endregion
+        private int currentColor;
+        private int lastColor;
 
-        #region Unity Methods
-
-        private void Update()
-        {
-            if (Vector3.Distance(inoPort1.transform.position, inoPort1Position) > MaxDistance ||
-                Vector3.Distance(inoPort2.transform.position, inoPort2Position) > MaxDistance)
-            {
-                Generate(inoPort1, inoPort2);
-            }
-        }
+        private List<Material> materials;
 
         #endregion
 
@@ -72,6 +64,38 @@ namespace Assets.Scripts.Components
 
         public override void DrawPropertiesWindow()
         {
+            var colors = new string[]
+            {
+                LocalizationManager.Instance.Localize("ColorBlack"),
+                LocalizationManager.Instance.Localize("ColorBlue"),
+                LocalizationManager.Instance.Localize("ColorBrown"),
+                LocalizationManager.Instance.Localize("ColorGray"),
+                LocalizationManager.Instance.Localize("ColorOrange"),
+                LocalizationManager.Instance.Localize("ColorRed"),
+                LocalizationManager.Instance.Localize("ColorTurquoise"),
+                LocalizationManager.Instance.Localize("ColorWhite"),
+                LocalizationManager.Instance.Localize("ColorYellow")
+            };
+            UIManager.Instance.GenerateComboBoxPropertyField(LocalizationManager.Instance.Localize("Color"),
+                ref currentColor, colors);
+        }
+
+        protected override void OnUpdate()
+        {
+            if (inoPort1 == null || inoPort2 == null)
+                return;
+
+            if (Vector3.Distance(inoPort1.transform.position, inoPort1Position) > MaxDistance ||
+                Vector3.Distance(inoPort2.transform.position, inoPort2Position) > MaxDistance)
+            {
+                Generate(inoPort1, inoPort2, currentColor);
+            }
+
+            if (lastColor != currentColor)
+            {
+                lineRenderer.sharedMaterial = materials[currentColor];
+                lastColor = currentColor;
+            }
         }
 
         protected override void SetupPorts()
@@ -93,7 +117,9 @@ namespace Assets.Scripts.Components
 
                 Port2PositionX = inoPort2Position.x,
                 Port2PositionY = inoPort2Position.y,
-                Port2PositionZ = inoPort2Position.z
+                Port2PositionZ = inoPort2Position.z,
+
+                CurrentColor = currentColor
             };
 
             return saveFile;
@@ -101,7 +127,11 @@ namespace Assets.Scripts.Components
 
         public override void Load(SaveFile saveFile)
         {
-
+            if (saveFile is JumperSaveFile jumperSave)
+            {
+                currentColor = jumperSave.CurrentColor;
+                Debug.Log("a");
+            }
         }
 
         public override void Delete()
@@ -119,10 +149,23 @@ namespace Assets.Scripts.Components
 
         #region Public Methods
 
-        public void Generate(InoPort port1, InoPort port2)
+        public void Generate(InoPort port1, InoPort port2, int color)
         {
             if (lineRenderer == null)
             {
+                materials = new List<Material>
+                {
+                    Resources.Load<Material>("3D Models\\Jumper\\Materials\\BlackWire"),
+                    Resources.Load<Material>("3D Models\\Jumper\\Materials\\BlueWire"),
+                    Resources.Load<Material>("3D Models\\Jumper\\Materials\\BrownWire"),
+                    Resources.Load<Material>("3D Models\\Jumper\\Materials\\GrayWire"),
+                    Resources.Load<Material>("3D Models\\Jumper\\Materials\\OrangeWire"),
+                    Resources.Load<Material>("3D Models\\Jumper\\Materials\\RedWire"),
+                    Resources.Load<Material>("3D Models\\Jumper\\Materials\\TurquoiseWire"),
+                    Resources.Load<Material>("3D Models\\Jumper\\Materials\\WhiteWire"),
+                    Resources.Load<Material>("3D Models\\Jumper\\Materials\\YellowWire")
+                };
+
                 lineRenderer = GetComponentInChildren<LineRenderer>();
                 lineRenderer.useWorldSpace = true;
 
@@ -131,6 +174,9 @@ namespace Assets.Scripts.Components
                 lineRenderer.startWidth = Width;
                 lineRenderer.endWidth = Width;
                 lineRenderer.positionCount = NumberOfPoints;
+
+                lineRenderer.sharedMaterial = materials[color];
+                currentColor = color;
 
                 inoPort1 = port1;
                 inoPort2 = port2;

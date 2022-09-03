@@ -75,6 +75,10 @@ namespace Assets.Scripts.Components
 
         public override void DrawPropertiesWindow()
         {
+            UIManager.Instance.GenerateButtonPropertyField(LocalizationManager.Instance.Localize("EditCode"), () =>
+            {
+
+            });
         }
 
         protected override void SetupPorts()

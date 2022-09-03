@@ -132,13 +132,10 @@ namespace Assets.Scripts.Managers
             currentLog += log + (lineEnding == 1 ? "\n" : "");
         }
 
-        public void BeginPropertyBar()
-        {
-            ImGui.Columns(2);
-        }
 
         public void GenerateStringPropertyField(string label, byte[] stringBuffer)
         {
+            ImGui.Columns(2);
             var cursorPosition = ImGui.GetCursorPos();
             ImGui.SetCursorPos(new Vector2(cursorPosition.x, cursorPosition.y + ImGui.GetFontSize() / 2));
             ImGui.Text(label);
@@ -146,10 +143,12 @@ namespace Assets.Scripts.Managers
             ImGui.SetNextItemWidth(-1);
             ImGui.InputText(label, stringBuffer, (uint)stringBuffer.Length);
             ImGui.NextColumn();
+            ImGui.Columns(1);
         }
 
         public void GenerateIntPropertyField(string label, ref int value)
         {
+            ImGui.Columns(2);
             var cursorPosition = ImGui.GetCursorPos();
             ImGui.SetCursorPos(new Vector2(cursorPosition.x, cursorPosition.y + ImGui.GetFontSize() / 2));
             ImGui.Text(label);
@@ -157,10 +156,12 @@ namespace Assets.Scripts.Managers
             ImGui.SetNextItemWidth(-1);
             ImGui.InputInt(label, ref value, 10, 100);
             ImGui.NextColumn();
+            ImGui.Columns(1);
         }
 
         public void GenerateComboBoxPropertyField(string label, ref int selectedIndex, string[] items)
         {
+            ImGui.Columns(2);
             var cursorPosition = ImGui.GetCursorPos();
             ImGui.SetCursorPos(new Vector2(cursorPosition.x, cursorPosition.y + ImGui.GetFontSize() / 2));
             ImGui.Text(label);
@@ -168,6 +169,7 @@ namespace Assets.Scripts.Managers
             ImGui.SetNextItemWidth(-1);
             ImGui.Combo(label, ref selectedIndex, items, items.Length);
             ImGui.NextColumn();
+            ImGui.Columns(1);
         }
 
         public void GenerateButtonPropertyField(string label, Action onClick)
@@ -181,11 +183,6 @@ namespace Assets.Scripts.Managers
         public void GenerateSeparator()
         {
             ImGui.Separator();
-        }
-
-        public void EndPropertyBar()
-        {
-            ImGui.Columns(1);
         }
 
         #endregion

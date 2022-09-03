@@ -13,5 +13,7 @@ namespace Assets.Scripts.Components
         public float Port2PositionX;
         public float Port2PositionY;
         public float Port2PositionZ;
+
+        public int CurrentColor;
     }
 }

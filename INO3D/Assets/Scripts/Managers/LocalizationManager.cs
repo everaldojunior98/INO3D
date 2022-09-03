@@ -76,6 +76,17 @@ namespace Assets.Scripts.Managers
             AddLocalization("Clear", "Limpar", "Clear");
 
             AddLocalization("Resistance", "Resistência", "Resistance");
+            AddLocalization("EditCode", "Editar código", "Edit code");
+            AddLocalization("Color", "Cor", "Color");
+            AddLocalization("ColorBlack", "Preto", "Black");
+            AddLocalization("ColorBlue", "Azul", "Blue");
+            AddLocalization("ColorBrown", "Marrom", "Brown");
+            AddLocalization("ColorGray", "Cinza", "Gray");
+            AddLocalization("ColorOrange", "Laranja", "Orange");
+            AddLocalization("ColorRed", "Vermelho", "Red");
+            AddLocalization("ColorTurquoise", "Turquesa", "Turquoise");
+            AddLocalization("ColorWhite", "Branco", "White");
+            AddLocalization("ColorYellow", "Amarelo", "Yellow");
 
             currentLanguage = PlayerPrefs.GetString("currentLanguage", localizationDictionary.Keys.First());
             //currentLanguage = "en-us";
