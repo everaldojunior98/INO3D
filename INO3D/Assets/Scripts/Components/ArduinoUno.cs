@@ -64,7 +64,7 @@ namespace Assets.Scripts.Components
                 {"A3", aTmega328P.PC3Lead},
                 {"A4", aTmega328P.PC4Lead},
                 {"A5", aTmega328P.PC5Lead},
-                {"VCC", aTmega328P.VCCLead},
+                {"5V", aTmega328P.VCCLead},
                 {"GND", aTmega328P.GNDLead}
             };
         }

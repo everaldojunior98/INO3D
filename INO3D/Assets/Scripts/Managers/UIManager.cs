@@ -56,6 +56,7 @@ namespace Assets.Scripts.Managers
         private bool isMouseOverUI;
         private bool displayPortOverlay;
         private bool showConsole;
+        private bool showSettings;
 
         private string overlayPortName;
         private PortType overlayPortType;
@@ -68,6 +69,7 @@ namespace Assets.Scripts.Managers
 
         private string currentLog;
         private int currentLineEnding = 1;
+        private int selectedLanguage = -1;
 
         private Action currentPopupAction = () => { };
 
@@ -125,13 +127,19 @@ namespace Assets.Scripts.Managers
         {
             showConsole = !showConsole;
         }
-
+        
+        public void ShowSettings()
+        {
+            showSettings = !showSettings;
+            if (showSettings)
+                selectedLanguage = -1;
+        } 
+        
         public void AddLog(string log, int lineEnding = 1)
         {
             log = Regex.Unescape(log.Split('\0').First());
             currentLog += log + (lineEnding == 1 ? "\n" : "");
         }
-
 
         public void GenerateStringPropertyField(string label, byte[] stringBuffer)
         {
@@ -308,6 +316,9 @@ namespace Assets.Scripts.Managers
 
             if (showConsole)
                 ShowConsoleWindow();
+            
+            if (showSettings)
+                ShowSettingsWindow();
 
             if (displayPortOverlay)
                 ShowPortOverlay();
@@ -555,6 +566,9 @@ namespace Assets.Scripts.Managers
 
             InLineSpacing();
 
+            DrawInLineButton("Settings", true, LocalizationManager.Instance.Localize("OpenSettings"),
+                () => ShowSettings());
+
             var menuBarSize = ImGui.GetWindowSize();
             var pausePosition = menuBarSize.x / 2 - buttonBarButtonSize.x / 2;
             var playPosition = pausePosition - buttonBarButtonSize.x - 3 * padding.x;
@@ -732,7 +746,7 @@ namespace Assets.Scripts.Managers
         private void ShowConsoleWindow()
         {
             ImGui.SetNextWindowSize(new Vector2(520, 300), ImGuiCond.FirstUseEver);
-            ImGui.Begin(LocalizationManager.Instance.Localize("Console"), ref showConsole,
+            ImGui.Begin(LocalizationManager.Instance.Localize("Console") + "###console", ref showConsole,
                 ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking);
 
             ImGui.PushItemWidth(ImGui.GetContentRegionAvail().x - 55);
@@ -784,6 +798,39 @@ namespace Assets.Scripts.Managers
             if (ImGui.Button(LocalizationManager.Instance.Localize("Clear"),
                     new Vector2(50, ImGui.GetItemRectSize().y)))
                 ClearLog();
+
+            ImGui.End();
+        }
+
+        private void ShowSettingsWindow()
+        {
+            ImGui.SetNextWindowSize(new Vector2(520, 300), ImGuiCond.FirstUseEver);
+            ImGui.Begin(LocalizationManager.Instance.Localize("Settings") + "###settings", ref showSettings,
+                ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking);
+
+            if (selectedLanguage == -1)
+                selectedLanguage = LocalizationManager.Instance.GetCurrentLanguage();
+
+            ImGui.Columns(2);
+            var cursorPosition = ImGui.GetCursorPos();
+            ImGui.SetCursorPos(new Vector2(cursorPosition.x, cursorPosition.y + ImGui.GetFontSize() / 2));
+            ImGui.Text(LocalizationManager.Instance.Localize("Language"));
+
+            ImGui.NextColumn();
+            
+            ImGui.SetNextItemWidth(-1);
+            ImGui.PushID("Language");
+            var languages = LocalizationManager.Instance.GetLanguages();
+            ImGui.Combo("", ref selectedLanguage, languages, languages.Length);
+            ImGui.PopID();
+
+            ImGui.Columns(1);
+            ImGui.Separator();
+            if (ImGui.Button(LocalizationManager.Instance.Localize("Save"),
+                    new Vector2(ImGui.GetItemRectSize().x - 10, 30)))
+            {
+                LocalizationManager.Instance.SaveLanguage(languages[selectedLanguage]);
+            }
 
             ImGui.End();
         }

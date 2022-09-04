@@ -64,7 +64,7 @@ namespace Assets.Scripts.Components
 
         public override void DrawPropertiesWindow()
         {
-            var colors = new string[]
+            var colors = new []
             {
                 LocalizationManager.Instance.Localize("ColorBlack"),
                 LocalizationManager.Instance.Localize("ColorBlue"),
@@ -130,7 +130,6 @@ namespace Assets.Scripts.Components
             if (saveFile is JumperSaveFile jumperSave)
             {
                 currentColor = jumperSave.CurrentColor;
-                Debug.Log("a");
             }
         }
 

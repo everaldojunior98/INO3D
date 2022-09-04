@@ -88,8 +88,12 @@ namespace Assets.Scripts.Managers
             AddLocalization("ColorWhite", "Branco", "White");
             AddLocalization("ColorYellow", "Amarelo", "Yellow");
 
+            AddLocalization("OpenSettings", "Abrir configurações", "Open settings");
+            AddLocalization("Save", "Salvar", "Save");
+            AddLocalization("Settings", "Configurações", "Settings");
+            AddLocalization("Language", "Linguagem", "Language");
+
             currentLanguage = PlayerPrefs.GetString("currentLanguage", localizationDictionary.Keys.First());
-            //currentLanguage = "en-us";
         }
 
         #endregion
@@ -118,6 +122,27 @@ namespace Assets.Scripts.Managers
         #endregion
 
         #region Public Methods
+
+        public string[] GetLanguages()
+        {
+            return localizationDictionary.Keys.ToArray();
+        }
+
+        public int GetCurrentLanguage()
+        {
+            var languages = GetLanguages();
+            for (var i = 0; i < languages.Length; i++)
+                if (languages[i] == currentLanguage)
+                    return i;
+            return 0;
+        }
+
+        public void SaveLanguage(string language)
+        {
+            currentLanguage = language;
+            PlayerPrefs.SetString("currentLanguage", language);
+            PlayerPrefs.Save();
+        }
 
         public string Localize(string key)
         {
