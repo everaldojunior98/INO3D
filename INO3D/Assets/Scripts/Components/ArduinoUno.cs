@@ -14,7 +14,19 @@ namespace Assets.Scripts.Components
 
         public string CurrentCode;
 
+        public GameObject LedOnPointLight;
+        public GameObject Led13PointLight;
+
         private ATmega328P aTmega328P;
+        private Material ledOnMaterial;
+        private Material ledOffMaterial;
+
+        private MeshRenderer meshRenderer;
+
+        private bool updateMaterials;
+        
+        private bool lastSimulation;
+        private bool lastLed13;
 
         #endregion
 
@@ -66,6 +78,38 @@ namespace Assets.Scripts.Components
 
         public override void OnSimulationTick()
         {
+            var led13State = aTmega328P.GetPinVoltage(13) > 2.5f;
+            if (lastLed13 != led13State)
+            {
+                lastLed13 = led13State;
+                updateMaterials = true;
+            }
+        }
+
+        protected override void OnUpdate()
+        {
+            if (lastSimulation != SimulationManager.Instance.IsSimulating())
+            {
+                lastSimulation = SimulationManager.Instance.IsSimulating();
+                updateMaterials = true;
+            }
+
+            if (updateMaterials)
+            {
+                meshRenderer.sharedMaterials = new[]
+                {
+                    meshRenderer.sharedMaterials[0],
+                    meshRenderer.sharedMaterials[1],
+                    meshRenderer.sharedMaterials[2],
+                    SimulationManager.Instance.IsSimulating() && lastLed13 ? ledOnMaterial : ledOffMaterial,
+                    SimulationManager.Instance.IsSimulating() ? ledOnMaterial : ledOffMaterial
+                };
+
+                Led13PointLight.SetActive(SimulationManager.Instance.IsSimulating() && lastLed13);
+                LedOnPointLight.SetActive(SimulationManager.Instance.IsSimulating());
+
+                updateMaterials = false;
+            }
         }
 
         public override void DrawPropertiesWindow()
@@ -79,6 +123,12 @@ namespace Assets.Scripts.Components
         protected override void SetupPorts()
         {
             CurrentCode = "void setup()\n{\n\t\n}\n\n\nvoid loop()\n{\n\t\n}";
+
+            ledOnMaterial = Resources.Load<Material>("3D Models\\Uno\\Materials\\LedOn");
+            ledOffMaterial = Resources.Load<Material>("3D Models\\Uno\\Materials\\LedOff");
+
+            meshRenderer = GetComponentInChildren<MeshRenderer>();
+
             DefaultHeight = 0;
 
             Ports.Add(Tuple.Create("3.3V", new Vector3(0.092f, 0.2f, -0.488f), PortType.Power, PinType.Female));
