@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Assets.Scripts.Camera;
+using Assets.Scripts.Components;
 using ImGuiNET;
 using SFB;
 using UnityEngine;
@@ -57,6 +58,7 @@ namespace Assets.Scripts.Managers
         private bool displayPortOverlay;
         private bool showConsole;
         private bool showSettings;
+        private bool showEditCode;
 
         private string overlayPortName;
         private PortType overlayPortType;
@@ -72,6 +74,8 @@ namespace Assets.Scripts.Managers
         private int selectedLanguage = -1;
 
         private Action currentPopupAction = () => { };
+        private ArduinoUno currentArduinoUno;
+        private string currentCode = string.Empty;
 
         #endregion
 
@@ -133,6 +137,13 @@ namespace Assets.Scripts.Managers
             showSettings = !showSettings;
             if (showSettings)
                 selectedLanguage = -1;
+        }
+        
+        public void ShowEditCode(ArduinoUno arduino)
+        {
+            currentArduinoUno = arduino;
+            currentCode = currentArduinoUno.CurrentCode;
+            showEditCode = !showEditCode;
         } 
         
         public void AddLog(string log, int lineEnding = 1)
@@ -319,6 +330,9 @@ namespace Assets.Scripts.Managers
             
             if (showSettings)
                 ShowSettingsWindow();
+
+            if(showEditCode && !SimulationManager.Instance.IsSimulating())
+                ShowEditCodeWindow();
 
             if (displayPortOverlay)
                 ShowPortOverlay();
@@ -760,7 +774,13 @@ namespace Assets.Scripts.Managers
             ImGui.SameLine();
             if (ImGui.Button(LocalizationManager.Instance.Localize("Send"), new Vector2(50, ImGui.GetItemRectSize().y)))
             {
-                AddLog(Encoding.UTF8.GetString(consoleInputBuffer));
+                var command = Regex.Unescape(Encoding.UTF8.GetString(consoleInputBuffer).Split('\0').First());
+                AddLog(command);
+                if (SimulationManager.Instance.IsSimulating())
+                {
+                    foreach (var arduinoUno in FindObjectsOfType<ArduinoUno>())
+                        arduinoUno.WriteSerial(command);
+                }
                 consoleInputBuffer = new byte[consoleInputBuffer.Length];
             }
 
@@ -830,6 +850,25 @@ namespace Assets.Scripts.Managers
                     new Vector2(ImGui.GetItemRectSize().x - 10, 30)))
             {
                 LocalizationManager.Instance.SaveLanguage(languages[selectedLanguage]);
+            }
+
+            ImGui.End();
+        }
+
+        private void ShowEditCodeWindow()
+        {
+            ImGui.SetNextWindowSize(new Vector2(520, 300), ImGuiCond.FirstUseEver);
+            ImGui.Begin(LocalizationManager.Instance.Localize("CodeEditor") + "###editCode", ref showEditCode,
+                ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking);
+
+            ImGui.InputTextMultiline("", ref currentCode, 10000,
+                new Vector2(ImGui.GetItemRectSize().x - 10, ImGui.GetWindowSize().y - 80),
+                ImGuiInputTextFlags.AllowTabInput);
+            ImGui.Separator();
+            if (ImGui.Button(LocalizationManager.Instance.Localize("Save"),
+                    new Vector2(ImGui.GetItemRectSize().x - 10, 30)))
+            {
+                currentArduinoUno.CurrentCode = currentCode;
             }
 
             ImGui.End();

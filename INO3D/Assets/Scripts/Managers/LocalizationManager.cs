@@ -92,6 +92,8 @@ namespace Assets.Scripts.Managers
             AddLocalization("Save", "Salvar", "Save");
             AddLocalization("Settings", "Configurações", "Settings");
             AddLocalization("Language", "Linguagem", "Language");
+            
+            AddLocalization("CodeEditor", "Editor de código", "Code editor");
 
             currentLanguage = PlayerPrefs.GetString("currentLanguage", localizationDictionary.Keys.First());
         }

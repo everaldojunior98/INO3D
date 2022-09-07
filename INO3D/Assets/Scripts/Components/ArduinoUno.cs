@@ -10,38 +10,33 @@ namespace Assets.Scripts.Components
 {
     public class ArduinoUno : InoComponent
     {
+        #region Fields
+
+        public string CurrentCode;
+
+        private ATmega328P aTmega328P;
+
+        #endregion
+
+        #region Public Methods
+
+        public void WriteSerial(string serial)
+        {
+            aTmega328P?.WriteToArduino(serial);
+        }
+
+        #endregion
+
+        #region Overrides
+
         public override void GenerateCircuitElement()
         {
-            var code = @"
-            void setup() 
-            {
-                Serial.begin(9600);
-                pinMode(5, OUTPUT);
-                pinMode(2, INPUT);
-                attachInterrupt(digitalPinToInterrupt(2), blink, RISING);
-            }
-
-            void blink()
-            {
-                Serial.println(""INTERRUPCAO"");
-            }
-
-            void loop()
-            {
-                Serial.println(""A"");
-                digitalWrite(5, HIGH);
-                delay(1000);
-                digitalWrite(5, LOW);
-                delay(1000);
-            }
-            ";
-
             var print = new Action<byte>(b =>
             {
                 UIManager.Instance.AddLog(((char) b).ToString(), 0);
             });
 
-            var aTmega328P = SimulationManager.Instance.CreateElement<ATmega328P>(code, print);
+            aTmega328P = SimulationManager.Instance.CreateElement<ATmega328P>(CurrentCode, print);
             LeadByPortName = new Dictionary<string, Lead>
             {
                 {"0", aTmega328P.PD0Lead},
@@ -77,12 +72,13 @@ namespace Assets.Scripts.Components
         {
             UIManager.Instance.GenerateButtonPropertyField(LocalizationManager.Instance.Localize("EditCode"), () =>
             {
-
+                UIManager.Instance.ShowEditCode(this);
             });
         }
 
         protected override void SetupPorts()
         {
+            CurrentCode = "void setup()\n{\n\t\n}\n\n\nvoid loop()\n{\n\t\n}";
             DefaultHeight = 0;
 
             Ports.Add(Tuple.Create("3.3V", new Vector3(0.092f, 0.2f, -0.488f), PortType.Power, PinType.Female));
@@ -126,7 +122,9 @@ namespace Assets.Scripts.Components
 
                 RotationX = transform.eulerAngles.x,
                 RotationY = transform.eulerAngles.y,
-                RotationZ = transform.eulerAngles.z
+                RotationZ = transform.eulerAngles.z,
+
+                Code = CurrentCode
             };
 
             return saveFile;
@@ -140,6 +138,8 @@ namespace Assets.Scripts.Components
                     arduinoUnoSaveFile.PositionZ);
                 transform.eulerAngles = new Vector3(arduinoUnoSaveFile.RotationX, arduinoUnoSaveFile.RotationY,
                     arduinoUnoSaveFile.RotationZ);
+
+                CurrentCode = arduinoUnoSaveFile.Code;
             }
         }
 
@@ -156,5 +156,7 @@ namespace Assets.Scripts.Components
 
             Destroy(gameObject);
         }
+
+        #endregion
     }
 }

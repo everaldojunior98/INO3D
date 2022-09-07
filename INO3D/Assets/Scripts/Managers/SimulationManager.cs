@@ -32,14 +32,6 @@ namespace Assets.Scripts.Managers
                 Instance = this;
         }
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                isSimulating = !isSimulating;
-            }
-        }
-
         private void OnApplicationQuit()
         {
             StopSimulation();
