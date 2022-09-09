@@ -26,6 +26,26 @@ namespace Assets.Scripts.Components
         private Color goldColor;
         private Color silverColor;
 
+        private float voltage;
+        private float current;
+
+        private bool isMouseOver;
+
+        #endregion
+
+        #region Unity Methods
+
+        private void OnMouseEnter()
+        {
+            isMouseOver = true;
+        }
+
+        private void OnMouseExit()
+        {
+            isMouseOver = false;
+            UIManager.Instance.HideComponentOverlay();
+        }
+
         #endregion
 
         #region Overrides
@@ -48,7 +68,11 @@ namespace Assets.Scripts.Components
 
         public override void OnSimulationTick()
         {
-            //Debug.Log(resistor.GetVoltageDelta() + " :: " + resistor.GetCurrent());
+            voltage = (float) Math.Abs(resistor.GetVoltageDelta());
+            current = (float) Math.Abs(resistor.GetCurrent());
+
+            if (isMouseOver && SimulationManager.Instance.IsSimulating())
+                UIManager.Instance.DisplayComponentOverlay(voltage, current);
         }
 
         public override void DrawPropertiesWindow()

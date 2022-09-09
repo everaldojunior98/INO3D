@@ -37,6 +37,10 @@ namespace Assets.Scripts.Managers
 
             AddLocalization("Overlay.Port", "Porta", "Port");
             AddLocalization("Overlay.Type", "Tipo", "Type");
+
+            AddLocalization("Overlay.Voltage", "Tensão", "Voltage");
+            AddLocalization("Overlay.Current", "Corrente", "Current");
+
             AddLocalization("Overlay.Type.Analog", "Analógica", "Analog");
             AddLocalization("Overlay.Type.Digital", "Digital", "Digital");
             AddLocalization("Overlay.Type.DigitalPwm", "Digital (PWM)", "Digital (PWM)");
