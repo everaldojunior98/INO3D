@@ -140,22 +140,23 @@ namespace Assets.Scripts.Camera
         private void PerspectiveCameraControl()
         {
             currentZoom = Vector3.Distance(transform.position, target.transform.position);
+            var cameraSensitivity = LocalizationManager.Instance.GetCameraSensitivity();
 
             //Rotate
             if (Input.GetKey(KeyCode.Mouse1))
             {
                 transform.RotateAround(target.transform.position, Vector3.up,
-                    (Input.GetAxisRaw("Mouse X") * 0.001f * rotateSpeed));
+                    Input.GetAxisRaw("Mouse X") * 0.001f * rotateSpeed * cameraSensitivity);
 
-                var angle = -(Input.GetAxisRaw("Mouse Y") * 0.001f * rotateSpeed);
+                var angle = -(Input.GetAxisRaw("Mouse Y") * 0.001f * rotateSpeed * cameraSensitivity);
                 transform.RotateAround(target.transform.position, transform.right, angle);
             }
 
             //Drag
             if (Input.GetKey(KeyCode.Mouse2))
             {
-                var direction = new Vector3(-Input.GetAxisRaw("Mouse X") * 0.001f * dragSpeed * currentZoom,
-                    -Input.GetAxisRaw("Mouse Y") * 0.001f * dragSpeed * currentZoom, 0);
+                var direction = new Vector3(-Input.GetAxisRaw("Mouse X") * 0.001f * dragSpeed * currentZoom * cameraSensitivity,
+                    -Input.GetAxisRaw("Mouse Y") * 0.001f * dragSpeed * currentZoom * cameraSensitivity, 0);
 
                 var ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
                 if (floorPlane.Raycast(ray, out var enter))
@@ -170,18 +171,20 @@ namespace Assets.Scripts.Camera
             //Zoom
             if (currentZoom >= minDistance && Input.GetAxis("Mouse ScrollWheel") > 0f ||
                 currentZoom <= maxDistance && Input.GetAxis("Mouse ScrollWheel") < 0f)
-                transform.Translate(0f, 0f, Input.GetAxis("Mouse ScrollWheel") * 0.001f * zoomSpeed,
+                transform.Translate(0f, 0f, Input.GetAxis("Mouse ScrollWheel") * 0.001f * zoomSpeed * cameraSensitivity,
                     Space.Self);
         }
 
         private void OrthographicCameraControl()
         {
             var zoom = OrthographicSizeToZoom(mainCamera.orthographicSize);
+            var cameraSensitivity = LocalizationManager.Instance.GetCameraSensitivity();
+
             //Drag
             if (Input.GetKey(KeyCode.Mouse2))
             {
-                var direction = new Vector3(-Input.GetAxisRaw("Mouse X") * 0.001f * dragSpeed * zoom,
-                    -Input.GetAxisRaw("Mouse Y") * 0.001f * dragSpeed * zoom, 0);
+                var direction = new Vector3(-Input.GetAxisRaw("Mouse X") * 0.001f * dragSpeed * zoom * cameraSensitivity,
+                    -Input.GetAxisRaw("Mouse Y") * 0.001f * dragSpeed * zoom * cameraSensitivity, 0);
 
                 var ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
                 if (floorPlane.Raycast(ray, out var enter))
@@ -199,7 +202,7 @@ namespace Assets.Scripts.Camera
                 mainCamera.orthographicSize =
                     Mathf.Clamp(
                         mainCamera.orthographicSize -
-                        Input.GetAxis("Mouse ScrollWheel") * 0.001f * zoomSpeed,
+                        Input.GetAxis("Mouse ScrollWheel") * 0.001f * zoomSpeed * cameraSensitivity,
                         minDistance, maxDistance);
         }
 

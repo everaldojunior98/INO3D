@@ -15,6 +15,7 @@ namespace Assets.Scripts.Managers
         #region Fields
 
         private string currentLanguage;
+        private float cameraSensitivity;
 
         private Dictionary<string, Dictionary<string, string>> localizationDictionary;
 
@@ -92,10 +93,12 @@ namespace Assets.Scripts.Managers
             AddLocalization("Save", "Salvar", "Save");
             AddLocalization("Settings", "Configurações", "Settings");
             AddLocalization("Language", "Linguagem", "Language");
-            
+            AddLocalization("CameraSensitivity", "Sensibilidade da câmera", "Camera sensitivity");
+
             AddLocalization("CodeEditor", "Editor de código", "Code editor");
 
             currentLanguage = PlayerPrefs.GetString("currentLanguage", localizationDictionary.Keys.First());
+            cameraSensitivity = PlayerPrefs.GetFloat("cameraSensitivity", 1);
         }
 
         #endregion
@@ -138,11 +141,23 @@ namespace Assets.Scripts.Managers
                     return i;
             return 0;
         }
+        
+        public float GetCameraSensitivity()
+        {
+            return cameraSensitivity;
+        }
 
         public void SaveLanguage(string language)
         {
             currentLanguage = language;
             PlayerPrefs.SetString("currentLanguage", language);
+            PlayerPrefs.Save();
+        }
+        
+        public void SaveCameraSensitivity(float sensitivity)
+        {
+            cameraSensitivity = sensitivity;
+            PlayerPrefs.SetFloat("cameraSensitivity", cameraSensitivity);
             PlayerPrefs.Save();
         }
 

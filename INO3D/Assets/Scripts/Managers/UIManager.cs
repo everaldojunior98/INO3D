@@ -72,6 +72,7 @@ namespace Assets.Scripts.Managers
         private string currentLog;
         private int currentLineEnding = 1;
         private int selectedLanguage = -1;
+        private float cameraSensitivity = 1;
 
         private Action currentPopupAction = () => { };
         private ArduinoUno currentArduinoUno;
@@ -136,7 +137,10 @@ namespace Assets.Scripts.Managers
         {
             showSettings = !showSettings;
             if (showSettings)
-                selectedLanguage = -1;
+            {
+                selectedLanguage = LocalizationManager.Instance.GetCurrentLanguage();
+                cameraSensitivity = LocalizationManager.Instance.GetCameraSensitivity();
+            }
         }
         
         public void ShowEditCode(ArduinoUno arduino)
@@ -828,12 +832,9 @@ namespace Assets.Scripts.Managers
             ImGui.Begin(LocalizationManager.Instance.Localize("Settings") + "###settings", ref showSettings,
                 ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking);
 
-            if (selectedLanguage == -1)
-                selectedLanguage = LocalizationManager.Instance.GetCurrentLanguage();
-
             ImGui.Columns(2);
-            var cursorPosition = ImGui.GetCursorPos();
-            ImGui.SetCursorPos(new Vector2(cursorPosition.x, cursorPosition.y + ImGui.GetFontSize() / 2));
+            var languageCursorPosition = ImGui.GetCursorPos();
+            ImGui.SetCursorPos(new Vector2(languageCursorPosition.x, languageCursorPosition.y + ImGui.GetFontSize() / 2));
             ImGui.Text(LocalizationManager.Instance.Localize("Language"));
 
             ImGui.NextColumn();
@@ -844,12 +845,27 @@ namespace Assets.Scripts.Managers
             ImGui.Combo("", ref selectedLanguage, languages, languages.Length);
             ImGui.PopID();
 
+            ImGui.NextColumn();
+
+            var cameraSensitivityCursorPosition = ImGui.GetCursorPos();
+            ImGui.SetCursorPos(new Vector2(cameraSensitivityCursorPosition.x, cameraSensitivityCursorPosition.y + ImGui.GetFontSize() / 2));
+            ImGui.Text(LocalizationManager.Instance.Localize("CameraSensitivity"));
+
+            ImGui.NextColumn();
+            
+            ImGui.SetNextItemWidth(-1);
+            ImGui.PushID("CameraSensitivity");
+            ImGui.SliderFloat("", ref cameraSensitivity, 0, 3);
+            ImGui.PopID();
             ImGui.Columns(1);
+
             ImGui.Separator();
+
             if (ImGui.Button(LocalizationManager.Instance.Localize("Save"),
                     new Vector2(ImGui.GetItemRectSize().x - 10, 30)))
             {
                 LocalizationManager.Instance.SaveLanguage(languages[selectedLanguage]);
+                LocalizationManager.Instance.SaveCameraSensitivity(cameraSensitivity);
             }
 
             ImGui.End();
