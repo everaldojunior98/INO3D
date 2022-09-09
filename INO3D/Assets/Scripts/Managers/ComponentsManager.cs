@@ -81,7 +81,8 @@ namespace Assets.Scripts.Managers
             componentsCategories["Circuit"].Add("Basics", new List<string>
             {
                 "Resistor",
-                "Protoboard400"
+                "Protoboard400",
+                "Led"
             });
 
             componentsCategories.Add("Arduino", new Dictionary<string, List<string>>());

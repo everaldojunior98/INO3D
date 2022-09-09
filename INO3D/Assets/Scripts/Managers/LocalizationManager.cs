@@ -53,6 +53,7 @@ namespace Assets.Scripts.Managers
             AddLocalization("ArduinoUno", "Arduino Uno", "Arduino Uno");
             AddLocalization("Protoboard400", "Protoboard 400 pontos", "Protoboard 400 points");
             AddLocalization("Resistor", "Resistor", "Resistor");
+            AddLocalization("Led", "Led", "Led");
 
             AddLocalization("Yes", "Sim", "Yes");
             AddLocalization("No", "Não", "No");
@@ -86,6 +87,7 @@ namespace Assets.Scripts.Managers
             AddLocalization("ColorBlack", "Preto", "Black");
             AddLocalization("ColorBlue", "Azul", "Blue");
             AddLocalization("ColorBrown", "Marrom", "Brown");
+            AddLocalization("ColorGreen", "Verde", "Green");
             AddLocalization("ColorGray", "Cinza", "Gray");
             AddLocalization("ColorOrange", "Laranja", "Orange");
             AddLocalization("ColorRed", "Vermelho", "Red");
