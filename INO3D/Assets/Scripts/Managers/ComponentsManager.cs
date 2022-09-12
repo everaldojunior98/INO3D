@@ -155,23 +155,30 @@ namespace Assets.Scripts.Managers
                 {
                     var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
                     if (Physics.Raycast(ray, out var hit, float.MaxValue, floorLayerMask))
+                    {
                         if (selectedComponent != null)
                         {
                             if (!isDragging)
                                 dragStartPosition = hit.point;
 
                             var draggingOffset = hit.point - dragStartPosition;
-                            selectedComponent.transform.position = new Vector3(
-                                selectedComponent.transform.position.x + draggingOffset.x,
-                                dragStartPosition.y + selectedComponent.DefaultHeight,
-                                selectedComponent.transform.position.z + draggingOffset.z);
+
+                            if (draggingOffset.magnitude > 0)
+                            {
+                                selectedComponent.transform.position = new Vector3(
+                                    selectedComponent.transform.position.x + draggingOffset.x,
+                                    dragStartPosition.y + selectedComponent.DefaultHeight,
+                                    selectedComponent.transform.position.z + draggingOffset.z);
+
+                                if (!HasUnsavedChanges)
+                                    UpdateWindowTitle(true);
+                                HasUnsavedChanges = true;
+                            }
+
                             dragStartPosition = hit.point;
                             isDragging = true;
-
-                            if(!HasUnsavedChanges)
-                                UpdateWindowTitle(true);
-                            HasUnsavedChanges = true;
                         }
+                    }
                 }
             }
 
