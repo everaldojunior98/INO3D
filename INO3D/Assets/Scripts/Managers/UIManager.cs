@@ -169,8 +169,11 @@ namespace Assets.Scripts.Managers
         
         public void AddLog(string log, int lineEnding = 1)
         {
-            log = Regex.Unescape(log.Split('\0').First());
-            currentLog += log + (lineEnding == 1 ? "\n" : "");
+            if (log.Length > 0)
+            {
+                log = Regex.Unescape(log.Split('\0').First());
+                currentLog += log + (lineEnding == 1 ? "\n" : "");
+            }
         }
 
         public void GenerateStringPropertyField(string label, byte[] stringBuffer)
@@ -813,7 +816,7 @@ namespace Assets.Scripts.Managers
             {
                 var command = Regex.Unescape(Encoding.UTF8.GetString(consoleInputBuffer).Split('\0').First());
                 AddLog(command);
-                if (SimulationManager.Instance.IsSimulating())
+                if (SimulationManager.Instance.IsSimulating() && command.Length > 0)
                 {
                     foreach (var arduinoUno in FindObjectsOfType<ArduinoUno>())
                         arduinoUno.WriteSerial(command);
@@ -940,7 +943,7 @@ namespace Assets.Scripts.Managers
             {
                 var value = current * units[i];
                 if (Math.Abs(value) > 1 || i == units.Length - 1)
-                    return Math.Round(value, 3) + " " + symbols[i];
+                    return Math.Round(value, 3).ToString(CultureInfo.InvariantCulture) + " " + symbols[i];
             }
 
             return string.Empty;
@@ -958,7 +961,7 @@ namespace Assets.Scripts.Managers
             {
                 var value = voltage * units[i];
                 if (Math.Abs(value) > 1 || i == units.Length - 1)
-                    return Math.Round(value, 3) + " " + symbols[i];
+                    return Math.Round(value, 3).ToString(CultureInfo.InvariantCulture) + " " + symbols[i];
             }
 
             return string.Empty;

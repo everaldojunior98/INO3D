@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.Components.Base;
 using Assets.Scripts.Managers;
@@ -16,6 +17,8 @@ namespace Assets.Scripts.Components
 
         public GameObject LedOnPointLight;
         public GameObject Led13PointLight;
+        public GameObject LedRxPointLight;
+        public GameObject LedTxPointLight;
 
         private ATmega328P aTmega328P;
         private Material ledOnMaterial;
@@ -24,6 +27,7 @@ namespace Assets.Scripts.Components
         private MeshRenderer meshRenderer;
 
         private bool updateMaterials;
+        private bool blinkTxLed;
         
         private bool lastSimulation;
         private bool lastLed13;
@@ -34,7 +38,64 @@ namespace Assets.Scripts.Components
 
         public void WriteSerial(string serial)
         {
-            aTmega328P?.WriteToArduino(serial);
+            StartCoroutine(BlinkRxLed());
+            aTmega328P.WriteToArduino(serial);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private IEnumerator BlinkRxLed()
+        {
+            LedRxPointLight.SetActive(true);
+            meshRenderer.sharedMaterials = new[]
+            {
+                meshRenderer.sharedMaterials[0],
+                ledOnMaterial,
+                meshRenderer.sharedMaterials[2],
+                meshRenderer.sharedMaterials[3],
+                meshRenderer.sharedMaterials[4]
+            };
+
+            yield return new WaitForSeconds(0.1f);
+
+            LedRxPointLight.SetActive(false);
+            meshRenderer.sharedMaterials = new[]
+            {
+                meshRenderer.sharedMaterials[0],
+                ledOffMaterial,
+                meshRenderer.sharedMaterials[2],
+                meshRenderer.sharedMaterials[3],
+                meshRenderer.sharedMaterials[4]
+            };
+        }
+
+        private IEnumerator BlinkTxLed()
+        {
+            LedTxPointLight.SetActive(true);
+            meshRenderer.sharedMaterials = new[]
+            {
+                meshRenderer.sharedMaterials[0],
+                meshRenderer.sharedMaterials[1],
+                ledOnMaterial,
+                meshRenderer.sharedMaterials[3],
+                meshRenderer.sharedMaterials[4]
+            };
+
+            yield return new WaitForSeconds(0.1f);
+
+            LedTxPointLight.SetActive(false);
+            meshRenderer.sharedMaterials = new[]
+            {
+                meshRenderer.sharedMaterials[0],
+                meshRenderer.sharedMaterials[1],
+                ledOffMaterial,
+                meshRenderer.sharedMaterials[3],
+                meshRenderer.sharedMaterials[4]
+            };
+
+            blinkTxLed = false;
         }
 
         #endregion
@@ -45,6 +106,8 @@ namespace Assets.Scripts.Components
         {
             var print = new Action<byte>(b =>
             {
+                if (!blinkTxLed)
+                    blinkTxLed = true;
                 UIManager.Instance.AddLog(((char) b).ToString(), 0);
             });
 
@@ -110,6 +173,9 @@ namespace Assets.Scripts.Components
 
                 updateMaterials = false;
             }
+
+            if (blinkTxLed)
+                StartCoroutine(BlinkTxLed());
         }
 
         public override void DrawPropertiesWindow()
