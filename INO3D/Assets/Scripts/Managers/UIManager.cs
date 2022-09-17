@@ -531,9 +531,9 @@ namespace Assets.Scripts.Managers
             ImGui.SetNextWindowPos(new Vector2(Input.mousePosition.x + PortHoverPaddingX, Screen.height - Input.mousePosition.y - PortHoverPaddingY));
             if (ImGui.Begin("ComponentOverlay", PortHoverWindowFlags))
             {
-                ImGui.Text(LocalizationManager.Instance.Localize("Overlay.Voltage") + ": " + componentVoltage + " V");
+                ImGui.Text(LocalizationManager.Instance.Localize("Overlay.Voltage") + ": " + FormatVoltage(componentVoltage));
                 ImGui.Separator();
-                ImGui.Text(LocalizationManager.Instance.Localize("Overlay.Current") + ": " + componentCurrent + " A");
+                ImGui.Text(LocalizationManager.Instance.Localize("Overlay.Current") + ": " + FormatCurrent(componentCurrent));
             }
 
             ImGui.End();
@@ -926,6 +926,42 @@ namespace Assets.Scripts.Managers
         private void ClearLog()
         {
             currentLog = string.Empty;
+        }
+
+        private string FormatCurrent(float current)
+        {
+            var symbols = new[] { "GA", "MA", "kA", "A", "mA", "µA", "nA" };
+            var units = new[] { 1e-9, 10e-6, 10e-3, 1, 1e3, 1e6, 1e9 };
+
+            if (current == 0)
+                return Math.Round(current, 3) + " " + symbols[3];
+
+            for (var i = 0; i < units.Length; i++)
+            {
+                var value = current * units[i];
+                if (Math.Abs(value) > 1 || i == units.Length - 1)
+                    return Math.Round(value, 3) + " " + symbols[i];
+            }
+
+            return string.Empty;
+        }
+
+        private string FormatVoltage(float voltage)
+        {
+            var symbols = new[] { "GV", "MV", "kV", "V", "mV", "µV", "nV" };
+            var units = new[] { 1e-9, 10e-6, 10e-3, 1, 1e3, 1e6, 1e9 };
+
+            if (voltage == 0)
+                return Math.Round(voltage, 3) + " " + symbols[3];
+
+            for (var i = 0; i < units.Length; i++)
+            {
+                var value = voltage * units[i];
+                if (Math.Abs(value) > 1 || i == units.Length - 1)
+                    return Math.Round(value, 3) + " " + symbols[i];
+            }
+
+            return string.Empty;
         }
 
         #endregion
