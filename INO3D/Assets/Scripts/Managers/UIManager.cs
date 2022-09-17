@@ -632,9 +632,9 @@ namespace Assets.Scripts.Managers
                 () => ShowSettings());
 
             var menuBarSize = ImGui.GetWindowSize();
-            var pausePosition = menuBarSize.x / 2 - buttonBarButtonSize.x / 2;
-            var playPosition = pausePosition - buttonBarButtonSize.x - 3 * padding.x;
-            var stopPosition = pausePosition + buttonBarButtonSize.x + 3 * padding.x;
+            var middleBarPosition = menuBarSize.x / 2;
+            var playPosition = middleBarPosition - buttonBarButtonSize.x + padding.x / 2;
+            var stopPosition = middleBarPosition + buttonBarButtonSize.x - padding.x / 2;
             var timePosition = stopPosition + buttonBarButtonSize.x + 3 * padding.x;
 
             ImGui.SetCursorPos(new Vector2(playPosition, padding.y));
@@ -642,10 +642,6 @@ namespace Assets.Scripts.Managers
             DrawButton("Play", !SimulationManager.Instance.IsSimulating(),
                 LocalizationManager.Instance.Localize("StartSimulation"),
                 () => SimulationManager.Instance.StartSimulation());
-
-            ImGui.SetCursorPos(new Vector2(pausePosition, padding.y));
-            DrawButton("Pause", SimulationManager.Instance.IsSimulating(),
-                LocalizationManager.Instance.Localize("PauseSimulation"), null);
             ImGui.SetCursorPos(new Vector2(stopPosition, padding.y));
             DrawButton("Stop", SimulationManager.Instance.IsSimulating(),
                 LocalizationManager.Instance.Localize("StopSimulation"),
