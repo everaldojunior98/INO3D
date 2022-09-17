@@ -37,6 +37,8 @@ namespace Assets.Scripts.Managers
         private InoComponent selectedComponent;
         private UnityEngine.Camera mainCamera;
 
+        private bool isMouseReleased;
+
         private bool canDrag;
         private bool isDragging;
         private bool isAddingComponent;
@@ -183,13 +185,13 @@ namespace Assets.Scripts.Managers
             }
 
             if (Input.GetKeyUp(selectButton))
+                isMouseReleased = true;
+
+            if (isMouseReleased && UIManager.Instance.ImGuiIsMouseUp())
             {
                 if (isAddingComponent && selectedComponent != null)
                 {
-                    if (Vector2.Distance(
-                            new Vector2(addingComponentStartPosition.x, addingComponentStartPosition.z),
-                            new Vector2(selectedComponent.transform.position.x,
-                                selectedComponent.transform.position.z)) < 1)
+                    if (UIManager.Instance.IsMouserOverUI())
                     {
                         var component = selectedComponent;
                         DeselectComponent();
@@ -202,7 +204,7 @@ namespace Assets.Scripts.Managers
                 canDrag = false;
                 isDragging = false;
                 isAddingComponent = false;
-
+                isMouseReleased = false;
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))

@@ -55,6 +55,8 @@ namespace Assets.Scripts.Managers
         private bool setupDearImGui = true;
 
         private bool isMouseOverUI;
+        private bool isMouseUp;
+
         private bool displayPortOverlay;
         private bool displayComponentOverlay;
         private bool showConsole;
@@ -116,6 +118,11 @@ namespace Assets.Scripts.Managers
         public bool IsMouserOverUI()
         {
             return !displayPortOverlay && !displayComponentOverlay && isMouseOverUI;
+        }
+
+        public bool ImGuiIsMouseUp()
+        {
+            return isMouseUp;
         }
 
         public void DisplayPortOverlay(string portName, PortType portType, PinType pinType)
@@ -344,6 +351,7 @@ namespace Assets.Scripts.Managers
             ImGui.End();
 
             isMouseOverUI = ImGui.GetIO().WantCaptureMouse;
+            isMouseUp = !ImGui.IsAnyMouseDown();
 
             ShowButtonBar();
             ShowComponentsWindow();
