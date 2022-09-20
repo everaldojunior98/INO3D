@@ -173,8 +173,7 @@ namespace Assets.Scripts.Components.Base
                     }
                 }
 
-                if (pins.Count == Pins.Count && pins.All(port =>
-                        !port.Value.IsConnected() || ConnectedPorts.ContainsKey(port.Key)))
+                if (pins.Count == Pins.Count && pins.All(port => !port.Value.IsConnected()))
                 {
                     if (pins.Any(pin => !ConnectedPorts.ContainsKey(pin.Key) || ConnectedPorts[pin.Key] != pin.Value))
                     {
