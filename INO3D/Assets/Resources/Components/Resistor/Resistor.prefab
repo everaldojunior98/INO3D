@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1167236557842747219}
   - component: {fileID: 1167236557842747229}
   - component: {fileID: 1167236557842747228}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Resistor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -69,7 +69,7 @@ GameObject:
   - component: {fileID: 7045107094921733731}
   - component: {fileID: 6227040152492698054}
   - component: {fileID: 8182498803698048268}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -227,6 +227,11 @@ namespace Assets.Scripts.Components.Base
             return isConnected;
         }
 
+        public bool IsAttachable()
+        {
+            return Pins.Count > 0;
+        }
+
         #endregion
 
         #region Protected Methods

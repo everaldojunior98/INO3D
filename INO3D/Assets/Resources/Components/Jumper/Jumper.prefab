@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2640074033711128272}
   - component: {fileID: 2640074033711128275}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Jumper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -56,7 +56,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2640074035057585425}
   - component: {fileID: 2640074035057585424}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}

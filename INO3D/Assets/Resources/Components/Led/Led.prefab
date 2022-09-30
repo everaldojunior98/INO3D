@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1072005459321864947}
   - component: {fileID: 1072005459321864948}
   - component: {fileID: 1072005459321864956}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Led
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -70,7 +70,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2599197861629731}
   - component: {fileID: 8902051950729133886}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -164,7 +164,7 @@ GameObject:
   - component: {fileID: 5849358478951853014}
   - component: {fileID: 7386680876145779827}
   - component: {fileID: 4712511609191780537}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}

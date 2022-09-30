@@ -34,7 +34,11 @@ namespace Assets.Scripts.Managers
 
         [SerializeField] GameObject jumperPrefab;
 
+        private int inoComponentLayerId;
+
         private InoComponent selectedComponent;
+        private int selectedComponentLayer;
+
         private UnityEngine.Camera mainCamera;
 
         private bool isMouseReleased;
@@ -125,6 +129,8 @@ namespace Assets.Scripts.Managers
 
         private void Start()
         {
+            inoComponentLayerId = (int) Math.Log(inoLayerMask.value, 2);
+
             mainCamera = CameraController.Instance.GetMainCamera();
             selectedPorts = new List<InoPort>();
         }
@@ -156,7 +162,7 @@ namespace Assets.Scripts.Managers
                 if (canDrag)
                 {
                     var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-                    if (Physics.Raycast(ray, out var hit, float.MaxValue, floorLayerMask))
+                    if (Physics.Raycast(ray, out var hit, float.MaxValue, selectedComponentLayer))
                     {
                         if (selectedComponent != null)
                         {
@@ -409,17 +415,36 @@ namespace Assets.Scripts.Managers
         public void SelectComponent(InoComponent component)
         {
             isDragging = false;
-            selectedComponent?.DisableHighlight();
+
+            if (selectedComponent != null)
+            {
+                selectedComponent.DisableHighlight();
+                selectedComponent.gameObject.layer = inoComponentLayerId;
+            }
+
             selectedComponent = component;
             canDrag = selectedComponent.CanDrag;
             selectedComponent.EnableHighlight();
+
+            selectedComponent.gameObject.layer = 0;
+
+            if (selectedComponent.IsAttachable())
+                selectedComponentLayer = floorLayerMask | inoLayerMask;
+            else
+                selectedComponentLayer = floorLayerMask;
         }
 
         public void DeselectComponent()
         {
             canDrag = false;
             isDragging = false;
-            selectedComponent?.DisableHighlight();
+
+            if (selectedComponent != null)
+            {
+                selectedComponent.DisableHighlight();
+                selectedComponent.gameObject.layer = inoComponentLayerId;
+            }
+
             selectedComponent = null;
         }
         
