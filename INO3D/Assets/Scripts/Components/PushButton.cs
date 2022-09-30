@@ -29,9 +29,12 @@ namespace Assets.Scripts.Components
 
         protected override void SetupPorts()
         {
+            DebugPins = true;
             DefaultHeight = 0.18f;
-            Pins.Add(Tuple.Create("A", new Vector3(0, 0, 0.0196f)));
-            Pins.Add(Tuple.Create("B", new Vector3(0, 0, -0.0192f)));
+            Pins.Add(Tuple.Create("A", new Vector3(-0.0737f, 0.0196f, 0.0516f)));
+            Pins.Add(Tuple.Create("B", new Vector3(0.073f, 0.0196f, 0.0516f)));
+            Pins.Add(Tuple.Create("C", new Vector3(-0.0737f, 0.0196f, -0.0516f)));
+            Pins.Add(Tuple.Create("D", new Vector3(0.073f, 0.0196f, -0.0516f)));
         }
 
         public override SaveFile Save()

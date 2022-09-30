@@ -88,7 +88,8 @@ namespace Assets.Scripts.Managers
             {
                 "Resistor",
                 "Protoboard400",
-                "Led"
+                "Led",
+                "PushButton",
             });
 
             componentsCategories.Add("Arduino", new Dictionary<string, List<string>>());

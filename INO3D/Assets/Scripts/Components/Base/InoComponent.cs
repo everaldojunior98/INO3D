@@ -41,6 +41,8 @@ namespace Assets.Scripts.Components.Base
 
         protected List<Tuple<string, Vector3>> Pins;
 
+        protected bool DebugPins;
+
         public bool CanDrag { get; protected set; }
         public bool CanRotate { get; protected set; }
 
@@ -110,6 +112,23 @@ namespace Assets.Scripts.Components.Base
                         break;
                     }
                 }
+            }
+        }
+
+        private void OnDrawGizmos()
+        {
+            if(!DebugPins)
+                return;
+
+            Gizmos.color = Color.red;
+            foreach (var pin in Pins)
+            {
+                var contactGlobalPoint = RotatePointAroundPivot(
+                    transform.position + pin.Item2 +
+                    new Vector3(0, ComponentsManager.Instance.DefaultIndicatorSize.y, 0), transform.position,
+                    transform.eulerAngles);
+                var ray = new Ray(contactGlobalPoint, Vector3.down);
+                Gizmos.DrawRay(ray);
             }
         }
 

@@ -54,6 +54,7 @@ namespace Assets.Scripts.Managers
             AddLocalization("Protoboard400", "Protoboard 400 pontos", "Protoboard 400 points");
             AddLocalization("Resistor", "Resistor", "Resistor");
             AddLocalization("Led", "Led", "Led");
+            AddLocalization("PushButton", "Push button", "Push button");
 
             AddLocalization("Yes", "Sim", "Yes");
             AddLocalization("No", "Não", "No");
