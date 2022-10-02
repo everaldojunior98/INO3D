@@ -303,6 +303,12 @@ namespace Assets.Scripts.Components.Base
         private void UpdateComponentPosition()
         {
             var positions = Vector3.zero;
+            var firstPosition = Vector3.zero;
+            var lastPosition = Vector3.zero;
+
+            var orderedPositions = ConnectedPorts.OrderBy(kv => kv.Value.transform.position.y)
+                .ThenBy(kv => kv.Value.transform.position.x).ToArray();
+
             connectedPortsPositions.Clear();
             foreach (var connectedPort in ConnectedPorts)
             {
@@ -310,15 +316,20 @@ namespace Assets.Scripts.Components.Base
                 connectedPortsPositions.Add(connectedPort.Key, connectedPort.Value.transform.position);
             }
 
-            if (ConnectedPorts.Count > 1)
+            if (ConnectedPorts.Count == 2)
             {
-                var firstPosition = ConnectedPorts.First().Value.transform.position;
-                var lastPosition = ConnectedPorts.Last().Value.transform.position;
-
-                var middlePosition = positions / ConnectedPorts.Count;
-                transform.position = new Vector3(middlePosition.x, middlePosition.y, middlePosition.z);
-                transform.rotation = Quaternion.LookRotation(firstPosition - lastPosition, Vector3.up);
+                firstPosition = orderedPositions[0].Value.transform.position;
+                lastPosition = orderedPositions[1].Value.transform.position;
             }
+            else if (ConnectedPorts.Count == 4)
+            {
+                firstPosition = orderedPositions[0].Value.transform.position;
+                lastPosition = orderedPositions[1].Value.transform.position;
+            }
+
+            var middlePosition = positions / ConnectedPorts.Count;
+            transform.position = new Vector3(middlePosition.x, middlePosition.y, middlePosition.z);
+            transform.rotation = Quaternion.LookRotation(firstPosition - lastPosition, Vector3.up);
         }
 
         private Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Vector3 angles)

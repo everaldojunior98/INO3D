@@ -1,5 +1,6 @@
 using System;
 using Assets.Scripts.Components.Base;
+using Assets.Scripts.Managers;
 using UnityEngine;
 
 namespace Assets.Scripts.Components
@@ -7,6 +8,25 @@ namespace Assets.Scripts.Components
     public class PushButton : InoComponent
     {
         #region Fields
+
+        private Animator animator;
+
+        #endregion
+
+        #region Unity Methods
+
+        private void OnMouseDown()
+        {
+            if (SimulationManager.Instance.IsSimulating())
+            {
+                animator.SetBool("Down", true);
+            }
+        }
+
+        private void OnMouseUp()
+        {
+            animator.SetBool("Down", false);
+        }
 
         #endregion
 
@@ -35,6 +55,8 @@ namespace Assets.Scripts.Components
             Pins.Add(Tuple.Create("B", new Vector3(0.073f, 0.0196f, 0.0516f)));
             Pins.Add(Tuple.Create("C", new Vector3(-0.0737f, 0.0196f, -0.0516f)));
             Pins.Add(Tuple.Create("D", new Vector3(0.073f, 0.0196f, -0.0516f)));
+
+            animator = GetComponent<Animator>();
         }
 
         public override SaveFile Save()
