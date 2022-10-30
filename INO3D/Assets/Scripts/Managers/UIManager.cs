@@ -58,7 +58,6 @@ namespace Assets.Scripts.Managers
         private bool isMouseUp;
 
         private bool displayPortOverlay;
-        private bool displayComponentOverlay;
         private bool showConsole;
         private bool showSettings;
         private bool showEditCode;
@@ -117,7 +116,7 @@ namespace Assets.Scripts.Managers
 
         public bool IsMouserOverUI()
         {
-            return !displayPortOverlay && !displayComponentOverlay && isMouseOverUI;
+            return !displayPortOverlay && isMouseOverUI;
         }
 
         public bool ImGuiIsMouseUp()
@@ -137,19 +136,6 @@ namespace Assets.Scripts.Managers
         public void HidePortOverlay()
         {
             displayPortOverlay = false;
-        }
-        
-        public void DisplayComponentOverlay(float voltage, float current)
-        {
-            displayComponentOverlay = true;
-
-            componentVoltage = voltage;
-            componentCurrent = current;
-        }
-
-        public void HideComponentOverlay()
-        {
-            displayComponentOverlay = false;
         }
 
         public void ShowConsole()
@@ -368,9 +354,6 @@ namespace Assets.Scripts.Managers
 
             if (displayPortOverlay)
                 ShowPortOverlay();
-            
-            if (displayComponentOverlay)
-                ShowComponentOverlay();
         }
 
         private void ShowComponentsWindow()
@@ -532,19 +515,6 @@ namespace Assets.Scripts.Managers
                     ImGui.Separator();
                     ImGui.Text(LocalizationManager.Instance.Localize("Overlay.Type") + ": " + type);
                 }
-            }
-
-            ImGui.End();
-        }
-
-        private void ShowComponentOverlay()
-        {
-            ImGui.SetNextWindowPos(new Vector2(Input.mousePosition.x + PortHoverPaddingX, Screen.height - Input.mousePosition.y - PortHoverPaddingY));
-            if (ImGui.Begin("ComponentOverlay", PortHoverWindowFlags))
-            {
-                ImGui.Text(LocalizationManager.Instance.Localize("Overlay.Voltage") + ": " + FormatVoltage(componentVoltage));
-                ImGui.Separator();
-                ImGui.Text(LocalizationManager.Instance.Localize("Overlay.Current") + ": " + FormatCurrent(componentCurrent));
             }
 
             ImGui.End();
