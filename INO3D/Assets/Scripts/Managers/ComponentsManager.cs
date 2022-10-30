@@ -36,6 +36,8 @@ namespace Assets.Scripts.Managers
 
         private int inoComponentLayerId;
 
+        private Transform currentParent;
+
         private InoComponent selectedComponent;
         private int selectedComponentLayer;
 
@@ -170,6 +172,8 @@ namespace Assets.Scripts.Managers
                             if (!isDragging)
                                 dragStartPosition = hit.point;
 
+                            currentParent = hit.transform;
+
                             var draggingOffset = hit.point - dragStartPosition;
 
                             if (draggingOffset.magnitude > 0)
@@ -187,6 +191,10 @@ namespace Assets.Scripts.Managers
                             dragStartPosition = hit.point;
                             isDragging = true;
                         }
+                    }
+                    else
+                    {
+                        currentParent = null;
                     }
                 }
             }
@@ -207,7 +215,11 @@ namespace Assets.Scripts.Managers
                 }
 
                 if (isDragging && selectedComponent != null)
+                {
                     selectedComponent.UpdatePinsConnection();
+                    selectedComponent.transform.parent = currentParent;
+                    currentParent = null;
+                }
                 canDrag = false;
                 isDragging = false;
                 isAddingComponent = false;
