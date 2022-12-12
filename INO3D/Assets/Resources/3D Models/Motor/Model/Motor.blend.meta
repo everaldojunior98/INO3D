@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 0bd32ebad264b0d4abfc37b37a220643
+guid: 05010ec2f4df31047bb0ad6cc8e798ad
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
@@ -10,13 +10,23 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Jumper__Jumper
-    second: {fileID: 2100000, guid: 674bf9926844eab47ac8c973bf1c2ed5, type: 2}
+      name: Axis__Body
+    second: {fileID: 2100000, guid: a2dfa08d4297edf44b08afdfc56117ae, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: L298N__L298N_png
-    second: {fileID: 2100000, guid: 38a1a18ab7ddee249ae4dc09df6ec5fe, type: 2}
+      name: Cooper__Body
+    second: {fileID: 2100000, guid: 66a1c62d3abefc947a1d43e18c0013fc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Metal__Body
+    second: {fileID: 2100000, guid: f80a97fa5a4274d4c8f2285aef5c61e5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Plastic__Body
+    second: {fileID: 2100000, guid: 16655fb3c83ca074798a38074e32dfdb, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -47,7 +57,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 0.08
+    globalScale: 0.3
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -98,7 +108,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.08
+    globalScale: 0.3
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
