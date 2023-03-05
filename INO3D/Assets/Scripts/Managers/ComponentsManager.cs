@@ -45,6 +45,7 @@ namespace Assets.Scripts.Managers
 
         private bool isMouseReleased;
 
+        private bool hasSelectedComponentChangedPosition;
         private bool canDrag;
         private bool isDragging;
         private bool isAddingComponent;
@@ -175,9 +176,9 @@ namespace Assets.Scripts.Managers
                             currentParent = hit.transform;
 
                             var draggingOffset = hit.point - dragStartPosition;
-
                             if (draggingOffset.magnitude > 0)
                             {
+                                hasSelectedComponentChangedPosition = true;
                                 selectedComponent.transform.position = new Vector3(
                                     selectedComponent.transform.position.x + draggingOffset.x,
                                     dragStartPosition.y + selectedComponent.DefaultHeight,
@@ -216,14 +217,18 @@ namespace Assets.Scripts.Managers
 
                 if (isDragging && selectedComponent != null)
                 {
-                    selectedComponent.UpdatePinsConnection();
+                    if (hasSelectedComponentChangedPosition)
+                        selectedComponent.UpdatePinsConnection();
+
                     selectedComponent.transform.parent = currentParent;
                     currentParent = null;
                 }
+
                 canDrag = false;
                 isDragging = false;
                 isAddingComponent = false;
                 isMouseReleased = false;
+                hasSelectedComponentChangedPosition = false;
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))

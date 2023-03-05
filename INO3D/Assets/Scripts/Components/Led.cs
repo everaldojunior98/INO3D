@@ -27,7 +27,7 @@ namespace Assets.Scripts.Components
         private List<Material> materials;
         private List<Color> colors;
         private int currentColor;
-        private int lastColor;
+        private int lastColor = -1;
 
         private bool isOn;
 
@@ -65,7 +65,7 @@ namespace Assets.Scripts.Components
 
             if (lastColor != currentColor)
             {
-                meshRenderer.sharedMaterial = materials[currentColor];
+                meshRenderer.sharedMaterial = new Material(materials[currentColor]);
                 lastColor = currentColor;
             }
         }

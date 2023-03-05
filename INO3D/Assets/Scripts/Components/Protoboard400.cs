@@ -41,24 +41,48 @@ namespace Assets.Scripts.Components
 
             var vccOutput = SimulationManager.Instance.CreateElement<Output>();
             var vccCount = 0;
-            foreach (var inoPort in vcc)
+            if (vcc.Any(port => port.IsConnected()))
             {
-                LeadByPortName.Add(inoPort.PortName, vccOutput.LeadIn);
-                vccCount++;
+                foreach (var inoPort in vcc)
+                {
+                    if (inoPort.IsConnected())
+                    {
+                        var wire = SimulationManager.Instance.CreateElement<Wire>();
+                        SimulationManager.Instance.Connect(vccOutput.LeadIn, wire.LeadIn);
+                        LeadByPortName.Add(inoPort.PortName, wire.LeadOut);
+                    }
+                    else
+                    {
+                        LeadByPortName.Add(inoPort.PortName, vccOutput.LeadIn);
+                    }
 
-                if (vccCount == 25)
-                    vccOutput = SimulationManager.Instance.CreateElement<Output>();
+                    vccCount++;
+                    if (vccCount == 25)
+                        vccOutput = SimulationManager.Instance.CreateElement<Output>();
+                }
             }
 
             var gndOutput = SimulationManager.Instance.CreateElement<Output>();
             var gndCount = 0;
-            foreach (var inoPort in gnd)
+            if (gnd.Any(port => port.IsConnected()))
             {
-                LeadByPortName.Add(inoPort.PortName, gndOutput.LeadIn);
-                gndCount++;
+                foreach (var inoPort in gnd)
+                {
+                    if (inoPort.IsConnected())
+                    {
+                        var wire = SimulationManager.Instance.CreateElement<Wire>();
+                        SimulationManager.Instance.Connect(gndOutput.LeadIn, wire.LeadIn);
+                        LeadByPortName.Add(inoPort.PortName, wire.LeadOut);
+                    }
+                    else
+                    {
+                        LeadByPortName.Add(inoPort.PortName, gndOutput.LeadIn);
+                    }
 
-                if (gndCount == 25)
-                    gndOutput = SimulationManager.Instance.CreateElement<Output>();
+                    gndCount++;
+                    if (gndCount == 25)
+                        gndOutput = SimulationManager.Instance.CreateElement<Output>();
+                }
             }
 
             foreach (var pair in lines)
@@ -69,7 +93,17 @@ namespace Assets.Scripts.Components
                 {
                     foreach (var inoPort in pair.Value)
                     {
-                        LeadByPortName.Add(inoPort.PortName, output.LeadIn);
+                        if (inoPort.IsConnected())
+                        {
+                            var wire = SimulationManager.Instance.CreateElement<Wire>();
+                            SimulationManager.Instance.Connect(output.LeadIn, wire.LeadIn);
+                            LeadByPortName.Add(inoPort.PortName, wire.LeadOut);
+                        }
+                        else
+                        {
+                            LeadByPortName.Add(inoPort.PortName, output.LeadIn);
+                        }
+
                         count++;
 
                         if (count == 5)
