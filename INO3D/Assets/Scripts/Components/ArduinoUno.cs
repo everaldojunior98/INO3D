@@ -182,7 +182,7 @@ namespace Assets.Scripts.Components
         {
             UIManager.Instance.GenerateButtonPropertyField(LocalizationManager.Instance.Localize("EditCode"), () =>
             {
-                UIManager.Instance.ShowEditCode(this);
+                UIManager.Instance.ShowEditCode(CurrentCode, newCode => CurrentCode = newCode);
             });
         }
 

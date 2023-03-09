@@ -25,7 +25,7 @@ namespace Assets.Scripts.Components
             if (SimulationManager.Instance.IsSimulating())
             {
                 animator.SetBool("Down", true);
-                switchSpst.Close();
+                switchSpst?.Close();
             }
         }
 
@@ -33,7 +33,7 @@ namespace Assets.Scripts.Components
         {
             animator.SetBool("Down", false);
             if (SimulationManager.Instance.IsSimulating())
-                switchSpst.Open();
+                switchSpst?.Open();
         }
 
         #endregion

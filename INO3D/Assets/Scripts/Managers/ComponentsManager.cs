@@ -98,7 +98,13 @@ namespace Assets.Scripts.Managers
             componentsCategories.Add("Arduino", new Dictionary<string, List<string>>());
             componentsCategories["Arduino"].Add("Boards", new List<string>
             {
-                "ArduinoUno"
+                "ArduinoUno",
+            });
+            
+            componentsCategories.Add("Ino3D", new Dictionary<string, List<string>>());
+            componentsCategories["Ino3D"].Add("Boards", new List<string>
+            {
+                "BlackBox"
             });
 
             iconByName = new Dictionary<string, Texture>();

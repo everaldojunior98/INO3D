@@ -50,11 +50,14 @@ namespace Assets.Scripts.Managers
             AddLocalization("Circuit.Basics", "Básicos", "Basics");
             AddLocalization("Arduino", "Arduino", "Arduino");
             AddLocalization("Arduino.Boards", "Placas", "Boards");
+            AddLocalization("Ino3D", "Ino3D", "Ino3D");
+            AddLocalization("Ino3D.Boards", "Placas", "Boards");
             AddLocalization("ArduinoUno", "Arduino Uno", "Arduino Uno");
             AddLocalization("Protoboard400", "Protoboard 400 pontos", "Protoboard 400 points");
             AddLocalization("Resistor", "Resistor", "Resistor");
             AddLocalization("Led", "Led", "Led");
-            AddLocalization("PushButton", "Push button", "Push button");
+            AddLocalization("PushButton", "Chave táctil", "Push button");
+            AddLocalization("BlackBox", "Caixa preta", "Black box");
 
             AddLocalization("Yes", "Sim", "Yes");
             AddLocalization("No", "Não", "No");

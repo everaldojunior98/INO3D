@@ -80,7 +80,7 @@ namespace Assets.Scripts.Managers
         private float cameraSensitivity = 1;
 
         private Action currentPopupAction = () => { };
-        private ArduinoUno currentArduinoUno;
+        private Action<string> onCodeSave;
         private string currentCode = string.Empty;
 
         #endregion
@@ -153,10 +153,10 @@ namespace Assets.Scripts.Managers
             }
         }
         
-        public void ShowEditCode(ArduinoUno arduino)
+        public void ShowEditCode(string code, Action<string> onSave)
         {
-            currentArduinoUno = arduino;
-            currentCode = currentArduinoUno.CurrentCode;
+            currentCode = code;
+            onCodeSave = onSave;
             showEditCode = !showEditCode;
         } 
         
@@ -894,7 +894,7 @@ namespace Assets.Scripts.Managers
             if (ImGui.Button(LocalizationManager.Instance.Localize("Save"),
                     new Vector2(ImGui.GetItemRectSize().x - 10, 30)))
             {
-                currentArduinoUno.CurrentCode = currentCode;
+                onCodeSave(currentCode);
             }
 
             ImGui.End();
