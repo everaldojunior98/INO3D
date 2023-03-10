@@ -15,5 +15,6 @@ namespace Assets.Scripts.Components
         public float Port2PositionZ;
 
         public int CurrentColor;
+        public bool IsRigid;
     }
 }

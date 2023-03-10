@@ -365,7 +365,7 @@ namespace Assets.Scripts.Managers
                         port2 = port2Hit.transform.GetComponent<InoPort>();
 
                     if (port1 != null && port2 != null)
-                        StartCoroutine(CreateJumper(port1, port2, jumperSaveFile.CurrentColor));
+                        StartCoroutine(CreateJumper(port1, port2, jumperSaveFile.CurrentColor, jumperSaveFile.IsRigid));
                 }
             }
 
@@ -428,7 +428,7 @@ namespace Assets.Scripts.Managers
             selectedPorts.Add(port);
 
             if (selectedPorts.Count == 2)
-                StartCoroutine(CreateJumper(selectedPorts[0], selectedPorts[1], 0));
+                StartCoroutine(CreateJumper(selectedPorts[0], selectedPorts[1], 0, false));
         }
 
         public void OnPortUnselected(InoPort port)
@@ -483,7 +483,7 @@ namespace Assets.Scripts.Managers
 
         #region Private Methods
 
-        private IEnumerator CreateJumper(InoPort port1, InoPort port2, int color)
+        private IEnumerator CreateJumper(InoPort port1, InoPort port2, int color, bool isRigid)
         {
             if (!HasUnsavedChanges)
                 UpdateWindowTitle(true);
@@ -491,7 +491,7 @@ namespace Assets.Scripts.Managers
             isAddingJumper = true;
             var jumperGameObject = Instantiate(jumperPrefab);
             var jumper = jumperGameObject.GetComponent<Jumper>();
-            jumper.Generate(port1, port2, color);
+            jumper.Generate(port1, port2, color, isRigid);
 
             selectedPorts.Clear();
             SelectComponent(jumper);

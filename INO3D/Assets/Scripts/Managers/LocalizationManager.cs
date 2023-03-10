@@ -99,6 +99,8 @@ namespace Assets.Scripts.Managers
             AddLocalization("ColorWhite", "Branco", "White");
             AddLocalization("ColorYellow", "Amarelo", "Yellow");
 
+            AddLocalization("IsRigid", "Rígido", "Rigid");
+
             AddLocalization("OpenSettings", "Abrir configurações", "Open settings");
             AddLocalization("Save", "Salvar", "Save");
             AddLocalization("Settings", "Configurações", "Settings");

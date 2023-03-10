@@ -182,6 +182,19 @@ namespace Assets.Scripts.Managers
             ImGui.Columns(1);
         }
 
+        public void GenerateCheckboxPropertyField(string label, ref bool value)
+        {
+            ImGui.Columns(2);
+            var cursorPosition = ImGui.GetCursorPos();
+            ImGui.SetCursorPos(new Vector2(cursorPosition.x, cursorPosition.y + ImGui.GetFontSize() / 2));
+            ImGui.Text(label);
+            ImGui.NextColumn();
+            ImGui.SetNextItemWidth(-1);
+            ImGui.Checkbox("###" + label, ref value);
+            ImGui.NextColumn();
+            ImGui.Columns(1);
+        }
+
         public void GenerateIntPropertyField(string label, ref int value)
         {
             ImGui.Columns(2);

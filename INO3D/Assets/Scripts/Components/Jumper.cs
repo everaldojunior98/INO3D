@@ -11,10 +11,15 @@ namespace Assets.Scripts.Components
     {
         #region Fields
 
-        private const float Width = 0.02f;
+        private const float Radius = 0.011f;
         private const float MaxDistance = 0.001f;
-        private const float JumperOffset = 0.18f;
-        private const int NumberOfPoints = 20;
+
+        private const float RigidJumperOffset = 0.03f;
+        private const float NonRigidJumperOffset = 0.18f;
+        
+        private const int NumberOfBezierPoints = 20;
+
+        private const int CrossSegments = 10;
 
         [SerializeField] GameObject malePrefab;
         [SerializeField] GameObject femalePrefab;
@@ -33,8 +38,11 @@ namespace Assets.Scripts.Components
         private InoPort inoPort2;
         private Vector3 inoPort2Position;
 
-        private LineRenderer lineRenderer;
+        private MeshRenderer meshRenderer;
         private MeshCollider meshCollider;
+
+        private bool isRigid;
+        private bool lastIsRigid;
 
         private int currentColor;
         private int lastColor;
@@ -78,6 +86,8 @@ namespace Assets.Scripts.Components
             };
             UIManager.Instance.GenerateComboBoxPropertyField(LocalizationManager.Instance.Localize("Color"),
                 ref currentColor, colors);
+            UIManager.Instance.GenerateCheckboxPropertyField(LocalizationManager.Instance.Localize("IsRigid"),
+                ref isRigid);
         }
 
         protected override void OnUpdate()
@@ -86,14 +96,14 @@ namespace Assets.Scripts.Components
                 return;
 
             if (Vector3.Distance(inoPort1.transform.position, inoPort1Position) > MaxDistance ||
-                Vector3.Distance(inoPort2.transform.position, inoPort2Position) > MaxDistance)
+                Vector3.Distance(inoPort2.transform.position, inoPort2Position) > MaxDistance || isRigid != lastIsRigid)
             {
-                Generate(inoPort1, inoPort2, currentColor);
+                Generate(inoPort1, inoPort2, currentColor, isRigid);
             }
 
             if (lastColor != currentColor)
             {
-                lineRenderer.sharedMaterial = materials[currentColor];
+                meshRenderer.sharedMaterial = materials[currentColor];
                 lastColor = currentColor;
             }
         }
@@ -119,7 +129,8 @@ namespace Assets.Scripts.Components
                 Port2PositionY = inoPort2Position.y,
                 Port2PositionZ = inoPort2Position.z,
 
-                CurrentColor = currentColor
+                CurrentColor = currentColor,
+                IsRigid = isRigid
             };
 
             return saveFile;
@@ -130,6 +141,7 @@ namespace Assets.Scripts.Components
             if (saveFile is JumperSaveFile jumperSave)
             {
                 currentColor = jumperSave.CurrentColor;
+                isRigid = jumperSave.IsRigid;
             }
         }
 
@@ -148,9 +160,9 @@ namespace Assets.Scripts.Components
 
         #region Public Methods
 
-        public void Generate(InoPort port1, InoPort port2, int color)
+        public void Generate(InoPort port1, InoPort port2, int color, bool rigid)
         {
-            if (lineRenderer == null)
+            if (meshRenderer == null)
             {
                 materials = new List<Material>
                 {
@@ -165,16 +177,10 @@ namespace Assets.Scripts.Components
                     Resources.Load<Material>("3D Models\\Jumper\\Materials\\YellowWire")
                 };
 
-                lineRenderer = GetComponentInChildren<LineRenderer>();
-                lineRenderer.useWorldSpace = true;
-
+                meshRenderer = GetComponentInChildren<MeshRenderer>();
                 meshCollider = gameObject.AddComponent<MeshCollider>();
 
-                lineRenderer.startWidth = Width;
-                lineRenderer.endWidth = Width;
-                lineRenderer.positionCount = NumberOfPoints;
-
-                lineRenderer.sharedMaterial = materials[color];
+                meshRenderer.sharedMaterial = materials[color];
                 currentColor = color;
 
                 inoPort1 = port1;
@@ -221,25 +227,131 @@ namespace Assets.Scripts.Components
 
             inoPort1Position = port1.transform.position;
             inoPort2Position = port2.transform.position;
-            
-            var p0 = new Vector3(inoPort1Position.x, inoPort1Position.y + JumperOffset, inoPort1Position.z);
-            var p3 = new Vector3(inoPort2Position.x, inoPort2Position.y + JumperOffset, inoPort2Position.z);
-            var height = Vector3.Distance(p0, p3) / 2f;
 
-            var p1 = new Vector3(p0.x, height + p0.y + JumperOffset, p0.z);
-            var p2 = new Vector3(p3.x, height + p3.y + JumperOffset, p3.z);
-
-            for (var i = 0; i < NumberOfPoints; i++)
+            var points = new List<Vector3>();
+            if (rigid)
             {
-                var t = i / (NumberOfPoints - 1.0f);
-                var position = Mathf.Pow(1 - t, 3) * p0 + 3 * Mathf.Pow(1 - t, 2) * t * p1 +
-                               3 * (1 - t) * t * t * p2 + t * t * t * p3;
-                lineRenderer.SetPosition(i, position);
+                jumper1.SetActive(false);
+                jumper1BoxCollider.isTrigger = true;
+                jumper2.SetActive(false);
+                jumper1BoxCollider.isTrigger = true;
+
+                var initialPoint = new Vector3(inoPort1Position.x, inoPort1Position.y, inoPort1Position.z);
+                var finalPoint = new Vector3(inoPort2Position.x, inoPort2Position.y, inoPort2Position.z);
+                var middlePoint = (initialPoint + finalPoint) / 2;
+
+                var controlPoint1 = new Vector3(initialPoint.x, initialPoint.y + RigidJumperOffset, initialPoint.z);
+                var controlPoint2 = new Vector3(initialPoint.x, initialPoint.y + RigidJumperOffset, initialPoint.z);
+
+                var controlPoint3 = new Vector3(finalPoint.x, finalPoint.y + RigidJumperOffset, finalPoint.z);
+                var controlPoint4 = new Vector3(finalPoint.x, finalPoint.y + RigidJumperOffset, finalPoint.z);
+
+                for (var i = 0; i < NumberOfBezierPoints / 2; i++)
+                {
+                    var t = i / (NumberOfBezierPoints - 1.0f);
+                    var position = Mathf.Pow(1 - t, 3) * initialPoint + 3 * Mathf.Pow(1 - t, 2) * t * controlPoint1 + 3 * (1 - t) * t * t * controlPoint2 + t * t * t * middlePoint;
+                    points.Add(position);
+                }
+
+                for (var i = NumberOfBezierPoints / 2; i < NumberOfBezierPoints; i++)
+                {
+                    var t = i / (NumberOfBezierPoints - 1.0f);
+                    var position = Mathf.Pow(1 - t, 3) * middlePoint + 3 * Mathf.Pow(1 - t, 2) * t * controlPoint3 + 3 * (1 - t) * t * t * controlPoint4 + t * t * t * finalPoint;
+                    points.Add(position);
+                }
+            }
+            else
+            {
+                jumper1.SetActive(true);
+                jumper1BoxCollider.isTrigger = false;
+                jumper2.SetActive(true);
+                jumper2BoxCollider.isTrigger = false;
+
+                var initialPoint = new Vector3(inoPort1Position.x, inoPort1Position.y + NonRigidJumperOffset, inoPort1Position.z);
+                var finalPoint = new Vector3(inoPort2Position.x, inoPort2Position.y + NonRigidJumperOffset, inoPort2Position.z);
+                var height = Vector3.Distance(initialPoint, finalPoint) / 2f;
+
+                var controlPoint1 = new Vector3(initialPoint.x, height + initialPoint.y + NonRigidJumperOffset, initialPoint.z);
+                var controlPoint2 = new Vector3(finalPoint.x, height + finalPoint.y + NonRigidJumperOffset, finalPoint.z);
+
+                for (var i = 0; i < NumberOfBezierPoints; i++)
+                {
+                    var t = i / (NumberOfBezierPoints - 1.0f);
+                    var position = Mathf.Pow(1 - t, 3) * initialPoint + 3 * Mathf.Pow(1 - t, 2) * t * controlPoint1 + 3 * (1 - t) * t * t * controlPoint2 + t * t * t * finalPoint;
+                    points.Add(position);
+                }
             }
 
-            var mesh = new Mesh();
-            lineRenderer.BakeMesh(mesh);
+            var crossPoints = new Vector3[CrossSegments];
+            var theta = 2.0f * Mathf.PI / CrossSegments;
+            for (var c = 0; c < CrossSegments; c++)
+                crossPoints[c] = new Vector3(Mathf.Cos(theta * c), Mathf.Sin(theta * c), 0);
+
+            var vertices = new Vector3[points.Count + 2];
+
+            var v0Offset = (points[0] - points[1]) * 0.01f;
+            vertices[0] = v0Offset + points[0];
+            var v1Offset = (points[points.Count - 1] - points[points.Count - 2]) * 0.01f;
+            vertices[vertices.Length - 1] = v1Offset + points[points.Count - 1];
+
+            for (var p = 0; p < points.Count; p++)
+                vertices[p + 1] = points[p];
+
+            var meshVertices = new Vector3[vertices.Length * CrossSegments];
+            var uvs = new Vector2[vertices.Length * CrossSegments];
+            var triangles = new int[vertices.Length * CrossSegments * 6];
+            var lastVertices = new int[CrossSegments];
+            var theseVertices = new int[CrossSegments];
+            var rotation = Quaternion.identity;
+
+            for (var p = 0; p < vertices.Length; p++)
+            {
+                if (p < vertices.Length - 1)
+                {
+                    var eulerAngles = Quaternion.FromToRotation(Vector3.forward, vertices[p + 1] - vertices[p]).eulerAngles;
+                    rotation = Quaternion.Euler(eulerAngles.x, eulerAngles.y, 0);
+                }
+
+                for (var c = 0; c < CrossSegments; c++)
+                {
+                    var vertexIndex = p * CrossSegments + c;
+                    meshVertices[vertexIndex] = vertices[p] + rotation * crossPoints[c] * Radius;
+                    uvs[vertexIndex] = new Vector2((float) c / CrossSegments, (float) p / vertices.Length);
+
+                    lastVertices[c] = theseVertices[c];
+                    theseVertices[c] = p * CrossSegments + c;
+                }
+
+                if (p > 0)
+                {
+                    for (var c = 0; c < CrossSegments; c++)
+                    {
+                        var start = (p * CrossSegments + c) * 6;
+                        triangles[start] = lastVertices[c];
+                        triangles[start + 1] = lastVertices[(c + 1) % CrossSegments];
+                        triangles[start + 2] = theseVertices[c];
+                        triangles[start + 3] = triangles[start + 2];
+                        triangles[start + 4] = triangles[start + 1];
+                        triangles[start + 5] = theseVertices[(c + 1) % CrossSegments];
+                    }
+                }
+            }
+
+            var mesh = GetComponentInChildren<MeshFilter>().mesh;
+            if (!mesh)
+                mesh = new Mesh();
+
+            mesh.vertices = meshVertices;
+            mesh.triangles = triangles;
+            mesh.uv = uvs;
+
+            mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
+            mesh.RecalculateBounds();
+
             meshCollider.sharedMesh = mesh;
+            isRigid = rigid;
+            lastIsRigid = rigid;
         }
 
         #endregion
