@@ -7,7 +7,7 @@ using CircuitSharp.Core;
 using CircuitSharp.Machines;
 using CLanguage;
 using CLanguage.Interpreter;
-using static CircuitSharp.Components.Base.Pin;
+using static CircuitSharp.Components.Base.ATmegaPin;
 
 namespace CircuitSharp.Components.Chips
 {
@@ -69,7 +69,7 @@ namespace CircuitSharp.Components.Chips
         private const string LoopEntryPoint = "main";
         private readonly CInterpreter interpreter;
 
-        private Pin[] pins;
+        private ATmegaPin[] pins;
         private Dictionary<int, Tuple<Action, int>> interruptions;
 
         private double[] pinTimeOn;
@@ -185,7 +185,7 @@ namespace CircuitSharp.Components.Chips
         public void SetPinMode(short pin, int mode)
         {
             if (mode >= 0 && mode <= 2 && IsValidPin(pin))
-                pins[pin].Mode = (PinMode) mode;
+                pins[pin].Mode = (ATmegaPinMode) mode;
         }
 
         public bool ReadDigitalPin(short pin)
@@ -204,7 +204,7 @@ namespace CircuitSharp.Components.Chips
 
         public int ReadAnalogPin(short pin)
         {
-            if (IsValidPin(pin) && pins[pin].GetType() == PinType.Analog)
+            if (IsValidPin(pin) && pins[pin].GetType() == ATmegaPinType.Analog)
             {
                 var maxInputValue = Math.Pow(2, AnalogReadResolution) - 1;
                 var value = (int) (pins[pin].GetVoltage() * maxInputValue / MaxVoltage);
@@ -222,7 +222,7 @@ namespace CircuitSharp.Components.Chips
                     Math.Pow(2, AnalogWriteResolution) - 1);
 
                 var dutyCycle = Math.Round(analogValue / (Math.Pow(2, AnalogWriteResolution) - 1), 2);
-                if (pins[pin].GetType() == PinType.Digital)
+                if (pins[pin].GetType() == ATmegaPinType.Digital)
                     dutyCycle = dutyCycle >= 0.5 ? 1 : 0;
 
                 pins[pin].DutyCycle = dutyCycle;
@@ -280,78 +280,78 @@ namespace CircuitSharp.Components.Chips
             interruptions = new Dictionary<int, Tuple<Action, int>>();
             pinTimeOn = new double[GetLeadCount()];
             pinTotalTime = new double[GetLeadCount()];
-            pins = new Pin[GetLeadCount()];
+            pins = new ATmegaPin[GetLeadCount()];
 
             //Digital Pins
             //0 - RXD
-            pins[0] = new Pin("PD0", MaxVoltage, PwmFrequency, PinType.Digital);
+            pins[0] = new ATmegaPin("PD0", MaxVoltage, PwmFrequency, ATmegaPinType.Digital);
             //1 - TXD
-            pins[1] = new Pin("PD1",  MaxVoltage, PwmFrequency, PinType.Digital);
+            pins[1] = new ATmegaPin("PD1",  MaxVoltage, PwmFrequency, ATmegaPinType.Digital);
             //2
-            pins[2] = new Pin("PD2",  MaxVoltage, PwmFrequency, PinType.Digital)
+            pins[2] = new ATmegaPin("PD2",  MaxVoltage, PwmFrequency, ATmegaPinType.Digital)
             {
                 IsInterruptPin = true,
                 InterruptIndex = 0
             };
             //3
-            pins[3] = new Pin("PD3",  MaxVoltage, PwmFrequency, PinType.DigitalPwm)
+            pins[3] = new ATmegaPin("PD3",  MaxVoltage, PwmFrequency, ATmegaPinType.DigitalPwm)
             {
                 IsInterruptPin = true,
                 InterruptIndex = 1
             };
             //4
-            pins[4] = new Pin("PD4",  MaxVoltage, PwmFrequency, PinType.DigitalPwm);
+            pins[4] = new ATmegaPin("PD4",  MaxVoltage, PwmFrequency, ATmegaPinType.DigitalPwm);
             //5
-            pins[5] = new Pin("PD5",  MaxVoltage, PwmFrequency, PinType.DigitalPwm);
+            pins[5] = new ATmegaPin("PD5",  MaxVoltage, PwmFrequency, ATmegaPinType.DigitalPwm);
             //6
-            pins[6] = new Pin("PD6",  MaxVoltage, PwmFrequency, PinType.DigitalPwm);
+            pins[6] = new ATmegaPin("PD6",  MaxVoltage, PwmFrequency, ATmegaPinType.DigitalPwm);
             //7
-            pins[7] = new Pin("PD7",  MaxVoltage, PwmFrequency, PinType.Digital);
+            pins[7] = new ATmegaPin("PD7",  MaxVoltage, PwmFrequency, ATmegaPinType.Digital);
             //8
-            pins[8] = new Pin("PB0",  MaxVoltage, PwmFrequency, PinType.Digital);
+            pins[8] = new ATmegaPin("PB0",  MaxVoltage, PwmFrequency, ATmegaPinType.Digital);
             //9
-            pins[9] = new Pin("PB1",  MaxVoltage, PwmFrequency, PinType.DigitalPwm);
+            pins[9] = new ATmegaPin("PB1",  MaxVoltage, PwmFrequency, ATmegaPinType.DigitalPwm);
             //10
-            pins[10] = new Pin("PB2",  MaxVoltage, PwmFrequency, PinType.DigitalPwm);
+            pins[10] = new ATmegaPin("PB2",  MaxVoltage, PwmFrequency, ATmegaPinType.DigitalPwm);
             //11
-            pins[11] = new Pin("PB3",  MaxVoltage, PwmFrequency, PinType.DigitalPwm);
+            pins[11] = new ATmegaPin("PB3",  MaxVoltage, PwmFrequency, ATmegaPinType.DigitalPwm);
             //12
-            pins[12] = new Pin("PB4",  MaxVoltage, PwmFrequency, PinType.Digital);
+            pins[12] = new ATmegaPin("PB4",  MaxVoltage, PwmFrequency, ATmegaPinType.Digital);
             //13
-            pins[13] = new Pin("PB5",  MaxVoltage, PwmFrequency, PinType.Digital);
+            pins[13] = new ATmegaPin("PB5",  MaxVoltage, PwmFrequency, ATmegaPinType.Digital);
 
             //Analog Pins
             //A0
-            pins[14] = new Pin("PC0",  MaxVoltage, PwmFrequency, PinType.Analog);
+            pins[14] = new ATmegaPin("PC0",  MaxVoltage, PwmFrequency, ATmegaPinType.Analog);
             //A1
-            pins[15] = new Pin("PC1",  MaxVoltage, PwmFrequency, PinType.Analog);
+            pins[15] = new ATmegaPin("PC1",  MaxVoltage, PwmFrequency, ATmegaPinType.Analog);
             //A2
-            pins[16] = new Pin("PC2",  MaxVoltage, PwmFrequency, PinType.Analog);
+            pins[16] = new ATmegaPin("PC2",  MaxVoltage, PwmFrequency, ATmegaPinType.Analog);
             //A3
-            pins[17] = new Pin("PC3",  MaxVoltage, PwmFrequency, PinType.Analog);
+            pins[17] = new ATmegaPin("PC3",  MaxVoltage, PwmFrequency, ATmegaPinType.Analog);
             //A4
-            pins[18] = new Pin("PC4",  MaxVoltage, PwmFrequency, PinType.Analog);
+            pins[18] = new ATmegaPin("PC4",  MaxVoltage, PwmFrequency, ATmegaPinType.Analog);
             //A5
-            pins[19] = new Pin("PC5",  MaxVoltage, PwmFrequency, PinType.Analog);
+            pins[19] = new ATmegaPin("PC5",  MaxVoltage, PwmFrequency, ATmegaPinType.Analog);
 
             //Control Pins
             //Reset
-            pins[20] = new Pin("PC6",  MaxVoltage, PwmFrequency, PinType.Analog)
+            pins[20] = new ATmegaPin("PC6",  MaxVoltage, PwmFrequency, ATmegaPinType.Analog)
             {
-                Mode = PinMode.Input,
+                Mode = ATmegaPinMode.Input,
                 IsControlPin = true
             };
             //VCC
-            pins[21] = new Pin("VCC",  MaxVoltage, PwmFrequency, PinType.Digital)
+            pins[21] = new ATmegaPin("VCC",  MaxVoltage, PwmFrequency, ATmegaPinType.Digital)
             {
-                Mode = PinMode.Output,
+                Mode = ATmegaPinMode.Output,
                 DutyCycle = 1,
                 IsControlPin = true
             };
             //GND
-            pins[22] = new Pin("GND",  MaxVoltage, PwmFrequency, PinType.Digital)
+            pins[22] = new ATmegaPin("GND",  MaxVoltage, PwmFrequency, ATmegaPinType.Digital)
             {
-                Mode = PinMode.Output,
+                Mode = ATmegaPinMode.Output,
                 IsControlPin = true
             };
 
@@ -365,7 +365,8 @@ namespace CircuitSharp.Components.Chips
 
             interpreter.Reset(LoopEntryPoint);
         }
-        private double GetVoltage(Circuit circuit, Pin pin)
+
+        private double GetVoltage(Circuit circuit, ATmegaPin pin)
         {
             var newFreq = pin.Frequency;
             var timeStep = circuit.GetTimeStep();
@@ -389,7 +390,7 @@ namespace CircuitSharp.Components.Chips
         public override void SetCurrent(int lead, double current)
         {
             for (var i = 0; i != GetLeadCount(); i++)
-                if (pins[i].Mode == PinMode.Output && pins[i].VoltSourceId == lead)
+                if (pins[i].Mode == ATmegaPinMode.Output && pins[i].VoltSourceId == lead)
                     pins[i].Current = current;
         }
 
@@ -398,7 +399,7 @@ namespace CircuitSharp.Components.Chips
             for (var i = 0; i != GetLeadCount(); i++)
             {
                 var pin = pins[i];
-                if (pin.Mode == PinMode.Output && j-- == 0)
+                if (pin.Mode == ATmegaPinMode.Output && j-- == 0)
                     pin.VoltSourceId = vs;
             }
         }
@@ -408,7 +409,7 @@ namespace CircuitSharp.Components.Chips
             for (var i = 0; i != GetLeadCount(); i++)
             {
                 var pin = pins[i];
-                if (pin.Mode == PinMode.Output)
+                if (pin.Mode == ATmegaPinMode.Output)
                     circuit.StampVoltageSource(0, LeadNode[i], pin.VoltSourceId);
             }
         }
@@ -423,7 +424,7 @@ namespace CircuitSharp.Components.Chips
             for (var i = 0; i != GetLeadCount(); i++)
             {
                 var pin = pins[i];
-                if (pin.Mode == PinMode.Input || pin.Mode == PinMode.InputPullup)
+                if (pin.Mode == ATmegaPinMode.Input || pin.Mode == ATmegaPinMode.InputPullup)
                 {
                     pinTotalTime[i] += circuit.GetTimeStep();
                     if (LeadVolt[i] > MaxVoltage / 2)
@@ -475,7 +476,7 @@ namespace CircuitSharp.Components.Chips
             for (var i = 0; i != GetLeadCount(); i++)
             {
                 var pin = pins[i];
-                if (pin.Mode == PinMode.Output)
+                if (pin.Mode == ATmegaPinMode.Output)
                     circuit.UpdateVoltageSource(0, i, pin.VoltSourceId, GetVoltage(circuit, pin));
             }
 
@@ -510,12 +511,12 @@ namespace CircuitSharp.Components.Chips
 
         public override bool LeadIsGround(int lead)
         {
-            return pins[lead].Mode == PinMode.Output;
+            return pins[lead].Mode == ATmegaPinMode.Output;
         }
 
         public override int GetVoltageSourceCount()
         {
-            return pins.Count(pin => pin.Mode == PinMode.Output);
+            return pins.Count(pin => pin.Mode == ATmegaPinMode.Output);
         }
 
         public override int GetLeadCount()

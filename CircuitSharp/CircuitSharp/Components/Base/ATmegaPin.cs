@@ -1,26 +1,24 @@
-﻿using System;
-
-namespace CircuitSharp.Components.Base
+﻿namespace CircuitSharp.Components.Base
 {
-    public class Pin
+    public class ATmegaPin
     {
         #region Properties
 
-        public enum PinType
+        public enum ATmegaPinType
         {
             Analog,
             Digital,
             DigitalPwm
         }
 
-        public enum PinMode
+        public enum ATmegaPinMode
         {
             Input,
             Output,
             InputPullup,
         }
 
-        public PinMode Mode;
+        public ATmegaPinMode Mode;
 
         public double DutyCycle;
         public double Current;
@@ -38,13 +36,13 @@ namespace CircuitSharp.Components.Base
 
         private readonly string name;
         private readonly double maxVoltage;
-        private readonly PinType type;
+        private readonly ATmegaPinType type;
 
         #endregion
 
         #region Constructor
 
-        public Pin(string name, double maxVoltage, double frequency, PinType type)
+        public ATmegaPin(string name, double maxVoltage, double frequency, ATmegaPinType type)
         {
             this.name = name;
             this.maxVoltage = maxVoltage;
@@ -61,7 +59,7 @@ namespace CircuitSharp.Components.Base
             return name;
         }
 
-        public new PinType GetType()
+        public new ATmegaPinType GetType()
         {
             return type;
         }
