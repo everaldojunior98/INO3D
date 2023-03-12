@@ -12,30 +12,14 @@ namespace CircuitSharp.Components.Chips
     {
         #region Properties
 
-        public new Lead IN1Lead => new Lead(this, 0);
-        public new Lead IN2Lead => new Lead(this, 1);
-        public new Lead IN3Lead => new Lead(this, 2);
-        public new Lead IN4Lead => new Lead(this, 3);
-        public new Lead IN5Lead => new Lead(this, 4);
-        public new Lead IN6Lead => new Lead(this, 5);
-        public new Lead IN7Lead => new Lead(this, 6);
-        public new Lead IN8Lead => new Lead(this, 7);
-        public new Lead IN9Lead => new Lead(this, 8);
-        public new Lead IN10Lead => new Lead(this, 9);
-        public new Lead OUT1Lead => new Lead(this, 10);
-        public new Lead OUT2Lead => new Lead(this, 11);
-        public new Lead OUT3Lead => new Lead(this, 12);
-        public new Lead OUT4Lead => new Lead(this, 13);
-        public new Lead OUT5Lead => new Lead(this, 14);
-        public new Lead OUT6Lead => new Lead(this, 15);
-        public new Lead OUT7Lead => new Lead(this, 16);
-        public new Lead OUT8Lead => new Lead(this, 17);
-        public new Lead OUT9Lead => new Lead(this, 18);
-        public new Lead OUT10Lead => new Lead(this, 19);
+        public readonly Lead[] Leads;
 
         #endregion
 
         #region Fields
+
+        private readonly int inputsCount;
+        private readonly int outputCount;
 
         private const string InterpreterEntryPoint = "__cinit";
         private const string LoopEntryPoint = "main";
@@ -52,8 +36,15 @@ namespace CircuitSharp.Components.Chips
 
         #region Constructor
 
-        public BkBx(string code)
+        public BkBx(int inputs, int outputs, string code)
         {
+            inputsCount = inputs;
+            outputCount = outputs;
+
+            Leads = new Lead[inputs + outputs];
+            for (var i = 0; i < Leads.Length; i++)
+                Leads[i] = new Lead(this, i);
+
             var machine = new BlackBoxMachineInfo(this);
             var fullCode = code + "\n\nvoid main() { while(1){loop();}}";
             interpreter = CLanguageService.CreateInterpreter(fullCode, machine);
@@ -88,27 +79,13 @@ namespace CircuitSharp.Components.Chips
         {
             pins = new BkBxPin[GetLeadCount()];
 
-            pins[0] = new BkBxPin("IN1", BlackBoxPinMode.Input);
-            pins[1] = new BkBxPin("IN2", BlackBoxPinMode.Input);
-            pins[2] = new BkBxPin("IN3", BlackBoxPinMode.Input);
-            pins[3] = new BkBxPin("IN4", BlackBoxPinMode.Input);
-            pins[4] = new BkBxPin("IN5", BlackBoxPinMode.Input);
-            pins[5] = new BkBxPin("IN6", BlackBoxPinMode.Input);
-            pins[6] = new BkBxPin("IN7", BlackBoxPinMode.Input);
-            pins[7] = new BkBxPin("IN8", BlackBoxPinMode.Input);
-            pins[8] = new BkBxPin("IN9", BlackBoxPinMode.Input);
-            pins[9] = new BkBxPin("IN10", BlackBoxPinMode.Input);
-
-            pins[10] = new BkBxPin("OUT1", BlackBoxPinMode.Output);
-            pins[11] = new BkBxPin("OUT2", BlackBoxPinMode.Output);
-            pins[12] = new BkBxPin("OUT3", BlackBoxPinMode.Output);
-            pins[13] = new BkBxPin("OUT4", BlackBoxPinMode.Output);
-            pins[14] = new BkBxPin("OUT5", BlackBoxPinMode.Output);
-            pins[15] = new BkBxPin("OUT6", BlackBoxPinMode.Output);
-            pins[16] = new BkBxPin("OUT7", BlackBoxPinMode.Output);
-            pins[17] = new BkBxPin("OUT8", BlackBoxPinMode.Output);
-            pins[18] = new BkBxPin("OUT9", BlackBoxPinMode.Output);
-            pins[19] = new BkBxPin("OUT10", BlackBoxPinMode.Output);
+            for (var i = 0; i < pins.Length; i++)
+            {
+                if (i < inputsCount)
+                    pins[i] = new BkBxPin($"IN{i + 1}", BlackBoxPinMode.Input);
+                else
+                    pins[i] = new BkBxPin($"OUT{i - inputsCount + 1}", BlackBoxPinMode.Output);
+            }
 
             interpreter.Reset(InterpreterEntryPoint);
             interpreter.Run();
@@ -215,7 +192,7 @@ namespace CircuitSharp.Components.Chips
 
         public override int GetLeadCount()
         {
-            return 20;
+            return inputsCount + outputCount;
         }
 
         #endregion

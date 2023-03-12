@@ -12,6 +12,7 @@ namespace Assets.Scripts.Components
     {
         #region Fields
 
+        private string header;
         private string currentCode;
         private BkBx bkBx;
 
@@ -25,29 +26,52 @@ namespace Assets.Scripts.Components
 
         public override void GenerateCircuitElement()
         {
-            bkBx = SimulationManager.Instance.CreateElement<BkBx>(currentCode);
+            header = @"
+                #define IN1 0
+                #define IN2 1
+                #define IN3 2
+                #define IN4 3
+                #define IN5 4
+                #define IN6 5
+                #define IN7 6
+                #define IN8 7
+                #define IN9 8
+                #define IN10 9
+                #define OUT1 10
+                #define OUT2 11
+                #define OUT3 12
+                #define OUT4 13
+                #define OUT5 14
+                #define OUT6 15
+                #define OUT7 16
+                #define OUT8 17
+                #define OUT9 18
+                #define OUT10 19
+                ";
+
+            bkBx = SimulationManager.Instance.CreateElement<BkBx>(10, 10, header + currentCode);
             LeadByPortName = new Dictionary<string, Lead>
             {
-                {"IN1", bkBx.IN1Lead},
-                {"IN2", bkBx.IN2Lead},
-                {"IN3", bkBx.IN3Lead},
-                {"IN4", bkBx.IN4Lead},
-                {"IN5", bkBx.IN5Lead},
-                {"IN6", bkBx.IN6Lead},
-                {"IN7", bkBx.IN7Lead},
-                {"IN8", bkBx.IN8Lead},
-                {"IN9", bkBx.IN9Lead},
-                {"IN10", bkBx.IN10Lead},
-                {"OUT1", bkBx.OUT1Lead},
-                {"OUT2", bkBx.OUT2Lead},
-                {"OUT3", bkBx.OUT3Lead},
-                {"OUT4", bkBx.OUT4Lead},
-                {"OUT5", bkBx.OUT5Lead},
-                {"OUT6", bkBx.OUT6Lead},
-                {"OUT7", bkBx.OUT7Lead},
-                {"OUT8", bkBx.OUT8Lead},
-                {"OUT9", bkBx.OUT9Lead},
-                {"OUT10", bkBx.OUT10Lead}
+                {"IN1", bkBx.Leads[0]},
+                {"IN2", bkBx.Leads[1]},
+                {"IN3", bkBx.Leads[2]},
+                {"IN4", bkBx.Leads[3]},
+                {"IN5", bkBx.Leads[4]},
+                {"IN6", bkBx.Leads[5]},
+                {"IN7", bkBx.Leads[6]},
+                {"IN8", bkBx.Leads[7]},
+                {"IN9", bkBx.Leads[8]},
+                {"IN10", bkBx.Leads[9]},
+                {"OUT1", bkBx.Leads[10]},
+                {"OUT2", bkBx.Leads[11]},
+                {"OUT3", bkBx.Leads[12]},
+                {"OUT4", bkBx.Leads[13]},
+                {"OUT5", bkBx.Leads[14]},
+                {"OUT6", bkBx.Leads[15]},
+                {"OUT7", bkBx.Leads[16]},
+                {"OUT8", bkBx.Leads[17]},
+                {"OUT9", bkBx.Leads[18]},
+                {"OUT10", bkBx.Leads[19]}
             };
         }
 

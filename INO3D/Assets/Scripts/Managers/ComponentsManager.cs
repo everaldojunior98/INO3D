@@ -106,6 +106,12 @@ namespace Assets.Scripts.Managers
             {
                 "BlackBox"
             });
+            
+            componentsCategories.Add("Motors", new Dictionary<string, List<string>>());
+            componentsCategories["Motors"].Add("HBridge", new List<string>
+            {
+                "L298N"
+            });
 
             iconByName = new Dictionary<string, Texture>();
             prefabByName = new Dictionary<string, GameObject>();

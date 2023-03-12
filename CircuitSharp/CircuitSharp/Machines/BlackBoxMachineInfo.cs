@@ -27,26 +27,6 @@ namespace CircuitSharp.Machines
             LongDoubleSize = 8;
             PointerSize = 2;
             HeaderCode = @"
-                #define IN1 0
-                #define IN2 1
-                #define IN3 2
-                #define IN4 3
-                #define IN5 4
-                #define IN6 5
-                #define IN7 6
-                #define IN8 7
-                #define IN9 8
-                #define IN10 9
-                #define OUT1 10
-                #define OUT2 11
-                #define OUT3 12
-                #define OUT4 13
-                #define OUT5 14
-                #define OUT6 15
-                #define OUT7 16
-                #define OUT8 17
-                #define OUT9 18
-                #define OUT10 19
                 typedef bool boolean;
                 typedef unsigned char byte;
                 typedef unsigned short word;
