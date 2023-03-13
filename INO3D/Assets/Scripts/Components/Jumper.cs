@@ -14,10 +14,11 @@ namespace Assets.Scripts.Components
         private const float Radius = 0.011f;
         private const float MaxDistance = 0.001f;
 
+        private const float HorizontalJumperOffset = -0.09f;
         private const float RigidJumperOffset = 0.03f;
         private const float NonRigidJumperOffset = 0.18f;
         
-        private const int NumberOfBezierPoints = 20;
+        private const int NumberOfBezierPoints = 40;
 
         private const int CrossSegments = 10;
 
@@ -86,8 +87,9 @@ namespace Assets.Scripts.Components
             };
             UIManager.Instance.GenerateComboBoxPropertyField(LocalizationManager.Instance.Localize("Color"),
                 ref currentColor, colors);
-            UIManager.Instance.GenerateCheckboxPropertyField(LocalizationManager.Instance.Localize("IsRigid"),
-                ref isRigid);
+
+            if(inoPort1.CanBeRigid && inoPort2.CanBeRigid)
+                UIManager.Instance.GenerateCheckboxPropertyField(LocalizationManager.Instance.Localize("IsRigid"), ref isRigid);
         }
 
         protected override void OnUpdate()
@@ -269,10 +271,28 @@ namespace Assets.Scripts.Components
 
                 var initialPoint = new Vector3(inoPort1Position.x, inoPort1Position.y + NonRigidJumperOffset, inoPort1Position.z);
                 var finalPoint = new Vector3(inoPort2Position.x, inoPort2Position.y + NonRigidJumperOffset, inoPort2Position.z);
-                var height = Vector3.Distance(initialPoint, finalPoint) / 2f;
+                var distance = Vector3.Distance(initialPoint, finalPoint) / 2f;
 
-                var controlPoint1 = new Vector3(initialPoint.x, height + initialPoint.y + NonRigidJumperOffset, initialPoint.z);
-                var controlPoint2 = new Vector3(finalPoint.x, height + finalPoint.y + NonRigidJumperOffset, finalPoint.z);
+                var controlPoint1 = new Vector3(initialPoint.x, distance + initialPoint.y + NonRigidJumperOffset, initialPoint.z);
+                var controlPoint2 = new Vector3(finalPoint.x, distance + finalPoint.y + NonRigidJumperOffset, finalPoint.z);
+
+                if (inoPort1.IsTerminalBlock)
+                {
+                    jumper1.SetActive(false);
+                    jumper1BoxCollider.isTrigger = true;
+
+                    initialPoint = new Vector3(inoPort1Position.x, inoPort1Position.y + HorizontalJumperOffset, inoPort1Position.z);
+                    controlPoint1 = initialPoint + distance * (Quaternion.Euler(0, inoPort1.Component.transform.eulerAngles.y, 0) * inoPort1.WireDirection);
+                }
+
+                if (inoPort2.IsTerminalBlock)
+                {
+                    jumper2.SetActive(false);
+                    jumper2BoxCollider.isTrigger = true;
+
+                    finalPoint = new Vector3(inoPort2Position.x, inoPort2Position.y + HorizontalJumperOffset, inoPort2Position.z);
+                    controlPoint2 = finalPoint + distance * (Quaternion.Euler(0, inoPort2.Component.transform.eulerAngles.y, 0) * inoPort2.WireDirection);
+                }
 
                 for (var i = 0; i < NumberOfBezierPoints; i++)
                 {

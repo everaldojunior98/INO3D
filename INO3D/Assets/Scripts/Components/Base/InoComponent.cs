@@ -36,7 +36,7 @@ namespace Assets.Scripts.Components.Base
 
         public string Hash { get; private set; }
 
-        protected List<Tuple<string, Vector3, PortType, PinType>> Ports;
+        protected List<Tuple<string, Vector3, PortType, PinType, bool, bool, Vector3>> Ports;
         protected List<InoPort> GeneratedPorts;
         protected Dictionary<string, Lead> LeadByPortName;
 
@@ -62,7 +62,7 @@ namespace Assets.Scripts.Components.Base
 
         private void Awake()
         {
-            Ports = new List<Tuple<string, Vector3, PortType, PinType>>();
+            Ports = new List<Tuple<string, Vector3, PortType, PinType, bool, bool, Vector3>>();
             GeneratedPorts = new List<InoPort>();
 
             Pins = new List<Tuple<string, Vector3>>();
@@ -295,6 +295,10 @@ namespace Assets.Scripts.Components.Base
                 inoPort.PortName = tuple.Item1;
                 inoPort.PortType = tuple.Item3;
                 inoPort.PinType = tuple.Item4;
+                inoPort.CanBeRigid = tuple.Item5;
+                inoPort.IsTerminalBlock = tuple.Item6;
+                inoPort.WireDirection = tuple.Item7;
+                inoPort.Component = this;
                 inoPort.GetLead = () => GetLead(tuple.Item1);
 
                 GeneratedPorts.Add(inoPort);

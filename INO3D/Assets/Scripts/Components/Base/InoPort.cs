@@ -13,6 +13,11 @@ namespace Assets.Scripts.Components.Base
         public string PortName;
         public PortType PortType;
         public PinType PinType;
+        public bool CanBeRigid;
+        public bool IsTerminalBlock;
+        public Vector3 WireDirection;
+
+        public InoComponent Component;
 
         public Func<Lead> GetLead;
 

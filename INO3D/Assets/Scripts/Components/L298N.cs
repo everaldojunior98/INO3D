@@ -118,19 +118,19 @@ namespace Assets.Scripts.Components
         {
             DefaultHeight = 0.006f;
 
-            Ports.Add(Tuple.Create("ENA", new Vector3(0.226f,0.018f,0.035f), PortType.None, PinType.Female));
-            Ports.Add(Tuple.Create("IN1", new Vector3(0.226f,0.018f,0.067f), PortType.None, PinType.Female));
-            Ports.Add(Tuple.Create("IN2", new Vector3(0.226f,0.018f,0.100f), PortType.None, PinType.Female));
-            Ports.Add(Tuple.Create("IN3", new Vector3(0.226f,0.018f,0.133f), PortType.None, PinType.Female));
-            Ports.Add(Tuple.Create("IN4", new Vector3(0.226f,0.018f,0.166f), PortType.None, PinType.Female));
-            Ports.Add(Tuple.Create("ENB", new Vector3(0.226f,0.018f,0.199f), PortType.None, PinType.Female));
+            Ports.Add(Tuple.Create("ENA", new Vector3(0.226f,0.018f,0.035f), PortType.None, PinType.Female, false, false, Vector3.zero));
+            Ports.Add(Tuple.Create("IN1", new Vector3(0.226f,0.018f,0.067f), PortType.None, PinType.Female, false, false, Vector3.zero));
+            Ports.Add(Tuple.Create("IN2", new Vector3(0.226f,0.018f,0.100f), PortType.None, PinType.Female, false, false, Vector3.zero));
+            Ports.Add(Tuple.Create("IN3", new Vector3(0.226f,0.018f,0.133f), PortType.None, PinType.Female, false, false, Vector3.zero));
+            Ports.Add(Tuple.Create("IN4", new Vector3(0.226f,0.018f,0.166f), PortType.None, PinType.Female, false, false, Vector3.zero));
+            Ports.Add(Tuple.Create("ENB", new Vector3(0.226f,0.018f,0.199f), PortType.None, PinType.Female, false, false, Vector3.zero));
 
-            Ports.Add(Tuple.Create("V12", new Vector3(0.2198f, 0.1058f, -0.1739f), PortType.None, PinType.Female));
-            Ports.Add(Tuple.Create("GND", new Vector3(0.2198f, 0.1058f, -0.0989f), PortType.None, PinType.Female));
-            Ports.Add(Tuple.Create("OUT1", new Vector3(0.023f, 0.105f, -0.241f), PortType.None, PinType.Female));
-            Ports.Add(Tuple.Create("OUT2", new Vector3(0.1f, 0.105f, -0.241f), PortType.None, PinType.Female));
-            Ports.Add(Tuple.Create("OUT3", new Vector3(0.103f, 0.105f, 0.256f), PortType.None, PinType.Female));
-            Ports.Add(Tuple.Create("OUT4", new Vector3(0.029f, 0.105f, 0.256f), PortType.None, PinType.Female));
+            Ports.Add(Tuple.Create("V12", new Vector3(0.221f, 0.1058f, -0.172f), PortType.None, PinType.Female, false, true, new Vector3(1,0,0)));
+            Ports.Add(Tuple.Create("GND", new Vector3(0.2211f, 0.1058f, -0.0971f), PortType.None, PinType.Female, false, true, new Vector3(1, 0, 0)));
+            Ports.Add(Tuple.Create("OUT1", new Vector3(0.0261f, 0.105f, -0.2392f), PortType.None, PinType.Female, false, true, new Vector3(0, 0, -1)));
+            Ports.Add(Tuple.Create("OUT2", new Vector3(0.1006f, 0.105f, -0.239f), PortType.None, PinType.Female, false, true, new Vector3(0, 0, -1)));
+            Ports.Add(Tuple.Create("OUT3", new Vector3(0.1048f, 0.105f, 0.2572f), PortType.None, PinType.Female, false, true, new Vector3(0, 0, 1)));
+            Ports.Add(Tuple.Create("OUT4", new Vector3(0.0296f, 0.105f, 0.2572f), PortType.None, PinType.Female, false, true, new Vector3(0, 0, 1)));
         }
 
         public override SaveFile Save()

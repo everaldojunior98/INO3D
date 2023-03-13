@@ -70,8 +70,7 @@ namespace Assets.Scripts.Components
             {
                 var index = i + 1;
                 var pinName = $"A{index}";
-                Ports.Add(Tuple.Create(pinName, new Vector3(-0.2808f, 0.1584f, 0.7524f - i * yOffset), PortType.None,
-                    PinType.Female));
+                Ports.Add(Tuple.Create(pinName, new Vector3(-0.2808f, 0.1584f, 0.7524f - i * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
             }
 
             //B
@@ -79,8 +78,7 @@ namespace Assets.Scripts.Components
             {
                 var index = i + 1;
                 var pinName = $"B{index}";
-                Ports.Add(Tuple.Create(pinName, new Vector3(-0.229f, 0.1584f, 0.7524f - i * yOffset), PortType.None,
-                    PinType.Female));
+                Ports.Add(Tuple.Create(pinName, new Vector3(-0.229f, 0.1584f, 0.7524f - i * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
             }
 
             //C
@@ -88,8 +86,7 @@ namespace Assets.Scripts.Components
             {
                 var index = i + 1;
                 var pinName = $"C{index}";
-                Ports.Add(Tuple.Create(pinName, new Vector3(-0.1766f, 0.1584f, 0.7524f - i * yOffset),
-                    PortType.None, PinType.Female));
+                Ports.Add(Tuple.Create(pinName, new Vector3(-0.1766f, 0.1584f, 0.7524f - i * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
             }
 
             //D
@@ -97,8 +94,7 @@ namespace Assets.Scripts.Components
             {
                 var index = i + 1;
                 var pinName = $"D{index}";
-                Ports.Add(Tuple.Create(pinName, new Vector3(-0.1248f, 0.1584f, 0.7524f - i * yOffset),
-                    PortType.None, PinType.Female));
+                Ports.Add(Tuple.Create(pinName, new Vector3(-0.1248f, 0.1584f, 0.7524f - i * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
             }
 
             //E
@@ -106,8 +102,7 @@ namespace Assets.Scripts.Components
             {
                 var index = i + 1;
                 var pinName = $"E{index}";
-                Ports.Add(Tuple.Create(pinName, new Vector3(-0.0748f, 0.1584f, 0.7524f - i * yOffset),
-                    PortType.None, PinType.Female));
+                Ports.Add(Tuple.Create(pinName, new Vector3(-0.0748f, 0.1584f, 0.7524f - i * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
             }
 
             //F
@@ -115,8 +110,7 @@ namespace Assets.Scripts.Components
             {
                 var index = i + 1;
                 var pinName = $"F{index}";
-                Ports.Add(Tuple.Create(pinName, new Vector3(0.0739f, 0.1584f, 0.7524f - i * yOffset),
-                    PortType.None, PinType.Female));
+                Ports.Add(Tuple.Create(pinName, new Vector3(0.0739f, 0.1584f, 0.7524f - i * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
             }
 
             //G
@@ -124,8 +118,7 @@ namespace Assets.Scripts.Components
             {
                 var index = i + 1;
                 var pinName = $"G{index}";
-                Ports.Add(Tuple.Create(pinName, new Vector3(0.1257f, 0.1584f, 0.7524f - i * yOffset),
-                    PortType.None, PinType.Female));
+                Ports.Add(Tuple.Create(pinName, new Vector3(0.1257f, 0.1584f, 0.7524f - i * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
             }
 
             //H
@@ -133,8 +126,7 @@ namespace Assets.Scripts.Components
             {
                 var index = i + 1;
                 var pinName = $"H{index}";
-                Ports.Add(Tuple.Create(pinName, new Vector3(0.1775f, 0.1584f, 0.7524f - i * yOffset),
-                    PortType.None, PinType.Female));
+                Ports.Add(Tuple.Create(pinName, new Vector3(0.1775f, 0.1584f, 0.7524f - i * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
             }
 
             //I
@@ -142,8 +134,7 @@ namespace Assets.Scripts.Components
             {
                 var index = i + 1;
                 var pinName = $"I{index}";
-                Ports.Add(Tuple.Create(pinName, new Vector3(0.2293f, 0.1584f, 0.7524f - i * yOffset),
-                    PortType.None, PinType.Female));
+                Ports.Add(Tuple.Create(pinName, new Vector3(0.2293f, 0.1584f, 0.7524f - i * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
             }
 
             //J
@@ -151,8 +142,7 @@ namespace Assets.Scripts.Components
             {
                 var index = i + 1;
                 var pinName = $"J{index}";
-                Ports.Add(Tuple.Create(pinName, new Vector3(0.2802f, 0.1584f, 0.7524f - i * yOffset),
-                    PortType.None, PinType.Female));
+                Ports.Add(Tuple.Create(pinName, new Vector3(0.2802f, 0.1584f, 0.7524f - i * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
             }
 
             //VCC E GND
@@ -167,8 +157,7 @@ namespace Assets.Scripts.Components
                 for (var j = 0; j < 5; j++)
                 {
                     var pinName = $"VCC{vccCount + 1}";
-                    Ports.Add(Tuple.Create(pinName, new Vector3(-0.4694f, 0.1584f, startPos - j * yOffset),
-                        PortType.None, PinType.Female));
+                    Ports.Add(Tuple.Create(pinName, new Vector3(-0.4694f, 0.1584f, startPos - j * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
                     vccCount++;
                 }
 
@@ -182,8 +171,7 @@ namespace Assets.Scripts.Components
                 for (var j = 0; j < 5; j++)
                 {
                     var pinName = $"GND{gndCount + 1}";
-                    Ports.Add(Tuple.Create(pinName, new Vector3(-0.416f, 0.1584f, startPos - j * yOffset),
-                        PortType.None, PinType.Female));
+                    Ports.Add(Tuple.Create(pinName, new Vector3(-0.416f, 0.1584f, startPos - j * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
                     gndCount++;
                 }
 
@@ -198,8 +186,7 @@ namespace Assets.Scripts.Components
                 for (var j = 0; j < 5; j++)
                 {
                     var pinName = $"VCC{vccCount + 1}";
-                    Ports.Add(Tuple.Create(pinName, new Vector3(0.41f, 0.1584f, startPos - j * yOffset),
-                        PortType.None, PinType.Female));
+                    Ports.Add(Tuple.Create(pinName, new Vector3(0.41f, 0.1584f, startPos - j * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
                     vccCount++;
                 }
 
@@ -213,8 +200,7 @@ namespace Assets.Scripts.Components
                 for (var j = 0; j < 5; j++)
                 {
                     var pinName = $"GND{gndCount + 1}";
-                    Ports.Add(Tuple.Create(pinName, new Vector3(0.461f, 0.1584f, startPos - j * yOffset),
-                        PortType.None, PinType.Female));
+                    Ports.Add(Tuple.Create(pinName, new Vector3(0.461f, 0.1584f, startPos - j * yOffset), PortType.None, PinType.Female, true, false, Vector3.zero));
                     gndCount++;
                 }
 
