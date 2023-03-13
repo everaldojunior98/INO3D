@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace Assets.Scripts.Managers
         #region Properties
 
         public static UIManager Instance { get; private set; }
+
+        public GameObject WarningPrefab;
 
         #endregion
 
@@ -78,10 +81,13 @@ namespace Assets.Scripts.Managers
         private int currentLineEnding = 1;
         private int selectedLanguage = -1;
         private float cameraSensitivity = 1;
+        private bool showWarnings = true;
 
         private Action currentPopupAction = () => { };
         private Action<string> onCodeSave;
         private string currentCode = string.Empty;
+
+        private Dictionary<GameObject, GameObject> warningByObject;
 
         #endregion
 
@@ -98,6 +104,8 @@ namespace Assets.Scripts.Managers
             consoleInputBuffer = new byte[1024];
 
             currentLog = string.Empty;
+            warningByObject = new Dictionary<GameObject, GameObject>();
+            LoadSettings();
         }
 
         private void OnEnable()
@@ -112,7 +120,44 @@ namespace Assets.Scripts.Managers
 
         #endregion
 
+        #region Private Methods
+
+        private void LoadSettings()
+        {
+            selectedLanguage = LocalizationManager.Instance.GetCurrentLanguage();
+            cameraSensitivity = LocalizationManager.Instance.GetCameraSensitivity();
+            showWarnings = LocalizationManager.Instance.GetShowWarnings();
+        }
+
+        #endregion
+
         #region Public Methods
+
+        public void ShowWarning(GameObject obj, Vector3 position)
+        {
+            var show = LocalizationManager.Instance.GetShowWarnings();
+            if (!show || !SimulationManager.Instance.IsSimulating() || warningByObject.ContainsKey(obj))
+            {
+                if (!show && warningByObject.ContainsKey(obj))
+                    HideWarning(obj);
+                return;
+            }
+
+            var warning = Instantiate(WarningPrefab);
+            warning.transform.parent = obj.transform;
+            warning.transform.localPosition = position;
+
+            warningByObject.Add(obj, warning);
+        }
+
+        public void HideWarning(GameObject obj)
+        {
+            if (!warningByObject.ContainsKey(obj))
+                return;
+
+            Destroy(warningByObject[obj]);
+            warningByObject.Remove(obj);
+        }
 
         public bool IsMouserOverUI()
         {
@@ -142,17 +187,13 @@ namespace Assets.Scripts.Managers
         {
             showConsole = !showConsole;
         }
-        
+
         public void ShowSettings()
         {
             showSettings = !showSettings;
-            if (showSettings)
-            {
-                selectedLanguage = LocalizationManager.Instance.GetCurrentLanguage();
-                cameraSensitivity = LocalizationManager.Instance.GetCameraSensitivity();
-            }
+            LoadSettings();
         }
-        
+
         public void ShowEditCode(string code, Action<string> onSave)
         {
             currentCode = code;
@@ -375,7 +416,7 @@ namespace Assets.Scripts.Managers
             {
                 var categories = ComponentsManager.Instance.GetComponentsCategories();
                 // Left
-                ImGui.BeginChild("left pane", new Vector2(40, 0), false, ImGuiWindowFlags.NoScrollbar);
+                ImGui.BeginChild("left panel", new Vector2(40, 0), false, ImGuiWindowFlags.NoScrollbar);
                 foreach (var category in categories)
                 {
                     if (string.IsNullOrEmpty(selectedCategory))
@@ -628,32 +669,14 @@ namespace Assets.Scripts.Managers
             ImGui.SetCursorPos(new Vector2(stopPosition, padding.y));
             DrawButton("Stop", SimulationManager.Instance.IsSimulating(),
                 LocalizationManager.Instance.Localize("StopSimulation"),
-                () => SimulationManager.Instance.StopSimulation());
+                () =>
+                {
+                    SimulationManager.Instance.StopSimulation();
 
-            if (SimulationManager.Instance.IsSimulating())
-            {
-                var us = SimulationManager.Instance.GetTime();
-                var ms = us * 1000;
-                var s = ms / 1000 % 60;
-                var m = ms / 1000 / 60;
-                var h = m / 60;
-
-                string timeString;
-                if (h > 1)
-                    timeString = h.ToString("0", CultureInfo.InvariantCulture) + " h " +
-                                 m.ToString("0", CultureInfo.InvariantCulture) + " m " +
-                                 s.ToString("0.00", CultureInfo.InvariantCulture) + " s";
-                else if (m > 1)
-                    timeString = m.ToString("0", CultureInfo.InvariantCulture) + " m " +
-                                 s.ToString("0.00", CultureInfo.InvariantCulture) + " s";
-                else if (s > 1)
-                    timeString = s.ToString("0.00", CultureInfo.InvariantCulture) + " s";
-                else
-                    timeString = ms.ToString("0", CultureInfo.InvariantCulture) + " ms";
-
-                ImGui.SetCursorPos(new Vector2(timePosition, menuBarSize.y / 2 - ImGui.GetFontSize() / 2));
-                ImGui.Text(LocalizationManager.Instance.Localize("SimulationTime") + ": " + timeString);
-            }
+                    foreach (var warning in warningByObject.Values)
+                        Destroy(warning);
+                    warningByObject.Clear();
+                });
 
             var center = ImGui.GetMainViewport().Size / 2;
             ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
@@ -880,6 +903,19 @@ namespace Assets.Scripts.Managers
             ImGui.PushID("CameraSensitivity");
             ImGui.SliderFloat("", ref cameraSensitivity, 0, 3);
             ImGui.PopID();
+            
+            ImGui.NextColumn();
+
+            var showWarningsCursorPosition = ImGui.GetCursorPos();
+            ImGui.SetCursorPos(new Vector2(showWarningsCursorPosition.x, showWarningsCursorPosition.y + ImGui.GetFontSize() / 2));
+            ImGui.Text(LocalizationManager.Instance.Localize("ShowWarnings"));
+
+            ImGui.NextColumn();
+            
+            ImGui.SetNextItemWidth(-1);
+            ImGui.PushID("ShowWarnings");
+            ImGui.Checkbox("", ref showWarnings);
+            ImGui.PopID();
             ImGui.Columns(1);
 
             ImGui.Separator();
@@ -889,6 +925,7 @@ namespace Assets.Scripts.Managers
             {
                 LocalizationManager.Instance.SaveLanguage(languages[selectedLanguage]);
                 LocalizationManager.Instance.SaveCameraSensitivity(cameraSensitivity);
+                LocalizationManager.Instance.SaveShowWarnings(showWarnings);
             }
 
             ImGui.End();

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using Assets.Scripts.Components.Base;
 using Assets.Scripts.Managers;
-using CircuitSharp.Components;
-using CircuitSharp.Core;
+using SharpCircuit;
 using UnityEngine;
+using static SharpCircuit.Circuit;
 
 namespace Assets.Scripts.Components
 {
@@ -13,7 +13,6 @@ namespace Assets.Scripts.Components
         #region Fields
 
         private SwitchSPST switchSpst;
-
         private Animator animator;
 
         #endregion
@@ -25,15 +24,25 @@ namespace Assets.Scripts.Components
             if (SimulationManager.Instance.IsSimulating())
             {
                 animator.SetBool("Down", true);
-                switchSpst?.Close();
+                if (switchSpst != null)
+                {
+                    switchSpst.setPosition(0);
+                    SimulationManager.Instance.NeedAnalysis();
+                }
             }
         }
 
         private void OnMouseUp()
         {
-            animator.SetBool("Down", false);
             if (SimulationManager.Instance.IsSimulating())
-                switchSpst?.Open();
+            {
+                animator.SetBool("Down", false);
+                if (switchSpst != null)
+                {
+                    switchSpst.setPosition(1);
+                    SimulationManager.Instance.NeedAnalysis();
+                }
+            }
         }
 
         #endregion
@@ -45,14 +54,14 @@ namespace Assets.Scripts.Components
             if (IsConnected())
             {
                 switchSpst = SimulationManager.Instance.CreateElement<SwitchSPST>();
-                switchSpst.Open();
+                switchSpst.setPosition(1);
 
                 LeadByPortName = new Dictionary<string, Lead>
                 {
-                    {"A", switchSpst.LeadA},
-                    {"C", switchSpst.LeadA},
-                    {"B", switchSpst.LeadB},
-                    {"D", switchSpst.LeadB}
+                    {"A", switchSpst.leadA},
+                    {"C", switchSpst.leadA},
+                    {"B", switchSpst.leadB},
+                    {"D", switchSpst.leadB}
                 };
 
                 foreach (var pair in ConnectedPorts)

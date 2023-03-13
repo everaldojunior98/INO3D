@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.Components.Base;
+using Assets.Scripts.CustomElements.Chips;
 using Assets.Scripts.Managers;
-using CircuitSharp.Components.Chips;
-using CircuitSharp.Core;
+using SharpCircuit;
 using UnityEngine;
+using static SharpCircuit.Circuit;
 
 namespace Assets.Scripts.Components
 {
@@ -141,6 +142,9 @@ namespace Assets.Scripts.Components
 
         public override void OnSimulationTick()
         {
+            if(aTmega328P == null)
+                return;
+
             var led13State = aTmega328P.GetPinVoltage(13) > 2.5f;
             if (lastLed13 != led13State)
             {

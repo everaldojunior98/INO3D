@@ -2,26 +2,38 @@ using System;
 using System.Collections.Generic;
 using Assets.Scripts.Components.Base;
 using Assets.Scripts.Managers;
-using CircuitSharp.Core;
+using SharpCircuit;
 using UnityEngine;
-using LedModel = CircuitSharp.Components.Led;
 
 namespace Assets.Scripts.Components
 {
     public class Led : InoComponent
     {
+        #region Properties
+
+        public Light PointLight;
+
+        #endregion
+
         #region Fields
 
         private const float MinLuminosity = 0.2f;
         private const float MaxLuminosity = 2f;
 
-        public Light PointLight;
+        private const float MaxCurrentToWarning = 0.5f;
 
-        private LedModel led;
+        private const float MinCurrent = 0f;
+        private const float MaxCurrent = 0.025f;
+
+        private const float MinIntensity = 0f;
+        private const float MaxIntensity = 1f;
+
+        private readonly Vector3 warningPosition = new Vector3(0, 0.12f, 0);
+
+        private LED led;
 
         private MeshRenderer meshRenderer;
 
-        private float voltage;
         private float current;
 
         private List<Material> materials;
@@ -39,13 +51,15 @@ namespace Assets.Scripts.Components
         {
             if (SimulationManager.Instance.IsSimulating())
             {
-                if (voltage > 1)
+                if (current > MinCurrent)
                 {
+                    var clampedCurrent = Math.Min(current, MaxCurrent);
                     PointLight.gameObject.SetActive(true);
+                    PointLight.intensity = Map(clampedCurrent, MinCurrent, MaxCurrent, MinIntensity, MaxIntensity);
                     PointLight.color = colors[currentColor];
 
                     meshRenderer.sharedMaterial.SetColor("_EmissionColor",
-                        Color.white * Map(current, 0, 0.02f, MinLuminosity, MaxLuminosity));
+                        Color.white * Map(clampedCurrent, MinCurrent, MaxCurrent, MinLuminosity, MaxLuminosity));
 
                     isOn = true;
                 }
@@ -54,6 +68,11 @@ namespace Assets.Scripts.Components
                     PointLight.gameObject.SetActive(false);
                     meshRenderer.sharedMaterial.SetColor("_EmissionColor", Color.white * MinLuminosity);
                 }
+
+                if (current > MaxCurrentToWarning)
+                    UIManager.Instance.ShowWarning(gameObject, warningPosition);
+                else
+                    UIManager.Instance.HideWarning(gameObject);
             }
 
             if (!SimulationManager.Instance.IsSimulating() && isOn)
@@ -74,11 +93,11 @@ namespace Assets.Scripts.Components
         {
             if (IsConnected())
             {
-                led = SimulationManager.Instance.CreateElement<LedModel>();
-                LeadByPortName = new Dictionary<string, Lead>
+                led = SimulationManager.Instance.CreateElement<LED>();
+                LeadByPortName = new Dictionary<string, Circuit.Lead>
                 {
-                    {"A", led.LeadOut},
-                    {"B", led.LeadIn}
+                    {"A", led.leadOut},
+                    {"B", led.leadIn}
                 };
 
                 foreach (var pair in ConnectedPorts)
@@ -88,8 +107,10 @@ namespace Assets.Scripts.Components
 
         public override void OnSimulationTick()
         {
-            voltage = (float) Math.Abs(led.GetVoltageDelta());
-            current = (float) Math.Abs(led.GetCurrent());
+            if(led == null)
+                return;
+
+            current = (float) led.getCurrent();
         }
 
         public override void DrawPropertiesWindow()

@@ -1,8 +1,8 @@
 using System;
 using Assets.Scripts.Managers;
-using CircuitSharp.Core;
 using UnityEngine;
 using static Assets.Scripts.Components.Base.InoComponent;
+using static SharpCircuit.Circuit;
 
 namespace Assets.Scripts.Components.Base
 {

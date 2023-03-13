@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Components.Base;
 using Assets.Scripts.Managers;
-using CircuitSharp.Core;
 using UnityEngine;
-using ResistorModel = CircuitSharp.Components.Resistor;
+using static SharpCircuit.Circuit;
+using ResistorModel = SharpCircuit.Resistor;
 
 namespace Assets.Scripts.Components
 {
@@ -26,9 +26,6 @@ namespace Assets.Scripts.Components
         private Color goldColor;
         private Color silverColor;
 
-        private float voltage;
-        private float current;
-
         #endregion
 
         #region Overrides
@@ -40,8 +37,8 @@ namespace Assets.Scripts.Components
                 resistor = SimulationManager.Instance.CreateElement<ResistorModel>(resistance);
                 LeadByPortName = new Dictionary<string, Lead>
                 {
-                    {"A", resistor.LeadIn},
-                    {"B", resistor.LeadOut}
+                    {"A", resistor.leadIn},
+                    {"B", resistor.leadOut}
                 };
 
                 foreach (var pair in ConnectedPorts)
@@ -51,8 +48,6 @@ namespace Assets.Scripts.Components
 
         public override void OnSimulationTick()
         {
-            voltage = (float) Math.Abs(resistor.GetVoltageDelta());
-            current = (float) Math.Abs(resistor.GetCurrent());
         }
 
         public override void DrawPropertiesWindow()

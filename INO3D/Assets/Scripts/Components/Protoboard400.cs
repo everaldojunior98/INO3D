@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Components.Base;
 using Assets.Scripts.Managers;
-using CircuitSharp.Components;
-using CircuitSharp.Core;
+using SharpCircuit;
 using UnityEngine;
+using static SharpCircuit.Circuit;
 
 namespace Assets.Scripts.Components
 {
@@ -15,101 +15,39 @@ namespace Assets.Scripts.Components
 
         public override void GenerateCircuitElement()
         {
-            var vcc = new List<InoPort>();
-            var gnd = new List<InoPort>();
-            var lines = new Dictionary<int, List<InoPort>>();
-            foreach (var inoPort in GeneratedPorts)
-            {
-                if (inoPort.PortName.Contains("VCC"))
-                {
-                    vcc.Add(inoPort);
-                }
-                else if (inoPort.PortName.Contains("GND"))
-                {
-                    gnd.Add(inoPort);
-                }
-                else
-                {
-                    var portNumber = int.Parse(inoPort.PortName.Substring(1));
-                    if (!lines.ContainsKey(portNumber))
-                        lines.Add(portNumber, new List<InoPort>());
-                    lines[portNumber].Add(inoPort);
-                }
-            }
-
             LeadByPortName = new Dictionary<string, Lead>();
 
-            var vccOutput = SimulationManager.Instance.CreateElement<Output>();
-            var vccCount = 0;
-            if (vcc.Any(port => port.IsConnected()))
+            var portsByGroup = GeneratedPorts.GroupBy(port =>
             {
-                foreach (var inoPort in vcc)
-                {
-                    if (inoPort.IsConnected())
-                    {
-                        var wire = SimulationManager.Instance.CreateElement<Wire>();
-                        SimulationManager.Instance.Connect(vccOutput.LeadIn, wire.LeadIn);
-                        LeadByPortName.Add(inoPort.PortName, wire.LeadOut);
-                    }
-                    else
-                    {
-                        LeadByPortName.Add(inoPort.PortName, vccOutput.LeadIn);
-                    }
+                if (port.PortName.Contains("VCC"))
+                    return "VCC";
+                if (port.PortName.Contains("GND"))
+                    return "GND";
+                return port.PortName.Substring(1);
+            });
 
-                    vccCount++;
-                    if (vccCount == 25)
-                        vccOutput = SimulationManager.Instance.CreateElement<Output>();
+            var ports = new List<List<InoPort>>();
+            foreach (var group in portsByGroup)
+            {
+                var currentGroup = new List<InoPort>();
+                foreach (var port in group)
+                {
+                    currentGroup.Add(port);
+                    var isVcc = group.Key.Contains("VCC");
+                    var isGnd = group.Key.Contains("GND");
+                    if ((currentGroup.Count == 25 && (isVcc || isGnd)) || (currentGroup.Count == 5 && !isVcc && !isGnd))
+                    {
+                        ports.Add(currentGroup);
+                        currentGroup = new List<InoPort>();
+                    }
                 }
             }
 
-            var gndOutput = SimulationManager.Instance.CreateElement<Output>();
-            var gndCount = 0;
-            if (gnd.Any(port => port.IsConnected()))
-            {
-                foreach (var inoPort in gnd)
-                {
-                    if (inoPort.IsConnected())
-                    {
-                        var wire = SimulationManager.Instance.CreateElement<Wire>();
-                        SimulationManager.Instance.Connect(gndOutput.LeadIn, wire.LeadIn);
-                        LeadByPortName.Add(inoPort.PortName, wire.LeadOut);
-                    }
-                    else
-                    {
-                        LeadByPortName.Add(inoPort.PortName, gndOutput.LeadIn);
-                    }
-
-                    gndCount++;
-                    if (gndCount == 25)
-                        gndOutput = SimulationManager.Instance.CreateElement<Output>();
-                }
-            }
-
-            foreach (var pair in lines)
+            foreach (var group in ports.Where(p => p.Any(port => port.IsConnected())))
             {
                 var output = SimulationManager.Instance.CreateElement<Output>();
-                var count = 0;
-                if(pair.Value.Any(port => port.IsConnected()))
-                {
-                    foreach (var inoPort in pair.Value)
-                    {
-                        if (inoPort.IsConnected())
-                        {
-                            var wire = SimulationManager.Instance.CreateElement<Wire>();
-                            SimulationManager.Instance.Connect(output.LeadIn, wire.LeadIn);
-                            LeadByPortName.Add(inoPort.PortName, wire.LeadOut);
-                        }
-                        else
-                        {
-                            LeadByPortName.Add(inoPort.PortName, output.LeadIn);
-                        }
-
-                        count++;
-
-                        if (count == 5)
-                            output = SimulationManager.Instance.CreateElement<Output>();
-                    }
-                }
+                foreach (var inoPort in group)
+                    LeadByPortName.Add(inoPort.PortName, output.leadIn);
             }
         }
 

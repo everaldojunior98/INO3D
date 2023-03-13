@@ -5,8 +5,9 @@ using System.Security.Cryptography;
 using System.Text;
 using Assets.Scripts.Managers;
 using cakeslice;
-using CircuitSharp.Core;
 using UnityEngine;
+using static SharpCircuit.Circuit;
+using Exception = System.Exception;
 
 namespace Assets.Scripts.Components.Base
 {
@@ -270,7 +271,7 @@ namespace Assets.Scripts.Components.Base
         {
             if (LeadByPortName != null && LeadByPortName.ContainsKey(portName))
                 return LeadByPortName[portName];
-            return null;
+            throw new Exception("Unknow lead");
         }
 
         #endregion

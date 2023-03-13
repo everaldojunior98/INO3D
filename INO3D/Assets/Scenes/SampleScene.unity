@@ -411,6 +411,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59683fdc87ac5dd4b8cdd14e8cadf01f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WarningPrefab: {fileID: 5445393119159774259, guid: a67724548b7220a419876e837ce38127, type: 3}
 --- !u!114 &703296495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -435,6 +436,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95bfea36b50673146a999db1fd5f0210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  needAnalysis: 0
 --- !u!1001 &861953093
 PrefabInstance:
   m_ObjectHideFlags: 0

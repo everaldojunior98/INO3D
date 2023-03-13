@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.Components.Base;
+using Assets.Scripts.CustomElements.Chips;
 using Assets.Scripts.Managers;
-using CircuitSharp.Components.Chips;
-using CircuitSharp.Core;
 using UnityEngine;
+using static SharpCircuit.Circuit;
 
 namespace Assets.Scripts.Components
 {

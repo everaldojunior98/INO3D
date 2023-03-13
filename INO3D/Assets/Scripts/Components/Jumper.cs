@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Assets.Scripts.Components.Base;
 using Assets.Scripts.Managers;
-using CircuitSharp.Components;
-using CircuitSharp.Core;
+using SharpCircuit;
 using UnityEngine;
+using static SharpCircuit.Circuit;
 
 namespace Assets.Scripts.Components
 {
@@ -58,8 +58,8 @@ namespace Assets.Scripts.Components
             var wire = SimulationManager.Instance.CreateElement<Wire>();
             LeadByPortName = new Dictionary<string, Lead>
             {
-                {"A", wire.LeadIn},
-                {"B", wire.LeadOut}
+                {"A", wire.leadIn},
+                {"B", wire.leadOut}
             };
 
             foreach (var pair in ConnectedPorts)

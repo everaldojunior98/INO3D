@@ -15,7 +15,7 @@ namespace Assets.Scripts.Camera
 
         #region Fields
 
-        private enum CameraProjection
+        public enum CameraProjection
         {
             Orthographic,
             Perspective
@@ -88,6 +88,16 @@ namespace Assets.Scripts.Camera
         #endregion
 
         #region Public Methods
+
+        public float GetCurrentZoom()
+        {
+            return currentZoom;
+        }
+
+        public CameraProjection GetCameraProjection()
+        {
+            return currentProjection;
+        }
 
         public UnityCamera GetMainCamera()
         {

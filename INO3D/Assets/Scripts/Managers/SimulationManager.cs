@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Assets.Scripts.Components.Base;
 using Assets.Scripts.Utils;
-using CircuitSharp.Core;
+using SharpCircuit;
 using UnityEngine;
+using static SharpCircuit.Circuit;
+using Debug = UnityEngine.Debug;
+using Exception = System.Exception;
 
 namespace Assets.Scripts.Managers
 {
@@ -18,7 +22,10 @@ namespace Assets.Scripts.Managers
         #region Fields
 
         private Circuit circuit;
-        private bool isSimulating;
+        private volatile bool isSimulating;
+        private volatile bool needAnalysis;
+
+        private Thread simulationThread;
 
         #endregion
 
@@ -46,16 +53,17 @@ namespace Assets.Scripts.Managers
             return isSimulating;
         }
 
+        public void NeedAnalysis()
+        {
+            needAnalysis = true;
+        }
+
         public void StartSimulation()
         {
             ComponentsManager.Instance.DeselectPorts();
             ComponentsManager.Instance.DeselectComponent();
 
-            circuit = new Circuit(error =>
-            {
-                isSimulating = false;
-                Debug.LogError(error.Code);
-            });
+            circuit = new Circuit();
 
             var components = new HashSet<string>();
             var dependencyByComponent = new HashSet<Tuple<string, string>>();
@@ -73,26 +81,42 @@ namespace Assets.Scripts.Managers
             foreach (var hash in DependencySorter.Sort(components, dependencyByComponent))
                 componentByHash[hash].GenerateCircuitElement();
 
-            circuit.StartSimulation(() =>
+            
+            if (simulationThread is {IsAlive: true})
             {
-                try
-                {
-                    foreach (var component in componentByHash)
-                        component.Value.OnSimulationTick();
-                }
-                catch
-                {
-                    // ignored
-                }
-            });
+                simulationThread.Abort();
+                simulationThread.Join();
+            }
 
             isSimulating = true;
+            simulationThread = new Thread(() =>
+            {
+                while (isSimulating)
+                {
+                    if (needAnalysis)
+                    {
+                        circuit.needAnalyze();
+                        needAnalysis = false;
+                    }
+                    circuit.doTick();
+
+                    try
+                    {
+                        foreach (var component in componentByHash)
+                            component.Value.OnSimulationTick();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e);
+                    }
+                }
+            });
+            simulationThread.Start();
         }
 
         public void StopSimulation()
         {
             isSimulating = false;
-            circuit?.StopSimulation();
         }
 
         public T CreateElement<T>(params object[] args) where T : class, ICircuitElement
@@ -107,7 +131,7 @@ namespace Assets.Scripts.Managers
 
         public double GetTime()
         {
-            return circuit?.GetTime() ?? 0;
+            return circuit?.time ?? 0;
         }
 
         #endregion
