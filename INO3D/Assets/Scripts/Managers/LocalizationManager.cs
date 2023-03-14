@@ -60,8 +60,10 @@ namespace Assets.Scripts.Managers
             AddLocalization("PushButton", "Chave táctil", "Push button");
             AddLocalization("BlackBox", "Caixa preta", "Black box");
             AddLocalization("L298N", "L298N", "L298N");
-            AddLocalization("Motors", "Motores", "Motors");
-            AddLocalization("Motors.HBridge", "Ponte H", "H Bridge");
+            AddLocalization("Electric", "Elétrico", "Electric");
+            AddLocalization("Electric.HBridge", "Ponte H", "H Bridge");
+            AddLocalization("Electric.Motors", "Motores", "Motors");
+            AddLocalization("DCMotor", "Motor DC", "DC Motor");
 
             AddLocalization("Yes", "Sim", "Yes");
             AddLocalization("No", "Não", "No");

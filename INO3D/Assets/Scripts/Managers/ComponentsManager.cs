@@ -107,10 +107,14 @@ namespace Assets.Scripts.Managers
                 "BlackBox"
             });
             
-            componentsCategories.Add("Motors", new Dictionary<string, List<string>>());
-            componentsCategories["Motors"].Add("HBridge", new List<string>
+            componentsCategories.Add("Electric", new Dictionary<string, List<string>>());
+            componentsCategories["Electric"].Add("HBridge", new List<string>
             {
                 "L298N"
+            });
+            componentsCategories["Electric"].Add("Motors", new List<string>
+            {
+                "DCMotor"
             });
 
             iconByName = new Dictionary<string, Texture>();

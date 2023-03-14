@@ -412,7 +412,8 @@ namespace Assets.Scripts.Managers
 
         private void ShowComponentsWindow()
         {
-            if (ImGui.Begin(LocalizationManager.Instance.Localize("Menu.Components") + "###components", ImGuiWindowFlags.NoCollapse))
+            if (ImGui.Begin(LocalizationManager.Instance.Localize("Menu.Components") + "###components",
+                    ImGuiWindowFlags.NoCollapse))
             {
                 var categories = ComponentsManager.Instance.GetComponentsCategories();
                 // Left
@@ -527,7 +528,7 @@ namespace Assets.Scripts.Managers
 
             ImGui.End();
         }
-        
+
         private void ShowPropertiesWindow()
         {
             if (ImGui.Begin(LocalizationManager.Instance.Localize("Menu.Properties") + "###properties", ImGuiWindowFlags.NoCollapse))
