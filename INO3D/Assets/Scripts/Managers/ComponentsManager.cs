@@ -35,6 +35,7 @@ namespace Assets.Scripts.Managers
         [SerializeField] GameObject jumperPrefab;
 
         private int inoComponentLayerId;
+        private int floorLayerMaskId;
 
         private Transform currentParent;
 
@@ -102,9 +103,10 @@ namespace Assets.Scripts.Managers
             });
             
             componentsCategories.Add("Ino3D", new Dictionary<string, List<string>>());
-            componentsCategories["Ino3D"].Add("Boards", new List<string>
+            componentsCategories["Ino3D"].Add("Custom", new List<string>
             {
-                "BlackBox"
+                "BlackBox",
+                "CarChassis"
             });
             
             componentsCategories.Add("Electric", new Dictionary<string, List<string>>());
@@ -150,6 +152,7 @@ namespace Assets.Scripts.Managers
         private void Start()
         {
             inoComponentLayerId = (int) Math.Log(inoLayerMask.value, 2);
+            floorLayerMaskId = (int) Math.Log(floorLayerMask.value, 2);
 
             mainCamera = CameraController.Instance.GetMainCamera();
             selectedPorts = new List<InoPort>();
@@ -184,7 +187,7 @@ namespace Assets.Scripts.Managers
                     var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
                     if (Physics.Raycast(ray, out var hit, float.MaxValue, selectedComponentLayer))
                     {
-                        if (selectedComponent != null)
+                        if (selectedComponent != null && !IsParent(hit.transform, selectedComponent.transform))
                         {
                             if (!isDragging)
                                 dragStartPosition = hit.point;
@@ -454,6 +457,10 @@ namespace Assets.Scripts.Managers
             {
                 selectedComponent.DisableHighlight();
                 selectedComponent.gameObject.layer = inoComponentLayerId;
+
+                foreach (var child in selectedComponent.GetComponentsInChildren<Transform>(true))
+                    if (child.gameObject.layer == floorLayerMaskId)
+                        child.gameObject.GetComponent<BoxCollider>().enabled = true;
             }
 
             selectedComponent = component;
@@ -461,6 +468,9 @@ namespace Assets.Scripts.Managers
             selectedComponent.EnableHighlight();
 
             selectedComponent.gameObject.layer = 0;
+            foreach (var child in selectedComponent.GetComponentsInChildren<Transform>(true))
+                if (child.gameObject.layer == floorLayerMaskId)
+                    child.gameObject.GetComponent<BoxCollider>().enabled = false;
 
             if (selectedComponent.IsAttachable())
                 selectedComponentLayer = floorLayerMask | inoLayerMask;
@@ -475,6 +485,10 @@ namespace Assets.Scripts.Managers
 
             if (selectedComponent != null)
             {
+                foreach (var child in selectedComponent.GetComponentsInChildren<Transform>(true))
+                    if (child.gameObject.layer == floorLayerMaskId)
+                        child.gameObject.GetComponent<BoxCollider>().enabled = true;
+
                 selectedComponent.DisableHighlight();
                 selectedComponent.gameObject.layer = inoComponentLayerId;
             }
@@ -492,6 +506,19 @@ namespace Assets.Scripts.Managers
         #endregion
 
         #region Private Methods
+
+        private bool IsParent(Transform baseTransform, Transform possibleParent)
+        {
+            var tempParent = baseTransform.parent;
+            while (tempParent != null)
+            {
+                if (tempParent == possibleParent)
+                    return true;
+                tempParent = tempParent.parent;
+            }
+
+            return false;
+        }
 
         private IEnumerator CreateJumper(InoPort port1, InoPort port2, int color, bool isRigid)
         {

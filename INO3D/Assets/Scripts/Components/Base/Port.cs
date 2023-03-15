@@ -14,13 +14,14 @@ namespace Assets.Scripts.Components.Base
         public readonly bool CanBeRigid;
         public readonly bool IsTerminalBlock;
         public readonly Vector3 WireDirection;
-        public readonly Vector3 WireOffset;
+        public readonly Vector3 WirePositionOffset;
+        public readonly Vector3 WireRotationOffset;
 
         #endregion
 
         #region Constructor
 
-        public Port(string portName, Vector3 portPosition, PortType portType, PinType pinType, bool canBeRigid, bool isTerminalBlock, Vector3 wireDirection, Vector3 wireOffset)
+        public Port(string portName, Vector3 portPosition, PortType portType, PinType pinType, bool canBeRigid, bool isTerminalBlock, Vector3 wireDirection, Vector3 wirePositionOffset, Vector3 wireRotationOffset)
         {
             PortName = portName;
             PortPosition = portPosition;
@@ -29,7 +30,8 @@ namespace Assets.Scripts.Components.Base
             CanBeRigid = canBeRigid;
             IsTerminalBlock = isTerminalBlock;
             WireDirection = wireDirection;
-            WireOffset = wireOffset;
+            WirePositionOffset = wirePositionOffset;
+            WireRotationOffset = wireRotationOffset;
         }
 
         #endregion

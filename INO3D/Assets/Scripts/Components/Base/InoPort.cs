@@ -16,7 +16,8 @@ namespace Assets.Scripts.Components.Base
         public bool CanBeRigid;
         public bool IsTerminalBlock;
         public Vector3 WireDirection;
-        public Vector3 WireOffset;
+        public Vector3 WirePositionOffset;
+        public Vector3 WireRotationOffset;
 
         public InoComponent Component;
 

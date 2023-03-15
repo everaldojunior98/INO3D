@@ -301,10 +301,10 @@ namespace Assets.Scripts.Components
                     if (port1.PinType == PinType.SolderingPoint)
                     {
                         jumper1.transform.position = new Vector3(jumper1.transform.position.x, jumper1.transform.position.y + SolderingPointOffset, jumper1.transform.position.z);
-                        jumper1.transform.eulerAngles = new Vector3(inoPort1.Component.transform.eulerAngles.x, inoPort1.Component.transform.eulerAngles.y + DirToRot(inoPort1.WireDirection), inoPort1.Component.transform.eulerAngles.z);
+                        jumper1.transform.eulerAngles = new Vector3(inoPort1.Component.transform.eulerAngles.x + inoPort1.WireRotationOffset.x, inoPort1.Component.transform.eulerAngles.y + DirToRot(inoPort1.WireDirection) + inoPort1.WireRotationOffset.y, inoPort1.Component.transform.eulerAngles.z + inoPort1.WireRotationOffset.z);
                     }
 
-                    initialPoint = new Vector3(inoPort1Position.x + inoPort1.WireOffset.x, inoPort1Position.y + inoPort1.WireOffset.y, inoPort1Position.z + inoPort1.WireOffset.z);
+                    initialPoint = new Vector3(inoPort1Position.x + inoPort1.WirePositionOffset.x, inoPort1Position.y + inoPort1.WirePositionOffset.y, inoPort1Position.z + inoPort1.WirePositionOffset.z);
                     controlPoint1 = initialPoint + distance * (Quaternion.Euler(0, inoPort1.Component.transform.eulerAngles.y, 0) * inoPort1.WireDirection);
                 }
 
@@ -316,10 +316,10 @@ namespace Assets.Scripts.Components
                     if (port2.PinType == PinType.SolderingPoint)
                     {
                         jumper2.transform.position = new Vector3(jumper2.transform.position.x, jumper2.transform.position.y + SolderingPointOffset, jumper2.transform.position.z);
-                        jumper2.transform.eulerAngles = new Vector3(inoPort2.Component.transform.eulerAngles.x, inoPort2.Component.transform.eulerAngles.y + DirToRot(inoPort2.WireDirection), inoPort2.Component.transform.eulerAngles.z);
+                        jumper2.transform.eulerAngles = new Vector3(inoPort2.Component.transform.eulerAngles.x + inoPort2.WireRotationOffset.x, inoPort2.Component.transform.eulerAngles.y + DirToRot(inoPort2.WireDirection) + inoPort2.WireRotationOffset.y, inoPort2.Component.transform.eulerAngles.z + inoPort2.WireRotationOffset.z);
                     }
 
-                    finalPoint = new Vector3(inoPort2Position.x + inoPort2.WireOffset.x, inoPort2Position.y + inoPort2.WireOffset.y, inoPort2Position.z + inoPort2.WireOffset.z);
+                    finalPoint = new Vector3(inoPort2Position.x + inoPort2.WirePositionOffset.x, inoPort2Position.y + inoPort2.WirePositionOffset.y, inoPort2Position.z + inoPort2.WirePositionOffset.z);
                     controlPoint2 = finalPoint + distance * (Quaternion.Euler(0, inoPort2.Component.transform.eulerAngles.y, 0) * inoPort2.WireDirection);
                 }
 

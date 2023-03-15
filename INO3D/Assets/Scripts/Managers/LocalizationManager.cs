@@ -52,7 +52,7 @@ namespace Assets.Scripts.Managers
             AddLocalization("Arduino", "Arduino", "Arduino");
             AddLocalization("Arduino.Boards", "Placas", "Boards");
             AddLocalization("Ino3D", "Ino3D", "Ino3D");
-            AddLocalization("Ino3D.Boards", "Placas", "Boards");
+            AddLocalization("Ino3D.Custom", "Personalizado", "Custom");
             AddLocalization("ArduinoUno", "Arduino Uno", "Arduino Uno");
             AddLocalization("Protoboard400", "Protoboard 400 pontos", "Protoboard 400 points");
             AddLocalization("Resistor", "Resistor", "Resistor");
@@ -64,6 +64,7 @@ namespace Assets.Scripts.Managers
             AddLocalization("Electric.HBridge", "Ponte H", "H Bridge");
             AddLocalization("Electric.Motors", "Motores", "Motors");
             AddLocalization("DCMotor", "Motor DC", "DC Motor");
+            AddLocalization("CarChassis", "Chassi 2wd", "Chassis 2wd");
 
             AddLocalization("Yes", "Sim", "Yes");
             AddLocalization("No", "Não", "No");

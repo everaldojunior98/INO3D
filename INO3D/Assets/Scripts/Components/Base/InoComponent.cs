@@ -299,7 +299,8 @@ namespace Assets.Scripts.Components.Base
                 inoPort.CanBeRigid = port.CanBeRigid;
                 inoPort.IsTerminalBlock = port.IsTerminalBlock;
                 inoPort.WireDirection = port.WireDirection;
-                inoPort.WireOffset = port.WireOffset;
+                inoPort.WirePositionOffset = port.WirePositionOffset;
+                inoPort.WireRotationOffset = port.WireRotationOffset;
                 inoPort.Component = this;
                 inoPort.GetLead = () => GetLead(port.PortName);
 
