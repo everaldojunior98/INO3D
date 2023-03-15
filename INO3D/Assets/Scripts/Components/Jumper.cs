@@ -14,9 +14,10 @@ namespace Assets.Scripts.Components
         private const float Radius = 0.011f;
         private const float MaxDistance = 0.001f;
 
-        private const float HorizontalJumperOffset = -0.09f;
         private const float RigidJumperOffset = 0.03f;
         private const float NonRigidJumperOffset = 0.18f;
+
+        private const float SolderingPointOffset = 0.009f;
         
         private const int NumberOfBezierPoints = 40;
 
@@ -24,6 +25,7 @@ namespace Assets.Scripts.Components
 
         [SerializeField] GameObject malePrefab;
         [SerializeField] GameObject femalePrefab;
+        [SerializeField] GameObject solderingPattern;
 
         private GameObject jumper1;
         private MeshRenderer jumper1MeshRenderer;
@@ -160,6 +162,21 @@ namespace Assets.Scripts.Components
 
         #endregion
 
+        #region Private Methods
+
+        private float DirToRot(Vector3 dir)
+        {
+            if (dir.x == 1)
+                return 0;
+            if (dir.x == -1)
+                return 180;
+            if (dir.z == 1)
+                return 90;
+            return -90;
+        }
+
+        #endregion
+
         #region Public Methods
 
         public void Generate(InoPort port1, InoPort port2, int color, bool rigid)
@@ -203,7 +220,7 @@ namespace Assets.Scripts.Components
 
             if (jumper1 == null)
             {
-                jumper1 = Instantiate(port1.PinType == PinType.Female ? malePrefab : femalePrefab, transform);
+                jumper1 = Instantiate(port1.PinType == PinType.SolderingPoint ? solderingPattern : port1.PinType == PinType.Female ? malePrefab : femalePrefab, transform);
                 jumper1MeshRenderer = jumper1.GetComponent<MeshRenderer>();
                 jumper1BoxCollider = gameObject.AddComponent<BoxCollider>();
                 jumper1BoxCollider.size = jumper1MeshRenderer.bounds.size;
@@ -216,7 +233,7 @@ namespace Assets.Scripts.Components
 
             if (jumper2 == null)
             {
-                jumper2 = Instantiate(port2.PinType == PinType.Female ? malePrefab : femalePrefab, transform);
+                jumper2 = Instantiate(port2.PinType == PinType.SolderingPoint ? solderingPattern : port2.PinType == PinType.Female ? malePrefab : femalePrefab, transform);
                 jumper2MeshRenderer = jumper2.GetComponent<MeshRenderer>();
                 jumper2BoxCollider = gameObject.AddComponent<BoxCollider>();
                 jumper2BoxCollider.size = jumper2MeshRenderer.bounds.size;
@@ -278,19 +295,31 @@ namespace Assets.Scripts.Components
 
                 if (inoPort1.IsTerminalBlock)
                 {
-                    jumper1.SetActive(false);
-                    jumper1BoxCollider.isTrigger = true;
+                    jumper1.SetActive(port1.PinType == PinType.SolderingPoint);
+                    jumper1BoxCollider.isTrigger = !jumper1.activeSelf;
 
-                    initialPoint = new Vector3(inoPort1Position.x, inoPort1Position.y + HorizontalJumperOffset, inoPort1Position.z);
+                    if (port1.PinType == PinType.SolderingPoint)
+                    {
+                        jumper1.transform.position = new Vector3(jumper1.transform.position.x, jumper1.transform.position.y + SolderingPointOffset, jumper1.transform.position.z);
+                        jumper1.transform.eulerAngles = new Vector3(inoPort1.Component.transform.eulerAngles.x, inoPort1.Component.transform.eulerAngles.y + DirToRot(inoPort1.WireDirection), inoPort1.Component.transform.eulerAngles.z);
+                    }
+
+                    initialPoint = new Vector3(inoPort1Position.x + inoPort1.WireOffset.x, inoPort1Position.y + inoPort1.WireOffset.y, inoPort1Position.z + inoPort1.WireOffset.z);
                     controlPoint1 = initialPoint + distance * (Quaternion.Euler(0, inoPort1.Component.transform.eulerAngles.y, 0) * inoPort1.WireDirection);
                 }
 
                 if (inoPort2.IsTerminalBlock)
                 {
-                    jumper2.SetActive(false);
-                    jumper2BoxCollider.isTrigger = true;
+                    jumper2.SetActive(port2.PinType == PinType.SolderingPoint);
+                    jumper2BoxCollider.isTrigger = !jumper2.activeSelf;
 
-                    finalPoint = new Vector3(inoPort2Position.x, inoPort2Position.y + HorizontalJumperOffset, inoPort2Position.z);
+                    if (port2.PinType == PinType.SolderingPoint)
+                    {
+                        jumper2.transform.position = new Vector3(jumper2.transform.position.x, jumper2.transform.position.y + SolderingPointOffset, jumper2.transform.position.z);
+                        jumper2.transform.eulerAngles = new Vector3(inoPort2.Component.transform.eulerAngles.x, inoPort2.Component.transform.eulerAngles.y + DirToRot(inoPort2.WireDirection), inoPort2.Component.transform.eulerAngles.z);
+                    }
+
+                    finalPoint = new Vector3(inoPort2Position.x + inoPort2.WireOffset.x, inoPort2Position.y + inoPort2.WireOffset.y, inoPort2Position.z + inoPort2.WireOffset.z);
                     controlPoint2 = finalPoint + distance * (Quaternion.Euler(0, inoPort2.Component.transform.eulerAngles.y, 0) * inoPort2.WireDirection);
                 }
 

@@ -60,8 +60,8 @@ namespace Assets.Scripts.Components
         {
             DefaultHeight = 0.15f;
 
-            Ports.Add(Tuple.Create("A", new Vector3(-0.1109f, 0.168f, -0.216f), PortType.None, PinType.Female, false, false, Vector3.zero));
-            Ports.Add(Tuple.Create("B", new Vector3(0.1031f, 0.168f, -0.216f), PortType.None, PinType.Female, false, false, Vector3.zero));
+            Ports.Add(new Port("A", new Vector3(-0.1109f, 0.168f, -0.216f), PortType.None, PinType.SolderingPoint, false, true, new Vector3(0, 0, -1), new Vector3(0, 0.01f, 0)));
+            Ports.Add(new Port("B", new Vector3(0.1031f, 0.168f, -0.216f), PortType.None, PinType.SolderingPoint, false, true, new Vector3(0, 0, -1), new Vector3(0, 0.01f, 0)));
         }
 
         public override SaveFile Save()

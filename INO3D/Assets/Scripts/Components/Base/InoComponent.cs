@@ -27,7 +27,8 @@ namespace Assets.Scripts.Components.Base
         public enum PinType
         {
             Male,
-            Female
+            Female,
+            SolderingPoint
         }
 
         #endregion
@@ -36,7 +37,7 @@ namespace Assets.Scripts.Components.Base
 
         public string Hash { get; private set; }
 
-        protected List<Tuple<string, Vector3, PortType, PinType, bool, bool, Vector3>> Ports;
+        protected List<Port> Ports;
         protected List<InoPort> GeneratedPorts;
         protected Dictionary<string, Lead> LeadByPortName;
 
@@ -62,7 +63,7 @@ namespace Assets.Scripts.Components.Base
 
         private void Awake()
         {
-            Ports = new List<Tuple<string, Vector3, PortType, PinType, bool, bool, Vector3>>();
+            Ports = new List<Port>();
             GeneratedPorts = new List<InoPort>();
 
             Pins = new List<Tuple<string, Vector3>>();
@@ -271,7 +272,7 @@ namespace Assets.Scripts.Components.Base
         {
             if (LeadByPortName != null && LeadByPortName.ContainsKey(portName))
                 return LeadByPortName[portName];
-            throw new Exception("Unknow lead");
+            throw new Exception("Unknown lead");
         }
 
         #endregion
@@ -280,26 +281,27 @@ namespace Assets.Scripts.Components.Base
 
         private void GeneratePorts()
         {
-            foreach (var tuple in Ports)
+            foreach (var port in Ports)
             {
-                var port = new GameObject(tuple.Item1)
+                var portGameObject = new GameObject(port.PortName)
                 {
                     transform =
                     {
                         parent = transform,
-                        localPosition = tuple.Item2
+                        localPosition = port.PortPosition
                     }
                 };
 
-                var inoPort = port.AddComponent<InoPort>();
-                inoPort.PortName = tuple.Item1;
-                inoPort.PortType = tuple.Item3;
-                inoPort.PinType = tuple.Item4;
-                inoPort.CanBeRigid = tuple.Item5;
-                inoPort.IsTerminalBlock = tuple.Item6;
-                inoPort.WireDirection = tuple.Item7;
+                var inoPort = portGameObject.AddComponent<InoPort>();
+                inoPort.PortName = port.PortName;
+                inoPort.PortType = port.PortType;
+                inoPort.PinType = port.PinType;
+                inoPort.CanBeRigid = port.CanBeRigid;
+                inoPort.IsTerminalBlock = port.IsTerminalBlock;
+                inoPort.WireDirection = port.WireDirection;
+                inoPort.WireOffset = port.WireOffset;
                 inoPort.Component = this;
-                inoPort.GetLead = () => GetLead(tuple.Item1);
+                inoPort.GetLead = () => GetLead(port.PortName);
 
                 GeneratedPorts.Add(inoPort);
             }

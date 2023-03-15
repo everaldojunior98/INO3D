@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   malePrefab: {fileID: 919132149155446097, guid: 751e0f145770aa14cbfa79063341e6c3, type: 3}
   femalePrefab: {fileID: 919132149155446097, guid: 0f50de7ed6d72bc499806a8b2be1f3b9, type: 3}
+  solderingPattern: {fileID: 1954170932264144881, guid: 6bc35e4456bc6a14eb51dad41cf2a032, type: 3}
 --- !u!1 &2640074035057585426
 GameObject:
   m_ObjectHideFlags: 0
