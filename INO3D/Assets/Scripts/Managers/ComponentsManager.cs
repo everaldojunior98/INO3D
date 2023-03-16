@@ -311,7 +311,18 @@ namespace Assets.Scripts.Managers
 
             var saveProject = new InoProjectSaveFile {Components = new List<SaveFile>()};
             foreach (var hash in DependencySorter.Sort(components, dependencyByComponent))
-                saveProject.Components.Add(componentByHash[hash].Save());
+            {
+                var saveFile = componentByHash[hash].Save();
+                saveFile.Hash = componentByHash[hash].Hash;
+                var parentComponent = GetParentComponent(componentByHash[hash].transform);
+                if (parentComponent != null)
+                {
+                    saveFile.ParentHash = parentComponent.Hash;
+                    saveFile.ParentName = componentByHash[hash].transform.parent.name;
+                }
+
+                saveProject.Components.Add(saveFile);
+            }
 
             var json = JsonConvert.SerializeObject(saveProject,
                 new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto, Formatting = Formatting.Indented});
@@ -337,12 +348,18 @@ namespace Assets.Scripts.Managers
                 new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto, Formatting = Formatting.Indented});
 
             var components = new List<Tuple<InoComponent, SaveFile>>();
+            var componentByHash = new Dictionary<string, InoComponent>();
             foreach (var componentSaveFile in saveFile.Components)
             {
                 if (prefabByName.ContainsKey(componentSaveFile.PrefabName))
                 {
-                    var newComponent = Instantiate(prefabByName[componentSaveFile.PrefabName])
-                        .GetComponent<InoComponent>();
+                    var newComponent = Instantiate(prefabByName[componentSaveFile.PrefabName]).GetComponent<InoComponent>();
+                    if (!string.IsNullOrEmpty(componentSaveFile.Hash))
+                    {
+                        newComponent.Hash = componentSaveFile.Hash;
+                        componentByHash.Add(newComponent.Hash, newComponent);
+                    }
+
                     components.Add(Tuple.Create(newComponent, componentSaveFile));
                 }
             }
@@ -382,6 +399,20 @@ namespace Assets.Scripts.Managers
 
                     if (port1 != null && port2 != null)
                         StartCoroutine(CreateJumper(port1, port2, jumperSaveFile.CurrentColor, jumperSaveFile.IsRigid));
+                }
+            }
+
+            yield return new WaitForEndOfFrame();
+
+            foreach (var tuple in components)
+            {
+                var component = tuple.Item1;
+                var save = tuple.Item2;
+                if (!string.IsNullOrEmpty(save.ParentHash) && componentByHash.ContainsKey(save.ParentHash))
+                {
+                    var parent = componentByHash[save.ParentHash].transform.Find(save.ParentName);
+                    if (parent != null)
+                        component.transform.parent = parent;
                 }
             }
 
@@ -509,6 +540,20 @@ namespace Assets.Scripts.Managers
         #endregion
 
         #region Private Methods
+
+        private InoComponent GetParentComponent(Transform baseTransform)
+        {
+            var tempParent = baseTransform.parent;
+            while (tempParent != null)
+            {
+                var comp = tempParent.GetComponent<InoComponent>();
+                if (comp != null)
+                    return comp;
+                tempParent = tempParent.parent;
+            }
+
+            return null;
+        }
 
         private bool IsParent(Transform baseTransform, Transform possibleParent)
         {

@@ -35,7 +35,7 @@ namespace Assets.Scripts.Components.Base
 
         #region Fields
 
-        public string Hash { get; private set; }
+        public string Hash { get; set; }
 
         protected List<Port> Ports;
         protected List<InoPort> GeneratedPorts;
@@ -81,17 +81,20 @@ namespace Assets.Scripts.Components.Base
             GeneratePorts();
             transform.position = new Vector3(transform.position.x, DefaultHeight, transform.position.z);
 
-            var creationTime = DateTime.Now.Ticks.ToString("yyMMddHHmmssff") + GetInstanceID();
-            var sb = new StringBuilder();
-            using (var md5 = MD5.Create())
+            if (string.IsNullOrEmpty(Hash))
             {
-                var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(creationTime));
+                var creationTime = DateTime.Now.Ticks.ToString("yyMMddHHmmssff") + GetInstanceID();
+                var sb = new StringBuilder();
+                using (var md5 = MD5.Create())
+                {
+                    var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(creationTime));
 
-                foreach (var b in hash)
-                    sb.Append(b.ToString("X2"));
+                    foreach (var b in hash)
+                        sb.Append(b.ToString("X2"));
+                }
+
+                Hash = sb.ToString();
             }
-
-            Hash = sb.ToString();
         }
 
         private void Update()
