@@ -239,8 +239,11 @@ namespace Assets.Scripts.Managers
                     if (hasSelectedComponentChangedPosition)
                         selectedComponent.UpdatePinsConnection();
 
-                    selectedComponent.transform.parent = currentParent;
-                    currentParent = null;
+                    if (!(selectedComponent is Jumper))
+                    {
+                        selectedComponent.transform.parent = currentParent;
+                        currentParent = null;
+                    }
                 }
 
                 canDrag = false;
