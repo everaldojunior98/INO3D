@@ -100,15 +100,6 @@ namespace Assets.Scripts.Components
             var saveFile = new ResistorSaveFile
             {
                 PrefabName = "Resistor",
-
-                PositionX = transform.position.x,
-                PositionY = transform.position.y,
-                PositionZ = transform.position.z,
-
-                RotationX = transform.eulerAngles.x,
-                RotationY = transform.eulerAngles.y,
-                RotationZ = transform.eulerAngles.z,
-
                 Resistance = resistance
             };
 
@@ -118,13 +109,7 @@ namespace Assets.Scripts.Components
         public override void Load(SaveFile saveFile)
         {
             if (saveFile is ResistorSaveFile resistorSaveFile)
-            {
-                transform.position = new Vector3(resistorSaveFile.PositionX, resistorSaveFile.PositionY,
-                    resistorSaveFile.PositionZ);
-                transform.eulerAngles = new Vector3(resistorSaveFile.RotationX, resistorSaveFile.RotationY,
-                    resistorSaveFile.RotationZ);
                 resistance = resistorSaveFile.Resistance;
-            }
         }
 
         public override void Delete()

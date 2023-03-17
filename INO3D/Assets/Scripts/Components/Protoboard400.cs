@@ -212,15 +212,7 @@ namespace Assets.Scripts.Components
         {
             var saveFile = new Protoboard400SaveFile
             {
-                PrefabName = "Protoboard400",
-
-                PositionX = transform.position.x,
-                PositionY = transform.position.y,
-                PositionZ = transform.position.z,
-
-                RotationX = transform.eulerAngles.x,
-                RotationY = transform.eulerAngles.y,
-                RotationZ = transform.eulerAngles.z
+                PrefabName = "Protoboard400"
             };
 
             return saveFile;
@@ -228,13 +220,6 @@ namespace Assets.Scripts.Components
 
         public override void Load(SaveFile saveFile)
         {
-            if (saveFile is Protoboard400SaveFile protoboard400SaveFile)
-            {
-                transform.position = new Vector3(protoboard400SaveFile.PositionX, protoboard400SaveFile.PositionY,
-                    protoboard400SaveFile.PositionZ);
-                transform.eulerAngles = new Vector3(protoboard400SaveFile.RotationX, protoboard400SaveFile.RotationY,
-                    protoboard400SaveFile.RotationZ);
-            }
         }
 
         public override void Delete()

@@ -313,13 +313,23 @@ namespace Assets.Scripts.Managers
             foreach (var hash in DependencySorter.Sort(components, dependencyByComponent))
             {
                 var saveFile = componentByHash[hash].Save();
+                saveFile.Name = componentByHash[hash].Name;
                 saveFile.Hash = componentByHash[hash].Hash;
+
                 var parentComponent = GetParentComponent(componentByHash[hash].transform);
                 if (parentComponent != null)
                 {
                     saveFile.ParentHash = parentComponent.Hash;
                     saveFile.ParentName = componentByHash[hash].transform.parent.name;
                 }
+
+                saveFile.PositionX = componentByHash[hash].transform.position.x;
+                saveFile.PositionY = componentByHash[hash].transform.position.y;
+                saveFile.PositionZ = componentByHash[hash].transform.position.z;
+
+                saveFile.RotationX = componentByHash[hash].transform.eulerAngles.x;
+                saveFile.RotationY = componentByHash[hash].transform.eulerAngles.y;
+                saveFile.RotationZ = componentByHash[hash].transform.eulerAngles.z;
 
                 saveProject.Components.Add(saveFile);
             }
@@ -360,6 +370,9 @@ namespace Assets.Scripts.Managers
                         componentByHash.Add(newComponent.Hash, newComponent);
                     }
 
+                    if (!string.IsNullOrEmpty(componentSaveFile.Name))
+                        newComponent.Name = componentSaveFile.Name;
+
                     components.Add(Tuple.Create(newComponent, componentSaveFile));
                 }
             }
@@ -367,7 +380,11 @@ namespace Assets.Scripts.Managers
             yield return new WaitForEndOfFrame();
 
             foreach (var inoComponent in components)
+            {
                 inoComponent.Item1.Load(inoComponent.Item2);
+                inoComponent.Item1.transform.position = new Vector3(inoComponent.Item2.PositionX, inoComponent.Item2.PositionY, inoComponent.Item2.PositionZ);
+                inoComponent.Item1.transform.eulerAngles = new Vector3(inoComponent.Item2.RotationX, inoComponent.Item2.RotationY, inoComponent.Item2.RotationZ);
+            }
 
             yield return new WaitForEndOfFrame();
 
@@ -500,6 +517,7 @@ namespace Assets.Scripts.Managers
             selectedComponent = component;
             canDrag = selectedComponent.CanDrag;
             selectedComponent.EnableHighlight();
+            UIManager.Instance.SetSelectedComponentName(selectedComponent.Name);
 
             selectedComponent.gameObject.layer = 0;
             foreach (var child in selectedComponent.GetComponentsInChildren<Transform>(true))

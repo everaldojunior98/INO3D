@@ -124,15 +124,6 @@ namespace Assets.Scripts.Components
             var saveFile = new BlackBoxSaveFile
             {
                 PrefabName = "BlackBox",
-
-                PositionX = transform.position.x,
-                PositionY = transform.position.y,
-                PositionZ = transform.position.z,
-
-                RotationX = transform.eulerAngles.x,
-                RotationY = transform.eulerAngles.y,
-                RotationZ = transform.eulerAngles.z,
-
                 Code = currentCode
             };
 
@@ -142,14 +133,7 @@ namespace Assets.Scripts.Components
         public override void Load(SaveFile saveFile)
         {
             if (saveFile is BlackBoxSaveFile blackBoxSaveFile)
-            {
-                transform.position = new Vector3(blackBoxSaveFile.PositionX, blackBoxSaveFile.PositionY,
-                    blackBoxSaveFile.PositionZ);
-                transform.eulerAngles = new Vector3(blackBoxSaveFile.RotationX, blackBoxSaveFile.RotationY,
-                    blackBoxSaveFile.RotationZ);
-
                 currentCode = blackBoxSaveFile.Code;
-            }
         }
 
         public override void Delete()

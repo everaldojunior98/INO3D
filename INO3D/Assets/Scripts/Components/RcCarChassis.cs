@@ -103,15 +103,7 @@ namespace Assets.Scripts.Components
         {
             var saveFile = new RcCarChassisSaveFile
             {
-                PrefabName = "CarChassis",
-
-                PositionX = transform.position.x,
-                PositionY = transform.position.y,
-                PositionZ = transform.position.z,
-
-                RotationX = transform.eulerAngles.x,
-                RotationY = transform.eulerAngles.y,
-                RotationZ = transform.eulerAngles.z
+                PrefabName = "CarChassis"
             };
 
             return saveFile;
@@ -119,11 +111,6 @@ namespace Assets.Scripts.Components
 
         public override void Load(SaveFile saveFile)
         {
-            if (saveFile is RcCarChassisSaveFile carChassisSaveFile)
-            {
-                transform.position = new Vector3(carChassisSaveFile.PositionX, carChassisSaveFile.PositionY, carChassisSaveFile.PositionZ);
-                transform.eulerAngles = new Vector3(carChassisSaveFile.RotationX, carChassisSaveFile.RotationY, carChassisSaveFile.RotationZ);
-            }
         }
 
         public override void Delete()

@@ -92,15 +92,7 @@ namespace Assets.Scripts.Components
         {
             var saveFile = new PushButtonSaveFile
             {
-                PrefabName = "PushButton",
-
-                PositionX = transform.position.x,
-                PositionY = transform.position.y,
-                PositionZ = transform.position.z,
-
-                RotationX = transform.eulerAngles.x,
-                RotationY = transform.eulerAngles.y,
-                RotationZ = transform.eulerAngles.z
+                PrefabName = "PushButton"
             };
 
             return saveFile;
@@ -108,13 +100,6 @@ namespace Assets.Scripts.Components
 
         public override void Load(SaveFile saveFile)
         {
-            if (saveFile is PushButtonSaveFile pushButtonSaveFile)
-            {
-                transform.position = new Vector3(pushButtonSaveFile.PositionX, pushButtonSaveFile.PositionY,
-                    pushButtonSaveFile.PositionZ);
-                transform.eulerAngles = new Vector3(pushButtonSaveFile.RotationX, pushButtonSaveFile.RotationY,
-                    pushButtonSaveFile.RotationZ);
-            }
         }
 
         public override void Delete()

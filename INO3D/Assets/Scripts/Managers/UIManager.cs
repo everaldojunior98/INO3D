@@ -76,6 +76,7 @@ namespace Assets.Scripts.Managers
 
         private bool consoleAutoScroll;
         private byte[] consoleInputBuffer;
+        private byte[] selectedComponentNameBuffer;
 
         private string currentLog;
         private int currentLineEnding = 1;
@@ -102,6 +103,7 @@ namespace Assets.Scripts.Managers
 
             consoleAutoScroll = true;
             consoleInputBuffer = new byte[1024];
+            selectedComponentNameBuffer = new byte[1024];
 
             currentLog = string.Empty;
             warningByObject = new Dictionary<GameObject, GameObject>();
@@ -273,6 +275,13 @@ namespace Assets.Scripts.Managers
         public void GenerateSeparator()
         {
             ImGui.Separator();
+        }
+
+        public void SetSelectedComponentName(string componentName)
+        {
+            selectedComponentNameBuffer = new byte[1024];
+            var nameBuffer = Encoding.UTF8.GetBytes(componentName);
+            nameBuffer.CopyTo(selectedComponentNameBuffer, 0);
         }
 
         #endregion
@@ -535,7 +544,11 @@ namespace Assets.Scripts.Managers
             {
                 var selectedComponent = ComponentsManager.Instance.GetSelectedComponent();
                 if (selectedComponent != null)
+                {
+                    GenerateStringPropertyField(LocalizationManager.Instance.Localize("Name"), selectedComponentNameBuffer);
+                    selectedComponent.Name = Encoding.UTF8.GetString(selectedComponentNameBuffer);
                     selectedComponent.DrawPropertiesWindow();
+                }
             }
 
             ImGui.End();
@@ -645,6 +658,11 @@ namespace Assets.Scripts.Managers
                 () => CameraController.Instance.SetCameraAsOrthographic());
             DrawInLineButton("3D", true, LocalizationManager.Instance.Localize("Camera3D"),
                 () => CameraController.Instance.SetCameraAsPerspective());
+            DrawInLineButton("LockCamera", true, LocalizationManager.Instance.Localize("LockCamera"),
+                () =>
+                {
+
+                });
 
             InLineSpacing();
 
@@ -660,7 +678,6 @@ namespace Assets.Scripts.Managers
             var middleBarPosition = menuBarSize.x / 2;
             var playPosition = middleBarPosition - buttonBarButtonSize.x + padding.x / 2;
             var stopPosition = middleBarPosition + buttonBarButtonSize.x - padding.x / 2;
-            var timePosition = stopPosition + buttonBarButtonSize.x + 3 * padding.x;
 
             ImGui.SetCursorPos(new Vector2(playPosition, padding.y));
 

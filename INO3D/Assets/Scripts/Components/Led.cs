@@ -163,15 +163,6 @@ namespace Assets.Scripts.Components
             var saveFile = new LedSaveFile
             {
                 PrefabName = "Led",
-
-                PositionX = transform.position.x,
-                PositionY = transform.position.y,
-                PositionZ = transform.position.z,
-
-                RotationX = transform.eulerAngles.x,
-                RotationY = transform.eulerAngles.y,
-                RotationZ = transform.eulerAngles.z,
-
                 CurrentColor = currentColor
             };
 
@@ -181,13 +172,7 @@ namespace Assets.Scripts.Components
         public override void Load(SaveFile saveFile)
         {
             if (saveFile is LedSaveFile ledSaveFileSaveFile)
-            {
-                transform.position = new Vector3(ledSaveFileSaveFile.PositionX, ledSaveFileSaveFile.PositionY,
-                    ledSaveFileSaveFile.PositionZ);
-                transform.eulerAngles = new Vector3(ledSaveFileSaveFile.RotationX, ledSaveFileSaveFile.RotationY,
-                    ledSaveFileSaveFile.RotationZ);
                 currentColor = ledSaveFileSaveFile.CurrentColor;
-            }
         }
 
         public override void Delete()

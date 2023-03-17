@@ -137,15 +137,7 @@ namespace Assets.Scripts.Components
         {
             var saveFile = new L298NSaveFile
             {
-                PrefabName = "L298N",
-
-                PositionX = transform.position.x,
-                PositionY = transform.position.y,
-                PositionZ = transform.position.z,
-
-                RotationX = transform.eulerAngles.x,
-                RotationY = transform.eulerAngles.y,
-                RotationZ = transform.eulerAngles.z
+                PrefabName = "L298N"
             };
 
             return saveFile;
@@ -153,13 +145,6 @@ namespace Assets.Scripts.Components
 
         public override void Load(SaveFile saveFile)
         {
-            if (saveFile is L298NSaveFile l298NSaveFile)
-            {
-                transform.position = new Vector3(l298NSaveFile.PositionX, l298NSaveFile.PositionY,
-                    l298NSaveFile.PositionZ);
-                transform.eulerAngles = new Vector3(l298NSaveFile.RotationX, l298NSaveFile.RotationY,
-                    l298NSaveFile.RotationZ);
-            }
         }
 
         public override void Delete()

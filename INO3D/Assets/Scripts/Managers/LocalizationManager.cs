@@ -92,6 +92,7 @@ namespace Assets.Scripts.Managers
             AddLocalization("NewLine", "Nova linha", "New line");
             AddLocalization("Clear", "Limpar", "Clear");
 
+            AddLocalization("Name", "Nome", "Name");
             AddLocalization("Resistance", "Resistência", "Resistance");
             AddLocalization("EditCode", "Editar código", "Edit code");
             AddLocalization("Color", "Cor", "Color");
@@ -114,6 +115,7 @@ namespace Assets.Scripts.Managers
             AddLocalization("Language", "Linguagem", "Language");
             AddLocalization("CameraSensitivity", "Sensibilidade da câmera", "Camera sensitivity");
             AddLocalization("ShowWarnings", "Mostrar avisos", "Show warnings");
+            AddLocalization("LockCamera", "Travar câmera", "Lock camera");
 
             AddLocalization("CodeEditor", "Editor de código", "Code editor");
 

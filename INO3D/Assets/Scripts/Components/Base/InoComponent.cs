@@ -35,6 +35,7 @@ namespace Assets.Scripts.Components.Base
 
         #region Fields
 
+        public string Name { get; set; }
         public string Hash { get; set; }
 
         protected List<Port> Ports;
@@ -73,13 +74,13 @@ namespace Assets.Scripts.Components.Base
 
             CanDrag = true;
             CanRotate = true;
-        }
 
-        private void Start()
-        {
-            SetupPorts();
-            GeneratePorts();
-            transform.position = new Vector3(transform.position.x, DefaultHeight, transform.position.z);
+            if (string.IsNullOrEmpty(Name))
+            {
+                var type = GetType();
+                var count = FindObjectsOfType(type).Length - 1;
+                Name = count > 0 ? $"{type.Name} ({count})" : $"{type.Name}";
+            }
 
             if (string.IsNullOrEmpty(Hash))
             {
@@ -95,6 +96,13 @@ namespace Assets.Scripts.Components.Base
 
                 Hash = sb.ToString();
             }
+        }
+
+        private void Start()
+        {
+            SetupPorts();
+            GeneratePorts();
+            transform.position = new Vector3(transform.position.x, DefaultHeight, transform.position.z);
         }
 
         private void Update()
