@@ -128,6 +128,11 @@ namespace Assets.Scripts.Components.Base
             }
         }
 
+        private void OnDestroy()
+        {
+            ComponentsManager.Instance.UpdateSceneComponents();
+        }
+
         private void OnDrawGizmos()
         {
             if(!DebugPins)

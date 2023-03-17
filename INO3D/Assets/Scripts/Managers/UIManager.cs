@@ -61,6 +61,7 @@ namespace Assets.Scripts.Managers
         private bool isMouseUp;
 
         private bool displayPortOverlay;
+        private bool showLockCamera;
         private bool showConsole;
         private bool showSettings;
         private bool showEditCode;
@@ -75,6 +76,7 @@ namespace Assets.Scripts.Managers
         private string selectedCategory;
 
         private bool consoleAutoScroll;
+        private byte[] searchInputBuffer;
         private byte[] consoleInputBuffer;
         private byte[] selectedComponentNameBuffer;
 
@@ -185,6 +187,12 @@ namespace Assets.Scripts.Managers
             displayPortOverlay = false;
         }
 
+        public void ShowLockCamera()
+        {
+            searchInputBuffer = new byte[1024];
+            showLockCamera = !showLockCamera;
+        }
+        
         public void ShowConsole()
         {
             showConsole = !showConsole;
@@ -403,9 +411,16 @@ namespace Assets.Scripts.Managers
             isMouseUp = !ImGui.IsAnyMouseDown();
 
             ShowButtonBar();
-            ShowComponentsWindow();
-            ShowPropertiesWindow();
 
+            if (!SimulationManager.Instance.IsSimulating())
+            {
+                ShowComponentsWindow();
+                ShowPropertiesWindow();
+            }
+
+            if (showLockCamera)
+                ShowLockCameraWindow();
+            
             if (showConsole)
                 ShowConsoleWindow();
             
@@ -546,7 +561,7 @@ namespace Assets.Scripts.Managers
                 if (selectedComponent != null)
                 {
                     GenerateStringPropertyField(LocalizationManager.Instance.Localize("Name"), selectedComponentNameBuffer);
-                    selectedComponent.Name = Encoding.UTF8.GetString(selectedComponentNameBuffer);
+                    selectedComponent.Name = Encoding.UTF8.GetString(selectedComponentNameBuffer).Trim('\0');
                     selectedComponent.DrawPropertiesWindow();
                 }
             }
@@ -659,10 +674,7 @@ namespace Assets.Scripts.Managers
             DrawInLineButton("3D", true, LocalizationManager.Instance.Localize("Camera3D"),
                 () => CameraController.Instance.SetCameraAsPerspective());
             DrawInLineButton("LockCamera", true, LocalizationManager.Instance.Localize("LockCamera"),
-                () =>
-                {
-
-                });
+                () => ShowLockCamera());
 
             InLineSpacing();
 
@@ -823,6 +835,49 @@ namespace Assets.Scripts.Managers
 
             ImGui.SameLine();
             ImGui.Spacing();
+        }
+
+        private void ShowLockCameraWindow()
+        {
+            ImGui.SetNextWindowSize(new Vector2(250, 300), ImGuiCond.FirstUseEver);
+            ImGui.Begin(LocalizationManager.Instance.Localize("LockCamera") + "###lockCamera", ref showLockCamera,
+                ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking);
+
+            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().x - 105);
+            ImGui.InputText("", searchInputBuffer, (uint) searchInputBuffer.Length);
+
+            ImGui.SameLine();
+            if (ImGui.Button(LocalizationManager.Instance.Localize("ResetCamera"), new Vector2(100, ImGui.GetItemRectSize().y)))
+                CameraController.Instance.SetTarget(null);
+
+            ImGui.Separator();
+
+            ImGui.BeginChild("ScrollingRegion", new Vector2(0, -1), false, ImGuiWindowFlags.HorizontalScrollbar);
+
+            ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(4, 1));
+
+            var searchString = Encoding.UTF8.GetString(searchInputBuffer).Trim('\0').ToLower();
+            foreach (var sceneComponent in ComponentsManager.Instance.GetSceneComponents())
+            {
+                if (string.IsNullOrEmpty(searchString) || sceneComponent.Name.ToLower().Contains(searchString))
+                {
+                    ImGui.PushID(sceneComponent.Hash);
+                    if (ImGui.ImageButton((IntPtr)ImGuiUn.GetTextureId(ComponentsManager.Instance.GetIcon("Eye")), buttonBarButtonSize))
+                        CameraController.Instance.SetTarget(sceneComponent.gameObject);
+                    ImGui.PopID();
+
+                    ImGui.SameLine();
+
+                    var cursorPosition = ImGui.GetCursorPos();
+                    ImGui.SetCursorPos(new Vector2(cursorPosition.x, cursorPosition.y + ImGui.GetFontSize() / 2));
+                    ImGui.Text(sceneComponent.Name);
+                }
+            }
+
+            ImGui.PopStyleVar();
+            ImGui.EndChild();
+
+            ImGui.End();
         }
 
         private void ShowConsoleWindow()

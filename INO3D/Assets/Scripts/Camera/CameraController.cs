@@ -1,4 +1,5 @@
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.Managers;
 using UnityEngine;
 using UnityCamera = UnityEngine.Camera;
@@ -9,33 +10,36 @@ namespace Assets.Scripts.Camera
     {
         #region Properties
 
-        public static CameraController Instance { get; private set; }
-
-        #endregion
-
-        #region Fields
-
         public enum CameraProjection
         {
             Orthographic,
             Perspective
         }
 
-        [Header("Speed")] [SerializeField] float rotateSpeed = 150f;
-        [SerializeField] float zoomSpeed = 100f;
-        [SerializeField] float dragSpeed = 20f;
+        public static CameraController Instance { get; private set; }
 
-        [Header("Zoom")] [SerializeField] float minDistance = 0.5f;
-        [SerializeField] float maxDistance = 12f;
+        #endregion
 
-        private GameObject target;
-        private UnityCamera mainCamera;
-        private float currentZoom;
-        private CameraProjection currentProjection;
+        #region Fields
 
-        private Plane floorPlane;
+        private const float ZoomFactor = 0.5f;
+        private const float PanFactor = 0.02f;
+        private const float RotateFactor = 1f;
 
-        private float lastAngle;
+        private Transform orbitTransform;
+
+        private Vector3 camLockOffset;
+        private GameObject gameObjectToLock;
+
+        private float lockDistanceToOrbit;
+        private float distanceToOrbit;
+
+        private Vector3 lastMouse;
+        private UnityCamera cam;
+
+        private float PanSpeed => LocalizationManager.Instance.GetCameraSensitivity() * PanFactor * 1.5f * (cam.orthographic ? cam.orthographicSize : distanceToOrbit);
+        private float RotateSpeed => LocalizationManager.Instance.GetCameraSensitivity() * RotateFactor;
+        private float ZoomSpeed => LocalizationManager.Instance.GetCameraSensitivity() * ZoomFactor * 1.5f * (cam.orthographic ? cam.orthographicSize : distanceToOrbit);
 
         #endregion
 
@@ -43,42 +47,53 @@ namespace Assets.Scripts.Camera
 
         private void Awake()
         {
-            mainCamera = GetComponent<UnityCamera>();
-
             if (Instance != null && Instance != this)
-                Destroy(gameObject);
+                Destroy(this);
             else
                 Instance = this;
         }
 
         private void Start()
         {
-            floorPlane = new Plane(Vector3.up, 0);
-            target = new GameObject("CAMERA_TARGET")
-            {
-                transform =
-                {
-                    position = Vector3.zero
-                }
-            };
-            mainCamera.orthographicSize = 2;
-            lastAngle = transform.eulerAngles.x;
-            SetCameraAsPerspective();
+            orbitTransform = GameObject.CreatePrimitive(PrimitiveType.Capsule).transform;
+            orbitTransform.position = transform.position;
+            orbitTransform.rotation = transform.rotation;
+            lastMouse = Input.mousePosition;
+
+            orbitTransform.GetComponent<Renderer>().enabled = false;
+            orbitTransform.GetComponent<CapsuleCollider>().enabled = false;
+            cam = GetComponent<UnityCamera>();
+            Reset();
         }
 
         private void Update()
         {
+            if (gameObjectToLock != null)
+            {
+                orbitTransform.position = gameObjectToLock.transform.position + camLockOffset;
+                transform.position = orbitTransform.position - transform.forward * lockDistanceToOrbit;
+
+                lockDistanceToOrbit -= ZoomSpeed * Input.GetAxis("Mouse ScrollWheel");
+            }
+
             if (UIManager.Instance.IsMouserOverUI())
                 return;
 
-            if (currentProjection == CameraProjection.Perspective)
-                PerspectiveCameraControl();
-            else if (currentProjection == CameraProjection.Orthographic)
-                OrthographicCameraControl();
+            UpdateMouse();
 
-            if (Input.GetKeyDown(KeyCode.Tab))
+            if (Input.GetKeyDown(KeyCode.F))
             {
-                if (currentProjection == CameraProjection.Orthographic)
+                var selectedComponent = ComponentsManager.Instance.GetSelectedComponent();
+                if (selectedComponent != null)
+                    FocusOnGameObject(new[] {selectedComponent.gameObject});
+            }
+            else if (Input.GetKeyDown(KeyCode.G))
+            {
+                Reset();
+            }
+            else if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                if (GetCameraProjection() == CameraProjection.Orthographic)
                     SetCameraAsPerspective();
                 else
                     SetCameraAsOrthographic();
@@ -89,136 +104,143 @@ namespace Assets.Scripts.Camera
 
         #region Public Methods
 
-        public float GetCurrentZoom()
+        public void SetCameraAsOrthographic()
         {
-            return currentZoom;
-        }
+            transform.parent = orbitTransform;
+            orbitTransform.rotation = Quaternion.Euler(90, 0, 0);
+            transform.parent = null;
 
-        public CameraProjection GetCameraProjection()
-        {
-            return currentProjection;
-        }
-
-        public UnityCamera GetMainCamera()
-        {
-            return mainCamera;
+            cam.orthographic = true;
         }
 
         public void SetCameraAsPerspective()
         {
-            var cameraLookingPoint = Vector3.zero;
-            if (Physics.Raycast(transform.position, transform.forward, out var hit))
-                cameraLookingPoint = hit.point;
-
-            currentProjection = CameraProjection.Perspective;
-            mainCamera.orthographic = false;
-            transform.eulerAngles = new Vector3(lastAngle, 0, 0);
-
-            target.transform.position = new Vector3(cameraLookingPoint.x, target.transform.position.y,
-                Math.Abs(target.transform.position.z - cameraLookingPoint.z) > 1f
-                    ? cameraLookingPoint.z
-                    : target.transform.position.z);
-            currentZoom = OrthographicSizeToZoom(mainCamera.orthographicSize);
-
-            var defaultAngleRad = Mathf.Deg2Rad * lastAngle;
-            var y = currentZoom * (float)Math.Sin(defaultAngleRad);
-            var z = currentZoom * (float)Math.Cos(defaultAngleRad);
-
-            transform.position = new Vector3(cameraLookingPoint.x, y, target.transform.position.z - z);
+            cam.orthographic = false;
         }
 
-        public void SetCameraAsOrthographic()
+        public void SetTarget(GameObject newTarget)
         {
-            var cameraLookingPoint = Vector3.zero;
-            if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out var hit))
-                cameraLookingPoint = hit.point;
+            if (newTarget != null)
+            {
+                gameObjectToLock = newTarget;
+                FocusOnGameObject(new[] {newTarget});
+            }
+            else
+            {
+                gameObjectToLock = null;
+                Reset();
+            }
+        }
 
-            currentProjection = CameraProjection.Orthographic;
-            mainCamera.orthographic = true;
-            transform.eulerAngles = new Vector3(90, 0, 0);
+        public CameraProjection GetCameraProjection()
+        {
+            return cam.orthographic ? CameraProjection.Orthographic : CameraProjection.Perspective;
+        }
 
-            transform.position = new Vector3(cameraLookingPoint.x, 10, cameraLookingPoint.z);
-
-            var size = 0.594469f * currentZoom - 0.101753f;
-            mainCamera.orthographicSize = size;
+        public void Reset()
+        {
+            gameObjectToLock = null;
+            var components = ComponentsManager.Instance.GetSceneComponents().Select(component => component.gameObject).ToArray();
+            FocusOnGameObject(components);
         }
 
         #endregion
 
         #region Private Methods
 
-        private void PerspectiveCameraControl()
+        private void UpdateMouse()
         {
-            currentZoom = Vector3.Distance(transform.position, target.transform.position);
-            var cameraSensitivity = LocalizationManager.Instance.GetCameraSensitivity();
+            var deltaMouse = Input.mousePosition - lastMouse;
+            lastMouse = Input.mousePosition;
 
-            //Rotate
-            if (Input.GetKey(KeyCode.Mouse1))
+            var mouseScrollWheel = Input.GetAxis("Mouse ScrollWheel");
+            var rotationEnabled = Input.GetMouseButton(1) && !cam.orthographic;
+            var zoomEnabled = mouseScrollWheel != 0;
+            var panEnabled = Input.GetMouseButton(2) && gameObjectToLock == null;
+
+            distanceToOrbit = Vector3.Distance(transform.position, orbitTransform.position);
+            if (zoomEnabled)
+                Zoom(mouseScrollWheel);
+
+            var mouseX = deltaMouse.x / 20;
+            var mouseY = deltaMouse.y / 20;
+
+            if (panEnabled)
             {
-                transform.RotateAround(target.transform.position, Vector3.up,
-                    Input.GetAxisRaw("Mouse X") * 0.001f * rotateSpeed * cameraSensitivity);
-
-                var angle = -(Input.GetAxisRaw("Mouse Y") * 0.001f * rotateSpeed * cameraSensitivity);
-                transform.RotateAround(target.transform.position, transform.right, angle);
+                PanRight(mouseX);
+                PanUp(mouseY);
             }
 
-            //Drag
-            if (Input.GetKey(KeyCode.Mouse2))
+            if (rotationEnabled)
             {
-                var direction = new Vector3(-Input.GetAxisRaw("Mouse X") * 0.001f * dragSpeed * currentZoom * cameraSensitivity,
-                    -Input.GetAxisRaw("Mouse Y") * 0.001f * dragSpeed * currentZoom * cameraSensitivity, 0);
-
-                var ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
-                if (floorPlane.Raycast(ray, out var enter))
-                {
-                    transform.Translate(direction);
-
-                    var hit = ray.GetPoint(enter);
-                    target.transform.position = new Vector3(hit.x, 0, hit.z);
-                }
+                RotateUp(-mouseY);
+                RotateRight(-mouseX);
             }
-
-            //Zoom
-            if (currentZoom >= minDistance && Input.GetAxis("Mouse ScrollWheel") > 0f ||
-                currentZoom <= maxDistance && Input.GetAxis("Mouse ScrollWheel") < 0f)
-                transform.Translate(0f, 0f, Input.GetAxis("Mouse ScrollWheel") * 0.001f * zoomSpeed * cameraSensitivity,
-                    Space.Self);
         }
 
-        private void OrthographicCameraControl()
+        private void FocusOnGameObject(GameObject[] objects)
         {
-            var zoom = OrthographicSizeToZoom(mainCamera.orthographicSize);
-            var cameraSensitivity = LocalizationManager.Instance.GetCameraSensitivity();
+            var center = objects.Aggregate(Vector3.zero, (current, obj) => current + obj.transform.position) / objects.Length;
 
-            //Drag
-            if (Input.GetKey(KeyCode.Mouse2))
+            var bounds = new Bounds(center, Vector3.zero);
+            foreach (var meshRenderer in objects.SelectMany(obj => obj.GetComponentsInChildren<MeshRenderer>()))
+                bounds.Encapsulate(meshRenderer.bounds);
+
+            var radius = bounds.size.magnitude / 2f;
+            var horizontalFov = 2f * Mathf.Atan(Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad / 2f) * cam.aspect) * Mathf.Rad2Deg;
+            var fov = Mathf.Min(cam.fieldOfView, horizontalFov);
+            var dist = radius / (Mathf.Sin(fov * Mathf.Deg2Rad / 2f));
+
+            if(gameObjectToLock != null)
             {
-                var direction = new Vector3(-Input.GetAxisRaw("Mouse X") * 0.001f * dragSpeed * zoom * cameraSensitivity,
-                    -Input.GetAxisRaw("Mouse Y") * 0.001f * dragSpeed * zoom * cameraSensitivity, 0);
-
-                var ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
-                if (floorPlane.Raycast(ray, out var enter))
-                {
-                    transform.Translate(direction);
-
-                    var hit = ray.GetPoint(enter);
-                    target.transform.position = new Vector3(hit.x, 0, hit.z);
-                }
+                camLockOffset = bounds.center - gameObjectToLock.transform.position;
+                lockDistanceToOrbit = dist;
             }
 
-            //Zoom
-            if (zoom >= minDistance && Input.GetAxis("Mouse ScrollWheel") > 0f ||
-                zoom <= maxDistance && Input.GetAxis("Mouse ScrollWheel") < 0f)
-                mainCamera.orthographicSize =
-                    Mathf.Clamp(
-                        mainCamera.orthographicSize -
-                        Input.GetAxis("Mouse ScrollWheel") * 0.001f * zoomSpeed * cameraSensitivity,
-                        minDistance, maxDistance);
+            if (float.IsNaN(bounds.center.x) || float.IsNaN(bounds.center.y) || float.IsNaN(bounds.center.z))
+                return;
+
+            if (cam.orthographic)
+                cam.orthographicSize = radius;
+
+            orbitTransform.position = bounds.center;
+            transform.position = bounds.center - transform.forward * dist;
         }
 
-        private float OrthographicSizeToZoom(float orthographicSize)
+        private void Zoom(float value)
         {
-            return (orthographicSize + 0.101753f) / 0.594469f;
+            if (cam.orthographic)
+                cam.orthographicSize -= ZoomSpeed * value;
+            else
+                transform.Translate(ZoomSpeed * value * Vector3.forward);
+        }
+
+        private void PanRight(float value)
+        {
+            transform.parent = orbitTransform;
+            orbitTransform.Translate(value * PanSpeed * -Vector3.right, transform);
+            transform.parent = null;
+        }
+
+        private void PanUp(float value)
+        {
+            transform.parent = orbitTransform;
+            orbitTransform.Translate(value * PanSpeed * -Vector3.up, transform);
+            transform.parent = null;
+        }
+
+        private void RotateRight(float value)
+        {
+            transform.parent = orbitTransform;
+            orbitTransform.Rotate(value * RotateSpeed * -Vector3.up, Space.World);
+            transform.parent = null;
+        }
+
+        private void RotateUp(float eventValue)
+        {
+            transform.parent = orbitTransform;
+            orbitTransform.Rotate(eventValue * RotateSpeed * Vector3.right);
+            transform.parent = null;
         }
 
         #endregion

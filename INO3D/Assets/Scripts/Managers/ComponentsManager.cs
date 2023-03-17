@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Assets.Scripts.Camera;
 using Assets.Scripts.Components;
@@ -58,6 +59,7 @@ namespace Assets.Scripts.Managers
         private Material selectedMaterial;
         private Material unselectedMaterial;
 
+        private List<InoComponent> sceneComponents;
         private List<InoPort> selectedPorts;
 
         private Dictionary<string, Dictionary<string, List<string>>> componentsCategories;
@@ -154,8 +156,9 @@ namespace Assets.Scripts.Managers
             inoComponentLayerId = (int) Math.Log(inoLayerMask.value, 2);
             floorLayerMaskId = (int) Math.Log(floorLayerMask.value, 2);
 
-            mainCamera = CameraController.Instance.GetMainCamera();
+            mainCamera = UnityEngine.Camera.main;
             selectedPorts = new List<InoPort>();
+            UpdateSceneComponents();
         }
 
         private void Update()
@@ -282,6 +285,16 @@ namespace Assets.Scripts.Managers
 
         #region Public Methods
 
+        public void UpdateSceneComponents()
+        {
+            sceneComponents = FindObjectsOfType<InoComponent>().ToList();
+        }
+
+        public List<InoComponent> GetSceneComponents()
+        {
+            return sceneComponents;
+        }
+
         public void NewProject()
         {
             DeselectComponent();
@@ -292,6 +305,8 @@ namespace Assets.Scripts.Managers
             HasUnsavedChanges = false;
             CurrentProjectName = "Untitled";
             UpdateWindowTitle(false);
+            UpdateSceneComponents();
+            CameraController.Instance.Reset();
         }
 
         public void SaveProject(string path)
@@ -438,6 +453,7 @@ namespace Assets.Scripts.Managers
             HasUnsavedChanges = false;
             CurrentProjectName = Path.GetFileNameWithoutExtension(path);
             UpdateWindowTitle(false);
+            UpdateSceneComponents();
         }
 
         public void InstantiateComponent(string componentName)
@@ -459,6 +475,7 @@ namespace Assets.Scripts.Managers
                 if (!HasUnsavedChanges)
                     UpdateWindowTitle(true);
                 HasUnsavedChanges = true;
+                UpdateSceneComponents();
             }
         }
 
@@ -601,6 +618,7 @@ namespace Assets.Scripts.Managers
 
             yield return new WaitForEndOfFrame();
             isAddingJumper = false;
+            UpdateSceneComponents();
         }
 
         private void UpdateWindowTitle(bool addStar)

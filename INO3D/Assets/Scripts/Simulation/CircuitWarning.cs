@@ -50,7 +50,7 @@ namespace Assets.Scripts.Simulation
             }
             else
             {
-                transform.localScale = Vector3.one * Math.Max(0.03f, cameraController.GetCurrentZoom() / 80f);
+                transform.localScale = Vector3.one * Math.Max(0.03f, Vector3.Distance(transform.position, cameraController.transform.position));
                 transform.LookAt(cameraTransform);
             }
 

@@ -115,7 +115,8 @@ namespace Assets.Scripts.Managers
             AddLocalization("Language", "Linguagem", "Language");
             AddLocalization("CameraSensitivity", "Sensibilidade da câmera", "Camera sensitivity");
             AddLocalization("ShowWarnings", "Mostrar avisos", "Show warnings");
-            AddLocalization("LockCamera", "Travar câmera", "Lock camera");
+            AddLocalization("LockCamera", "Travar câmera em um objeto", "Lock camera on an object");
+            AddLocalization("ResetCamera", "Resetar câmera", "Reset camera");
 
             AddLocalization("CodeEditor", "Editor de código", "Code editor");
 
