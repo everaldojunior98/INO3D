@@ -34,6 +34,9 @@ namespace Assets.Scripts.Camera
         private float lockDistanceToOrbit;
         private float distanceToOrbit;
 
+        private Vector3 lastCamPosition;
+        private Vector3 lastTargetPosition;
+
         private Vector3 lastMouse;
         private UnityCamera cam;
 
@@ -70,10 +73,15 @@ namespace Assets.Scripts.Camera
         {
             if (gameObjectToLock != null)
             {
-                orbitTransform.position = gameObjectToLock.transform.position + camLockOffset;
-                transform.position = orbitTransform.position - transform.forward * lockDistanceToOrbit;
+                if (!UIManager.Instance.IsMouserOverUI())
+                    lockDistanceToOrbit -= ZoomSpeed * Input.GetAxis("Mouse ScrollWheel");
 
-                lockDistanceToOrbit -= ZoomSpeed * Input.GetAxis("Mouse ScrollWheel");
+                if (cam.orthographic)
+                    cam.orthographicSize = lockDistanceToOrbit;
+                else
+                    transform.position = orbitTransform.position - transform.forward * lockDistanceToOrbit;
+
+                orbitTransform.position = gameObjectToLock.transform.position + camLockOffset;
             }
 
             if (UIManager.Instance.IsMouserOverUI())
@@ -85,7 +93,20 @@ namespace Assets.Scripts.Camera
             {
                 var selectedComponent = ComponentsManager.Instance.GetSelectedComponent();
                 if (selectedComponent != null)
-                    FocusOnGameObject(new[] {selectedComponent.gameObject});
+                    FocusOnGameObject(new[] { selectedComponent.gameObject });
+            }
+            else if (Input.GetKeyDown(KeyCode.L))
+            {
+                if (gameObjectToLock != null)
+                {
+                    SetTarget(null);
+                }
+                else
+                {
+                    var selectedComponent = ComponentsManager.Instance.GetSelectedComponent();
+                    if (selectedComponent != null)
+                        SetTarget(selectedComponent.gameObject);
+                }
             }
             else if (Input.GetKeyDown(KeyCode.G))
             {
@@ -106,15 +127,22 @@ namespace Assets.Scripts.Camera
 
         public void SetCameraAsOrthographic()
         {
+            lastCamPosition = transform.position;
+            lastTargetPosition = orbitTransform.position;
+
             transform.parent = orbitTransform;
             orbitTransform.rotation = Quaternion.Euler(90, 0, 0);
             transform.parent = null;
 
             cam.orthographic = true;
+            transform.position = new Vector3(transform.position.x, 10, transform.position.z);
         }
 
         public void SetCameraAsPerspective()
         {
+            transform.position = lastCamPosition;
+            orbitTransform.position = lastTargetPosition;
+
             cam.orthographic = false;
         }
 
@@ -128,7 +156,6 @@ namespace Assets.Scripts.Camera
             else
             {
                 gameObjectToLock = null;
-                Reset();
             }
         }
 
@@ -155,7 +182,7 @@ namespace Assets.Scripts.Camera
 
             var mouseScrollWheel = Input.GetAxis("Mouse ScrollWheel");
             var rotationEnabled = Input.GetMouseButton(1) && !cam.orthographic;
-            var zoomEnabled = mouseScrollWheel != 0;
+            var zoomEnabled = mouseScrollWheel != 0 && gameObjectToLock == null;
             var panEnabled = Input.GetMouseButton(2) && gameObjectToLock == null;
 
             distanceToOrbit = Vector3.Distance(transform.position, orbitTransform.position);
@@ -201,10 +228,14 @@ namespace Assets.Scripts.Camera
                 return;
 
             if (cam.orthographic)
+            {
                 cam.orthographicSize = radius;
-
-            orbitTransform.position = bounds.center;
-            transform.position = bounds.center - transform.forward * dist;
+            }
+            else
+            {
+                orbitTransform.position = bounds.center;
+                transform.position = bounds.center - transform.forward * dist;
+            }
         }
 
         private void Zoom(float value)
@@ -212,7 +243,10 @@ namespace Assets.Scripts.Camera
             if (cam.orthographic)
                 cam.orthographicSize -= ZoomSpeed * value;
             else
+            {
+                cam.orthographicSize = Vector3.Distance(orbitTransform.position, transform.position);
                 transform.Translate(ZoomSpeed * value * Vector3.forward);
+            }
         }
 
         private void PanRight(float value)

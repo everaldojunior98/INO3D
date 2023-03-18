@@ -573,12 +573,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efbe609a0c4b6a0449cf65b2a22a68df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zoomSensitivity: 1
-  mousePanSensitivity: 1
-  rotateSensitivity: 1
-  distanceToOrbit: 0
-  lastMouse: {x: 0, y: 0, z: 0}
-  Cam: {fileID: 0}
 --- !u!114 &1860337029
 MonoBehaviour:
   m_ObjectHideFlags: 0
