@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.RegularExpressions;
 using Assets.Scripts.Camera;
 using Assets.Scripts.Components;
 using Assets.Scripts.Components.Base;
@@ -350,11 +352,10 @@ namespace Assets.Scripts.Managers
                 saveProject.Components.Add(saveFile);
             }
 
-            var json = JsonConvert.SerializeObject(saveProject,
-                new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto, Formatting = Formatting.Indented});
+            var json = JsonConvert.SerializeObject(saveProject, new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto});
 
             var writer = new StreamWriter(path);
-            writer.Write(json);
+            writer.Write(Convert.ToBase64String(Encoding.UTF8.GetBytes(json)));
             writer.Close();
 
             CurrentProjectPath = path;
@@ -369,6 +370,9 @@ namespace Assets.Scripts.Managers
             var reader = new StreamReader(path);
             var json = reader.ReadToEnd();
             reader.Close();
+
+            if (IsBase64String(json))
+                json = Encoding.UTF8.GetString(Convert.FromBase64String(json));
 
             var saveFile = JsonConvert.DeserializeObject<InoProjectSaveFile>(json,
                 new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto, Formatting = Formatting.Indented});
@@ -576,6 +580,12 @@ namespace Assets.Scripts.Managers
         #endregion
 
         #region Private Methods
+
+        private bool IsBase64String(string s)
+        {
+            s = s.Trim();
+            return s.Length % 4 == 0 && Regex.IsMatch(s, @"^[a-zA-Z0-9\+/]*={0,3}$", RegexOptions.None);
+        }
 
         private InoComponent GetParentComponent(Transform baseTransform)
         {
