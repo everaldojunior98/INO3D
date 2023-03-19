@@ -46,8 +46,8 @@ namespace Assets.Scripts.Components
             {
                 {"A", leftMotor.leadIn},
                 {"B", leftMotor.leadOut},
-                {"C", rightMotor.leadIn},
-                {"D", rightMotor.leadOut}
+                {"D", rightMotor.leadIn},
+                {"C", rightMotor.leadOut}
             };
         }
 

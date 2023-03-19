@@ -60,6 +60,9 @@ namespace Assets.Scripts.Managers
         private bool isMouseOverUI;
         private bool isMouseUp;
 
+        private string errorMessage;
+        private bool displayErrorOverlay;
+
         private bool displayPortOverlay;
         private bool showLockCamera;
         private bool showConsole;
@@ -92,6 +95,8 @@ namespace Assets.Scripts.Managers
 
         private Dictionary<GameObject, GameObject> warningByObject;
 
+        private float errorScreenTime;
+
         #endregion
 
         #region Unity Methods
@@ -110,6 +115,18 @@ namespace Assets.Scripts.Managers
             currentLog = string.Empty;
             warningByObject = new Dictionary<GameObject, GameObject>();
             LoadSettings();
+        }
+
+        private void Update()
+        {
+            if (!string.IsNullOrEmpty(errorMessage))
+                errorScreenTime += Time.deltaTime;
+
+            if (errorScreenTime > 5)
+            {
+                errorMessage = string.Empty;
+                errorScreenTime = 0;
+            }
         }
 
         private void OnEnable()
@@ -290,6 +307,11 @@ namespace Assets.Scripts.Managers
             selectedComponentNameBuffer = new byte[1024];
             var nameBuffer = Encoding.UTF8.GetBytes(componentName);
             nameBuffer.CopyTo(selectedComponentNameBuffer, 0);
+        }
+
+        public void ShowError(string message)
+        {
+            errorMessage = message;
         }
 
         #endregion
@@ -690,6 +712,7 @@ namespace Assets.Scripts.Managers
             var middleBarPosition = menuBarSize.x / 2;
             var playPosition = middleBarPosition - buttonBarButtonSize.x + padding.x / 2;
             var stopPosition = middleBarPosition + buttonBarButtonSize.x - padding.x / 2;
+            var errorPosition = stopPosition + buttonBarButtonSize.x + 3.5f * padding.x;
 
             ImGui.SetCursorPos(new Vector2(playPosition, padding.y));
 
@@ -707,6 +730,12 @@ namespace Assets.Scripts.Managers
                         Destroy(warning);
                     warningByObject.Clear();
                 });
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                ImGui.SetCursorPos(new Vector2(errorPosition, menuBarSize.y / 2 - ImGui.GetFontSize() / 2));
+                ImGui.Text(LocalizationManager.Instance.Localize(errorMessage));
+            }
 
             var center = ImGui.GetMainViewport().Size / 2;
             ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));

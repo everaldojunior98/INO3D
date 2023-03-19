@@ -6,7 +6,6 @@ using Assets.Scripts.Utils;
 using SharpCircuit;
 using UnityEngine;
 using static SharpCircuit.Circuit;
-using Debug = UnityEngine.Debug;
 using Exception = System.Exception;
 
 namespace Assets.Scripts.Managers
@@ -93,12 +92,20 @@ namespace Assets.Scripts.Managers
             {
                 while (isSimulating)
                 {
-                    if (needAnalysis)
+                    try
                     {
-                        circuit.needAnalyze();
-                        needAnalysis = false;
+                        if (needAnalysis)
+                        {
+                            circuit.needAnalyze();
+                            needAnalysis = false;
+                        }
+                        circuit.doTick();
                     }
-                    circuit.doTick();
+                    catch (Exception e)
+                    {
+                        UIManager.Instance.ShowError(e.Message);
+                        StopSimulation();
+                    }
 
                     try
                     {
@@ -107,7 +114,7 @@ namespace Assets.Scripts.Managers
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError(e);
+                        // ignored
                     }
                 }
             });

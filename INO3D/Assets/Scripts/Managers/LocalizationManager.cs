@@ -61,10 +61,11 @@ namespace Assets.Scripts.Managers
             AddLocalization("BlackBox", "Caixa preta", "Black box");
             AddLocalization("L298N", "L298N", "L298N");
             AddLocalization("Electric", "Elétrico", "Electric");
-            AddLocalization("Electric.HBridge", "Ponte H", "H Bridge");
+            AddLocalization("Electric.Basics", "Básicos", "Basics");
             AddLocalization("Electric.Motors", "Motores", "Motors");
             AddLocalization("DCMotor", "Motor DC", "DC Motor");
             AddLocalization("CarChassis", "Chassi 2wd", "Chassis 2wd");
+            AddLocalization("Battery", "Bateria", "Battery");
 
             AddLocalization("Yes", "Sim", "Yes");
             AddLocalization("No", "Não", "No");
@@ -119,6 +120,16 @@ namespace Assets.Scripts.Managers
             AddLocalization("ResetCamera", "Resetar câmera", "Reset camera");
 
             AddLocalization("CodeEditor", "Editor de código", "Code editor");
+
+            //Errors
+            AddLocalization("NaN/Infinite matrix!", "Ocorreu um erro ao processar o circuito.", "An error occurred while processing the circuit.");
+            AddLocalization("Singular matrix!", "Ocorreu um erro ao processar o circuito.", "An error occurred while processing the circuit.");
+            AddLocalization("Convergence failed!", "Ocorreu um erro ao processar o circuito.", "An error occurred while processing the circuit.");
+            AddLocalization("No path for current source!", "Nenhum caminho para a fonte de corrente.", "No path for current source.");
+            AddLocalization("Voltage source/wire loop with no resistance!", "Fonte de tensão/fio em loop sem resistência.", "Voltage source/wire loop with no resistance.");
+            AddLocalization("Capacitor loop with no resistance!", "Capacitor em loop sem resistência.", "Capacitor loop with no resistance.");
+            AddLocalization("Matrix error", "Ocorreu um erro ao processar o circuito.", "An error occurred while processing the circuit.");
+            AddLocalization("Singular matrix!", "Ocorreu um erro ao processar o circuito.", "An error occurred while processing the circuit.");
 
             currentLanguage = PlayerPrefs.GetString("currentLanguage", localizationDictionary.Keys.First());
             cameraSensitivity = PlayerPrefs.GetFloat("cameraSensitivity", 1);

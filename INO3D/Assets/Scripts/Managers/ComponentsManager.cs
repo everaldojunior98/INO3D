@@ -112,9 +112,10 @@ namespace Assets.Scripts.Managers
             });
             
             componentsCategories.Add("Electric", new Dictionary<string, List<string>>());
-            componentsCategories["Electric"].Add("HBridge", new List<string>
+            componentsCategories["Electric"].Add("Basics", new List<string>
             {
-                "L298N"
+                "L298N",
+                "Battery"
             });
             componentsCategories["Electric"].Add("Motors", new List<string>
             {

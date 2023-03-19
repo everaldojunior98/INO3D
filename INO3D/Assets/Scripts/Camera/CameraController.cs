@@ -26,6 +26,8 @@ namespace Assets.Scripts.Camera
         private const float PanFactor = 0.02f;
         private const float RotateFactor = 1f;
 
+        private const float Smoothness = 10f;
+
         private Transform orbitTransform;
 
         private Vector3 camLockOffset;
@@ -33,9 +35,6 @@ namespace Assets.Scripts.Camera
 
         private float lockDistanceToOrbit;
         private float distanceToOrbit;
-
-        private Vector3 lastCamPosition;
-        private Vector3 lastTargetPosition;
 
         private Vector3 lastMouse;
         private UnityCamera cam;
@@ -79,8 +78,7 @@ namespace Assets.Scripts.Camera
                 if (cam.orthographic)
                     cam.orthographicSize = lockDistanceToOrbit;
                 else
-                    transform.position = orbitTransform.position - transform.forward * lockDistanceToOrbit;
-
+                    transform.position = Vector3.Lerp(transform.position, orbitTransform.position - transform.forward * lockDistanceToOrbit, Smoothness * Time.deltaTime);
                 orbitTransform.position = gameObjectToLock.transform.position + camLockOffset;
             }
 
@@ -127,22 +125,21 @@ namespace Assets.Scripts.Camera
 
         public void SetCameraAsOrthographic()
         {
-            lastCamPosition = transform.position;
-            lastTargetPosition = orbitTransform.position;
+            if(gameObjectToLock != null)
+                return;
 
             transform.parent = orbitTransform;
             orbitTransform.rotation = Quaternion.Euler(90, 0, 0);
             transform.parent = null;
 
+            cam.orthographicSize = distanceToOrbit / 1.5f;
             cam.orthographic = true;
             transform.position = new Vector3(transform.position.x, 10, transform.position.z);
         }
 
         public void SetCameraAsPerspective()
         {
-            transform.position = lastCamPosition;
-            orbitTransform.position = lastTargetPosition;
-
+            transform.position = orbitTransform.position - transform.forward * 1.5f * cam.orthographicSize;
             cam.orthographic = false;
         }
 
@@ -151,6 +148,7 @@ namespace Assets.Scripts.Camera
             if (newTarget != null)
             {
                 gameObjectToLock = newTarget;
+                SetCameraAsPerspective();
                 FocusOnGameObject(new[] {newTarget});
             }
             else
@@ -227,15 +225,9 @@ namespace Assets.Scripts.Camera
             if (float.IsNaN(bounds.center.x) || float.IsNaN(bounds.center.y) || float.IsNaN(bounds.center.z))
                 return;
 
-            if (cam.orthographic)
-            {
-                cam.orthographicSize = radius;
-            }
-            else
-            {
-                orbitTransform.position = bounds.center;
-                transform.position = bounds.center - transform.forward * dist;
-            }
+            cam.orthographicSize = radius;
+            orbitTransform.position = bounds.center;
+            transform.position = bounds.center - transform.forward * dist;
         }
 
         private void Zoom(float value)
