@@ -15,6 +15,7 @@ namespace Assets.Scripts.Components
         #region Fields
 
         public string CurrentCode;
+        public string CurrentGraph;
 
         public GameObject LedOnPointLight;
         public GameObject Led13PointLight;
@@ -184,9 +185,14 @@ namespace Assets.Scripts.Components
 
         public override void DrawPropertiesWindow()
         {
-            UIManager.Instance.GenerateButtonPropertyField(LocalizationManager.Instance.Localize("EditCode"), () =>
+            UIManager.Instance.GenerateButtonPropertyField(LocalizationManager.Instance.Localize("CodeEditor"), () =>
             {
                 UIManager.Instance.ShowEditCode(CurrentCode, newCode => CurrentCode = newCode);
+            });
+
+            UIManager.Instance.GenerateButtonPropertyField(LocalizationManager.Instance.Localize("NodeEditor"), () =>
+            {
+                UIManager.Instance.ShowNodeEditor(CurrentGraph, newGraph => CurrentGraph = newGraph);
             });
         }
 
@@ -235,7 +241,8 @@ namespace Assets.Scripts.Components
             var saveFile = new ArduinoUnoSaveFile
             {
                 PrefabName = "ArduinoUno",
-                Code = CurrentCode
+                Code = CurrentCode,
+                Graph = CurrentGraph
             };
 
             return saveFile;
@@ -244,7 +251,10 @@ namespace Assets.Scripts.Components
         public override void Load(SaveFile saveFile)
         {
             if (saveFile is ArduinoUnoSaveFile arduinoUnoSaveFile)
+            {
                 CurrentCode = arduinoUnoSaveFile.Code;
+                CurrentGraph = arduinoUnoSaveFile.Graph;
+            }
         }
 
         public override void Delete()

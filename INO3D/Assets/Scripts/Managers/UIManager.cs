@@ -7,8 +7,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Assets.Scripts.Camera;
 using Assets.Scripts.Components;
+using Assets.Scripts.NodeEditor.Scripts;
 using ImGuiNET;
+using RuntimeNodeEditor;
 using SFB;
+using UnityEditor;
 using UnityEngine;
 using static Assets.Scripts.Components.Base.InoComponent;
 
@@ -21,6 +24,8 @@ namespace Assets.Scripts.Managers
         public static UIManager Instance { get; private set; }
 
         public GameObject WarningPrefab;
+        public RectTransform NodeRectTransform;
+        public CodeNodeEditor CodeNodeEditor;
 
         #endregion
 
@@ -68,6 +73,7 @@ namespace Assets.Scripts.Managers
         private bool showConsole;
         private bool showSettings;
         private bool showEditCode;
+        private bool showNodeEditor;
 
         private string overlayPortName;
         private PortType overlayPortType;
@@ -91,6 +97,7 @@ namespace Assets.Scripts.Managers
 
         private Action currentPopupAction = () => { };
         private Action<string> onCodeSave;
+        private Action<string> onGraphSave;
         private string currentCode = string.Empty;
 
         private Dictionary<GameObject, GameObject> warningByObject;
@@ -114,7 +121,9 @@ namespace Assets.Scripts.Managers
 
             currentLog = string.Empty;
             warningByObject = new Dictionary<GameObject, GameObject>();
+            NodeRectTransform.gameObject.SetActive(false);
             LoadSettings();
+            LoadNodeEditor();
         }
 
         private void Update()
@@ -148,6 +157,12 @@ namespace Assets.Scripts.Managers
             selectedLanguage = LocalizationManager.Instance.GetCurrentLanguage();
             cameraSensitivity = LocalizationManager.Instance.GetCameraSensitivity();
             showWarnings = LocalizationManager.Instance.GetShowWarnings();
+        }
+
+        private void LoadNodeEditor()
+        {
+            var graph = CodeNodeEditor.CreateGraph<NodeGraph>(NodeRectTransform);
+            CodeNodeEditor.StartEditor(graph);
         }
 
         #endregion
@@ -225,7 +240,14 @@ namespace Assets.Scripts.Managers
         {
             currentCode = code;
             onCodeSave = onSave;
-            showEditCode = !showEditCode;
+            showEditCode = true;
+        }
+        
+        public void ShowNodeEditor(string graph, Action<string> onSave)
+        {
+            onGraphSave = onSave;
+            CodeNodeEditor.LoadGraph(graph);
+            showNodeEditor = true;
         } 
         
         public void AddLog(string log, int lineEnding = 1)
@@ -451,6 +473,9 @@ namespace Assets.Scripts.Managers
 
             if(showEditCode && !SimulationManager.Instance.IsSimulating())
                 ShowEditCodeWindow();
+            
+            if(showNodeEditor && !SimulationManager.Instance.IsSimulating())
+                ShowNodeEditorWindow();
 
             if (displayPortOverlay)
                 ShowPortOverlay();
@@ -1047,6 +1072,32 @@ namespace Assets.Scripts.Managers
                     new Vector2(ImGui.GetItemRectSize().x - 10, 30)))
             {
                 onCodeSave(currentCode);
+            }
+
+            ImGui.End();
+        }
+
+        private void ShowNodeEditorWindow()
+        {
+            ImGui.SetNextWindowSize(new Vector2(830, 560), ImGuiCond.FirstUseEver);
+            ImGui.Begin(LocalizationManager.Instance.Localize("NodeEditor") + "###nodeEditor", ref showNodeEditor,
+                ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking);
+
+            var windowPos = ImGui.GetWindowPos();
+            var windowSize = ImGui.GetContentRegionAvail();
+
+            ImGui.Image((IntPtr) ImGuiUn.GetTextureId(ComponentsManager.Instance.GetIcon("Dummy")),
+                new Vector2(ImGui.GetItemRectSize().x - 10, ImGui.GetWindowSize().y - 80));
+
+            NodeRectTransform.gameObject.SetActive(showNodeEditor);
+            NodeRectTransform.anchoredPosition = new Vector3(windowPos.x + 1, -windowPos.y - 25, NodeRectTransform.position.z);
+            NodeRectTransform.sizeDelta = new Vector2(windowSize.x + 8, windowSize.y - 38);
+
+            ImGui.Separator();
+            if (ImGui.Button(LocalizationManager.Instance.Localize("Save"),
+                    new Vector2(ImGui.GetItemRectSize().x - 10, 30)))
+            {
+                onGraphSave(CodeNodeEditor.SaveGraph());
             }
 
             ImGui.End();

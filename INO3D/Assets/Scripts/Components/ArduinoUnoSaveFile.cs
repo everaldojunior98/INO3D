@@ -7,5 +7,6 @@ namespace Assets.Scripts.Components
     public class ArduinoUnoSaveFile : SaveFile
     {
         public string Code;
+        public string Graph;
     }
 }

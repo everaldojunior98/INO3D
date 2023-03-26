@@ -120,6 +120,13 @@ namespace Assets.Scripts.Managers
             AddLocalization("ResetCamera", "Resetar câmera", "Reset camera");
 
             AddLocalization("CodeEditor", "Editor de código", "Code editor");
+            AddLocalization("NodeEditor", "Editor de nós", "Node editor");
+
+            AddLocalization("Nodes", "Nós", "Nodes");
+            AddLocalization("Nodes.Duplicate", "Duplicar", "Duplicate");
+            AddLocalization("Nodes.Clear", "Limpar conexão", "Clear connection");
+            AddLocalization("Nodes.MultiClear", "Limpar conexões", "Clear connections");
+            AddLocalization("Nodes.Delete", "Deletar", "Delete");
 
             //Errors
             AddLocalization("NaN/Infinite matrix!", "Ocorreu um erro ao processar o circuito.", "An error occurred while processing the circuit.");
