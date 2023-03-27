@@ -47,7 +47,7 @@ namespace Assets.Scripts.NodeEditor.Scripts
                 nextCode = NextNodeSocket.connection.input.OwnerNode.Value;
 
             var value = inputIncomingOutput?.GetValue<string>() ?? "\"\"";
-            Value = $"serialWrite({value});{nextCode}";
+            Value = $"Serial.println({value});{nextCode}";
 
             if (PreviousNodeSocket.Connections.Count > 0)
                 PreviousNodeSocket.Connections.First().output.OwnerNode.OnConnectedValueUpdated();

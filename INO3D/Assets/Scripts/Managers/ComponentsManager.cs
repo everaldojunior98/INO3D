@@ -459,6 +459,7 @@ namespace Assets.Scripts.Managers
             CurrentProjectName = Path.GetFileNameWithoutExtension(path);
             UpdateWindowTitle(false);
             UpdateSceneComponents();
+            CameraController.Instance.Reset();
         }
 
         public void InstantiateComponent(string componentName)

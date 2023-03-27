@@ -123,6 +123,7 @@ namespace Assets.Scripts.Managers
             AddLocalization("NodeEditor", "Editor de nós", "Node editor");
 
             AddLocalization("Nodes", "Nós", "Nodes");
+            AddLocalization("UseNodes", "Usar nós", "Use nodes");
             AddLocalization("Nodes.Duplicate", "Duplicar", "Duplicate");
             AddLocalization("Nodes.Clear", "Limpar conexão", "Clear connection");
             AddLocalization("Nodes.MultiClear", "Limpar conexões", "Clear connections");

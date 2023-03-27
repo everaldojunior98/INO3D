@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Assets.Scripts.Components.Base;
 using Assets.Scripts.CustomElements.Chips;
 using Assets.Scripts.Managers;
-using SharpCircuit;
 using UnityEngine;
 using static SharpCircuit.Circuit;
 
@@ -14,8 +13,10 @@ namespace Assets.Scripts.Components
     {
         #region Fields
 
+        public bool UseGraph;
         public string CurrentCode;
         public string CurrentGraph;
+        public string CurrentGraphCode;
 
         public GameObject LedOnPointLight;
         public GameObject Led13PointLight;
@@ -47,6 +48,11 @@ namespace Assets.Scripts.Components
         #endregion
 
         #region Private Methods
+
+        private void UpdateNodeCode(string setup, string loop)
+        {
+            CurrentGraphCode = "void setup(){ Serial.begin(9600);" + setup + "} void loop(){" + loop + "}";
+        }
 
         private IEnumerator BlinkRxLed()
         {
@@ -113,7 +119,7 @@ namespace Assets.Scripts.Components
                 UIManager.Instance.AddLog(((char) b).ToString(), 0);
             });
 
-            aTmega328P = SimulationManager.Instance.CreateElement<ATmega328P>(CurrentCode, print);
+            aTmega328P = SimulationManager.Instance.CreateElement<ATmega328P>(UseGraph ? CurrentGraphCode : CurrentCode, print);
             LeadByPortName = new Dictionary<string, Lead>
             {
                 {"0", aTmega328P.PD0Lead},
@@ -185,6 +191,8 @@ namespace Assets.Scripts.Components
 
         public override void DrawPropertiesWindow()
         {
+            UIManager.Instance.GenerateCheckboxPropertyField(LocalizationManager.Instance.Localize("UseNodes"), ref UseGraph);
+
             UIManager.Instance.GenerateButtonPropertyField(LocalizationManager.Instance.Localize("CodeEditor"), () =>
             {
                 UIManager.Instance.ShowEditCode(CurrentCode, newCode => CurrentCode = newCode);
@@ -192,13 +200,18 @@ namespace Assets.Scripts.Components
 
             UIManager.Instance.GenerateButtonPropertyField(LocalizationManager.Instance.Localize("NodeEditor"), () =>
             {
-                UIManager.Instance.ShowNodeEditor(CurrentGraph, newGraph => CurrentGraph = newGraph);
+                UIManager.Instance.ShowNodeEditor(CurrentGraph, (newGraph, setup, loop) =>
+                {
+                    CurrentGraph = newGraph;
+                    UpdateNodeCode(setup, loop);
+                });
             });
         }
 
         protected override void SetupPorts()
         {
             CurrentCode = "void setup()\n{\n\t\n}\n\n\nvoid loop()\n{\n\t\n}";
+            UpdateNodeCode(string.Empty, string.Empty);
 
             ledOnMaterial = Resources.Load<Material>("3D Models\\Uno\\Materials\\LedOn");
             ledOffMaterial = Resources.Load<Material>("3D Models\\Uno\\Materials\\LedOff");
@@ -206,6 +219,7 @@ namespace Assets.Scripts.Components
             meshRenderer = GetComponentInChildren<MeshRenderer>();
 
             DefaultHeight = 0;
+            UseGraph = true;
 
             Ports.Add(new Port("3.3V", new Vector3(0.092f, 0.2f, -0.488f), PortType.Power, PinType.Female, false, false, Vector3.zero, Vector3.zero, Vector3.zero));
             Ports.Add(new Port("5V", new Vector3(0.141f, 0.2f, -0.488f), PortType.Power, PinType.Female, false, false, Vector3.zero, Vector3.zero, Vector3.zero));
@@ -241,8 +255,10 @@ namespace Assets.Scripts.Components
             var saveFile = new ArduinoUnoSaveFile
             {
                 PrefabName = "ArduinoUno",
+                UseGraph = UseGraph,
                 Code = CurrentCode,
-                Graph = CurrentGraph
+                Graph = CurrentGraph,
+                GraphCode = CurrentGraphCode
             };
 
             return saveFile;
@@ -252,8 +268,10 @@ namespace Assets.Scripts.Components
         {
             if (saveFile is ArduinoUnoSaveFile arduinoUnoSaveFile)
             {
+                UseGraph = arduinoUnoSaveFile.UseGraph;
                 CurrentCode = arduinoUnoSaveFile.Code;
                 CurrentGraph = arduinoUnoSaveFile.Graph;
+                CurrentGraphCode = arduinoUnoSaveFile.GraphCode;
             }
         }
 

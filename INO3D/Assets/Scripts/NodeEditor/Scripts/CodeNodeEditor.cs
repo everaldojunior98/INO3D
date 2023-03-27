@@ -21,6 +21,7 @@ namespace Assets.Scripts.NodeEditor.Scripts
         {
             nodes = new Dictionary<string, string>
             {
+                {"PinMode", "Nodes/PinModeNode"},
                 {"Number", "Nodes/NumberNode"},
                 {"Text", "Nodes/TextNode"},
                 {"Math", "Nodes/MathNode"},
@@ -30,7 +31,7 @@ namespace Assets.Scripts.NodeEditor.Scripts
                 {"Analog/AnalogWrite", "Nodes/AnalogWriteNode"},
                 {"Delay", "Nodes/DelayNode"},
                 {"Millis", "Nodes/MillisNode"},
-                {"Serial/SerialRead", "Nodes/SerialReadNode"},
+                //{"Serial/SerialRead", "Nodes/SerialReadNode"},
                 {"Serial/SerialWrite", "Nodes/SerialWriteNode"},
                 {"Conditional", "Nodes/ConditionalNode"}
             };
@@ -49,10 +50,18 @@ namespace Assets.Scripts.NodeEditor.Scripts
 
         #region Public Methods
 
-        public string GenerateCode()
+        public string GenerateLoopCode()
         {
             var code = string.Empty;
-            foreach (var node in Graph.nodes.Where(node => node.IsTerminal && node.PreviousNodeSocket != null && !node.PreviousNodeSocket.HasConnection()))
+            foreach (var node in Graph.nodes.Where(node => !(node is PinModeNode) && node.IsTerminal && node.PreviousNodeSocket != null && !node.PreviousNodeSocket.HasConnection()))
+                code += node.Value;
+            return code;
+        }
+
+        public string GenerateSetupCode()
+        {
+            var code = string.Empty;
+            foreach (var node in Graph.nodes.Where(node => node is PinModeNode && node.IsTerminal))
                 code += node.Value;
             return code;
         }

@@ -250,13 +250,15 @@ namespace Assets.Scripts.Components.Base
             }
 
             foreach (var outline in outlines)
-                outline.enabled = true;
+                if (outline != null)
+                    outline.enabled = true;
         }
 
         public void DisableHighlight()
         {
             foreach (var outline in outlines)
-                outline.enabled = false;
+                if (outline != null)
+                    outline.enabled = false;
         }
 
         public bool IsConnected()

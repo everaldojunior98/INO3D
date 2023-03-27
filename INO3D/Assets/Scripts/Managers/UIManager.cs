@@ -97,7 +97,7 @@ namespace Assets.Scripts.Managers
 
         private Action currentPopupAction = () => { };
         private Action<string> onCodeSave;
-        private Action<string> onGraphSave;
+        private Action<string, string, string> onGraphSave;
         private string currentCode = string.Empty;
 
         private Dictionary<GameObject, GameObject> warningByObject;
@@ -243,13 +243,13 @@ namespace Assets.Scripts.Managers
             showEditCode = true;
         }
         
-        public void ShowNodeEditor(string graph, Action<string> onSave)
+        public void ShowNodeEditor(string graph, Action<string, string, string> onSave)
         {
             onGraphSave = onSave;
             CodeNodeEditor.LoadGraph(graph);
             showNodeEditor = true;
-        } 
-        
+        }
+
         public void AddLog(string log, int lineEnding = 1)
         {
             if (log.Length > 0)
@@ -1097,7 +1097,7 @@ namespace Assets.Scripts.Managers
             if (ImGui.Button(LocalizationManager.Instance.Localize("Save"),
                     new Vector2(ImGui.GetItemRectSize().x - 10, 30)))
             {
-                onGraphSave(CodeNodeEditor.SaveGraph());
+                onGraphSave(CodeNodeEditor.SaveGraph(), CodeNodeEditor.GenerateSetupCode(), CodeNodeEditor.GenerateLoopCode());
             }
 
             ImGui.End();
