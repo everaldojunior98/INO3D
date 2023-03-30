@@ -28,6 +28,10 @@ namespace Assets.Scripts.Camera
 
         private const float Smoothness = 10f;
 
+        private bool startedMovement;
+        private bool canExecute;
+        private bool isMouseOverUi;
+
         private Transform orbitTransform;
 
         private Vector3 camLockOffset;
@@ -82,7 +86,16 @@ namespace Assets.Scripts.Camera
                 orbitTransform.position = gameObjectToLock.transform.position + camLockOffset;
             }
 
-            if (UIManager.Instance.IsMouserOverUI())
+            startedMovement = Input.GetMouseButton(1) || Input.GetMouseButton(2);
+            if (!Input.GetMouseButton(1) && !Input.GetMouseButton(2))
+                isMouseOverUi = UIManager.Instance.IsMouserOverUI();
+
+            if (startedMovement && isMouseOverUi)
+                canExecute = false;
+            else
+                canExecute = true;
+
+            if (!canExecute)
                 return;
 
             UpdateMouse();

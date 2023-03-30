@@ -67,6 +67,7 @@ namespace Assets.Scripts.Managers
             AddLocalization("CarChassis", "Chassi 2wd", "Chassis 2wd");
             AddLocalization("Battery", "Bateria", "Battery");
 
+            AddLocalization("Ok", "Ok", "Ok");
             AddLocalization("Yes", "Sim", "Yes");
             AddLocalization("No", "Não", "No");
             AddLocalization("Cancel", "Cancelar", "Cancel");
@@ -77,6 +78,9 @@ namespace Assets.Scripts.Managers
             AddLocalization("Ino3DProjectFiles", "Arquivos de Projeto Ino3D", "Ino3D Project Files");
             AddLocalization("UnsavedPopupTitle", "Deseja salvar o projeto?", "Do you want to save the project?");
             AddLocalization("UnsavedPopupMessage", "Há alterações não salvas em", "There are unsaved changes in");
+            
+            AddLocalization("Warning", "Aviso", "Warning");
+            AddLocalization("LanguagePopupMessage", "A linguagem foi alterada. Você deve reiniciar o Ino3D para que as alterações entrem em vigor", "Language has been changed. You must restart Ino3D for the changes to take effect");
 
             AddLocalization("Camera2D", "Câmera 2D", "Camera 2D");
             AddLocalization("Camera3D", "Câmera 3D", "Camera 3D");

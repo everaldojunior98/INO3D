@@ -87,11 +87,10 @@ namespace Assets.Scripts.Components
                 LocalizationManager.Instance.Localize("ColorWhite"),
                 LocalizationManager.Instance.Localize("ColorYellow")
             };
-            UIManager.Instance.GenerateComboBoxPropertyField(LocalizationManager.Instance.Localize("Color"),
-                ref currentColor, colors);
+            UIManager.Instance.GenerateComboBoxPropertyField(LocalizationManager.Instance.Localize("Color"), colors, currentColor, value => currentColor = value);
 
             if(inoPort1.CanBeRigid && inoPort2.CanBeRigid)
-                UIManager.Instance.GenerateCheckboxPropertyField(LocalizationManager.Instance.Localize("IsRigid"), ref isRigid);
+                UIManager.Instance.GenerateCheckboxPropertyField(LocalizationManager.Instance.Localize("IsRigid"), isRigid, value => isRigid = value);
         }
 
         protected override void OnUpdate()

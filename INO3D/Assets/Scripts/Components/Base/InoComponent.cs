@@ -38,6 +38,8 @@ namespace Assets.Scripts.Components.Base
         public string Name { get; set; }
         public string Hash { get; set; }
 
+        public Action OnLoad { get; set; }
+
         protected List<Port> Ports;
         protected List<InoPort> GeneratedPorts;
         protected Dictionary<string, Lead> LeadByPortName;
@@ -103,6 +105,7 @@ namespace Assets.Scripts.Components.Base
             SetupPorts();
             GeneratePorts();
             transform.position = new Vector3(transform.position.x, DefaultHeight, transform.position.z);
+            OnLoad?.Invoke();
         }
 
         private void Update()

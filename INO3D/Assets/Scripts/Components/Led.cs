@@ -124,8 +124,7 @@ namespace Assets.Scripts.Components
                 LocalizationManager.Instance.Localize("ColorYellow")
 
             };
-            UIManager.Instance.GenerateComboBoxPropertyField(LocalizationManager.Instance.Localize("Color"),
-                ref currentColor, colorNames);
+            UIManager.Instance.GenerateComboBoxPropertyField(LocalizationManager.Instance.Localize("Color"), colorNames, currentColor, value => currentColor = value);
         }
 
         protected override void SetupPorts()

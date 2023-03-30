@@ -116,7 +116,7 @@ namespace Assets.Scripts.Components
             {
                 if (!blinkTxLed)
                     blinkTxLed = true;
-                UIManager.Instance.AddLog(((char) b).ToString(), 0);
+                UIManager.Instance.GetConsole()?.AddLog(((char) b).ToString());
             });
 
             aTmega328P = SimulationManager.Instance.CreateElement<ATmega328P>(UseGraph ? CurrentGraphCode : CurrentCode, print);
@@ -191,11 +191,11 @@ namespace Assets.Scripts.Components
 
         public override void DrawPropertiesWindow()
         {
-            UIManager.Instance.GenerateCheckboxPropertyField(LocalizationManager.Instance.Localize("UseNodes"), ref UseGraph);
+            UIManager.Instance.GenerateCheckboxPropertyField(LocalizationManager.Instance.Localize("UseNodes"), UseGraph, value => UseGraph = value);
 
             UIManager.Instance.GenerateButtonPropertyField(LocalizationManager.Instance.Localize("CodeEditor"), () =>
             {
-                UIManager.Instance.ShowEditCode(CurrentCode, newCode => CurrentCode = newCode);
+                UIManager.Instance.ShowEditCode(CurrentCode, newCode => CurrentCode = newCode, this);
             });
 
             UIManager.Instance.GenerateButtonPropertyField(LocalizationManager.Instance.Localize("NodeEditor"), () =>
@@ -204,7 +204,7 @@ namespace Assets.Scripts.Components
                 {
                     CurrentGraph = newGraph;
                     UpdateNodeCode(setup, loop);
-                });
+                }, this);
             });
         }
 

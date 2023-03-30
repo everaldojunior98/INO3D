@@ -87,7 +87,7 @@ namespace Assets.Scripts.Components
         {
             UIManager.Instance.GenerateButtonPropertyField(LocalizationManager.Instance.Localize("EditCode"), () =>
             {
-                UIManager.Instance.ShowEditCode(currentCode, newCode => currentCode = newCode);
+                UIManager.Instance.ShowEditCode(currentCode, newCode => currentCode = newCode, this);
             });
         }
 

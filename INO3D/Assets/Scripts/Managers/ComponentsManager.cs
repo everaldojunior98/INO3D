@@ -47,8 +47,6 @@ namespace Assets.Scripts.Managers
 
         private UnityEngine.Camera mainCamera;
 
-        private bool isMouseReleased;
-
         private bool hasSelectedComponentChangedPosition;
         private bool canDrag;
         private bool isDragging;
@@ -169,7 +167,7 @@ namespace Assets.Scripts.Managers
             if (!isAddingComponent && UIManager.Instance.IsMouserOverUI() || SimulationManager.Instance.IsSimulating())
                 return;
 
-            if (Input.GetKeyDown(selectButton))
+            if (Input.GetKeyDown(selectButton) && !isAddingComponent)
             {
                 var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out var hit, inoLayerMask))
@@ -226,9 +224,6 @@ namespace Assets.Scripts.Managers
             }
 
             if (Input.GetKeyUp(selectButton))
-                isMouseReleased = true;
-
-            if (isMouseReleased && UIManager.Instance.ImGuiIsMouseUp())
             {
                 if (isAddingComponent && selectedComponent != null)
                 {
@@ -255,7 +250,6 @@ namespace Assets.Scripts.Managers
                 canDrag = false;
                 isDragging = false;
                 isAddingComponent = false;
-                isMouseReleased = false;
                 hasSelectedComponentChangedPosition = false;
             }
 
@@ -287,6 +281,11 @@ namespace Assets.Scripts.Managers
         #endregion
 
         #region Public Methods
+
+        public bool IsAddingComponent()
+        {
+            return isAddingComponent;
+        }
 
         public void UpdateSceneComponents()
         {
@@ -540,7 +539,6 @@ namespace Assets.Scripts.Managers
             selectedComponent = component;
             canDrag = selectedComponent.CanDrag;
             selectedComponent.EnableHighlight();
-            UIManager.Instance.SetSelectedComponentName(selectedComponent.Name);
 
             selectedComponent.gameObject.layer = 0;
             foreach (var child in selectedComponent.GetComponentsInChildren<Transform>(true))
@@ -551,6 +549,11 @@ namespace Assets.Scripts.Managers
                 selectedComponentLayer = floorLayerMask | inoLayerMask;
             else
                 selectedComponentLayer = floorLayerMask;
+
+            if (isAddingComponent)
+                selectedComponent.OnLoad += () => UIManager.Instance.SelectComponent(selectedComponent);
+            else
+                UIManager.Instance.SelectComponent(selectedComponent);
         }
 
         public void DeselectComponent()
@@ -569,6 +572,7 @@ namespace Assets.Scripts.Managers
             }
 
             selectedComponent = null;
+            UIManager.Instance.SelectComponent(selectedComponent);
         }
         
         public void DeselectPorts()

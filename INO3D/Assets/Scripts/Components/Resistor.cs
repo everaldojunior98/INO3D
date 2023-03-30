@@ -52,7 +52,7 @@ namespace Assets.Scripts.Components
 
         public override void DrawPropertiesWindow()
         {
-            UIManager.Instance.GenerateIntPropertyField(LocalizationManager.Instance.Localize("Resistance"), ref resistance);
+            UIManager.Instance.GenerateIntPropertyField(LocalizationManager.Instance.Localize("Resistance"), resistance, value => resistance = value);
         }
 
         protected override void OnUpdate()
