@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Managers;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityCamera = UnityEngine.Camera;
 
 namespace Assets.Scripts.Camera
@@ -95,7 +95,10 @@ namespace Assets.Scripts.Camera
             else
                 canExecute = true;
 
-            if (!canExecute)
+            if (Input.GetAxis("Mouse ScrollWheel") != 0 && UIManager.Instance.IsMouserOverUI())
+                canExecute = false;
+
+            if (!canExecute || EventSystem.current.currentSelectedGameObject != null)
                 return;
 
             UpdateMouse();
