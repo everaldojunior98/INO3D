@@ -124,10 +124,10 @@ namespace Assets.Scripts.Managers
             AddLocalization("ResetCamera", "Resetar câmera", "Reset camera");
 
             AddLocalization("CodeEditor", "Editor de código", "Code editor");
-            AddLocalization("NodeEditor", "Editor de nós", "Node editor");
+            AddLocalization("NodeEditor", "Editor de blocos", "Blocks editor");
 
-            AddLocalization("Nodes", "Nós", "Nodes");
-            AddLocalization("UseNodes", "Usar nós", "Use nodes");
+            AddLocalization("Nodes", "Blocos", "Blocks");
+            AddLocalization("UseNodes", "Usar blocos", "Use blocks");
             AddLocalization("Nodes.Duplicate", "Duplicar", "Duplicate");
             AddLocalization("Nodes.Clear", "Limpar conexão", "Clear connection");
             AddLocalization("Nodes.MultiClear", "Limpar conexões", "Clear connections");
