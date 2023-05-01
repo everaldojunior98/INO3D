@@ -99,7 +99,10 @@ namespace Assets.Scripts.Camera
                 canExecute = false;
 
             if (!canExecute || EventSystem.current.currentSelectedGameObject != null)
+            {
+                lastMouse = Input.mousePosition;
                 return;
+            }
 
             UpdateMouse();
 
